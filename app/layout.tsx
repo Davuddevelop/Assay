@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteNav } from "@/components/site-nav";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -41,8 +40,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-obsidian text-ivory">
         <div className="atmosphere" aria-hidden />
-        <SiteNav />
-        <main className="flex-1">{children}</main>
+        {children}
       </body>
     </html>
   );
