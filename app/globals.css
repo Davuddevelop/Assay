@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/*
+  Assay design tokens.
+  The hallmark: a mark struck on code to certify it is sound.
+  Dark, luxurious, restrained. Elevation is almost nothing — restraint, not shadows.
+*/
+@theme {
+  /* Color */
+  --color-obsidian: #16150f; /* primary ground */
+  --color-obsidian-2: #1f1d15; /* raised surfaces, cards */
+  --color-ivory: #ede7d8; /* primary text on dark */
+  --color-ivory-dim: #b8b2a2; /* secondary text */
+  --color-gold: #b68a3e; /* accent, the hallmark, "Assayed" */
+  --color-gold-soft: #cda75a; /* hover/active gold */
+  --color-oxblood: #7a332e; /* the "Held" / flagged state — used rarely */
+  --color-ash: #6e695c; /* muted captions, metadata */
+  --color-line: #36332a; /* hairline borders */
+
+  /* Type roles (font CSS vars are set by next/font in layout.tsx) */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Radius */
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-pill: 999px;
+
+  /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */
+  --spacing-34: 34px;
+
+  /* Motion */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    background-color: var(--color-obsidian);
+    color: var(--color-ivory);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* A single, consistent gold focus ring on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+    color: var(--color-ivory);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+/*
+  HallmarkStamp "stamp-in": a quick strike that settles, once.
+  Boldness is spent here and nowhere else.
+*/
+@keyframes hallmark-strike {
+  0% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hallmark-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hallmark-animate {
+  animation: hallmark-strike 180ms var(--ease-settle) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No scale — just a quiet fade. Respected everywhere. */
+  .hallmark-animate {
+    animation: hallmark-fade 180ms ease both;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
