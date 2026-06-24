@@ -24,16 +24,16 @@ export function HowItWorks() {
     <section id="how-it-works" className="scroll-mt-16 border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="02" label="How it works" />
+          <Eyebrow index="03" label="How it works" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
             Three steps, then it stays out of your way.
           </h2>
         </Reveal>
 
-        <ol className="mt-16 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line md:grid-cols-3">
+        <ol className="mt-16 grid gap-4 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <Reveal as="li" key={step.n} delay={i * 90} className="bg-obsidian-2">
-              <div className="group h-full p-8 transition-colors duration-300 hover:bg-obsidian-2/60">
+            <Reveal as="li" key={step.n} delay={i * 90}>
+              <div className="panel lift group h-full p-8 hover:border-gold/30">
                 <span className="font-mono text-sm tracking-[0.2em] text-ash transition-colors duration-300 group-hover:text-gold">
                   {step.n}
                 </span>
