@@ -7,6 +7,7 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   display: "swap",
+  style: ["normal", "italic"],
   axes: ["opsz"],
 });
 
@@ -39,6 +40,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-obsidian text-ivory">
+        <div className="atmosphere" aria-hidden />
         <SiteNav />
         <main className="flex-1">{children}</main>
       </body>

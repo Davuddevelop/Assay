@@ -48,8 +48,15 @@
     background-color: var(--color-obsidian);
     color: var(--color-ivory);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Fraunces carries the editorial voice: optical sizing on, headline contrast. */
+  .font-display {
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 120;
   }
 
   /* A single, consistent gold focus ring on every interactive element. */
@@ -101,10 +108,63 @@
   animation: hallmark-strike 180ms var(--ease-settle) both;
 }
 
+/*
+  Atmosphere. The expensive feel lives here: a fine film grain over the whole
+  surface and one faint warm glow. Both barely there — texture, not decoration.
+*/
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.atmosphere::before {
+  /* Film grain — fractal noise, held to a whisper. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.atmosphere::after {
+  /* A single warm glow, top center, fading to nothing. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    60% 38% at 50% -4%,
+    color-mix(in srgb, var(--color-gold) 12%, transparent),
+    transparent 70%
+  );
+}
+
+/* Scroll reveal — a quiet fade-up, set by the <Reveal> client wrapper. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-settle),
+    transform 600ms var(--ease-settle);
+  will-change: opacity, transform;
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* No scale — just a quiet fade. Respected everywhere. */
   .hallmark-animate {
     animation: hallmark-fade 180ms ease both;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   *,
