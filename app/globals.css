@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/*
+  Assay design tokens.
+  The hallmark: a mark struck on code to certify it is sound.
+  Dark, luxurious, restrained. Elevation is almost nothing — restraint, not shadows.
+*/
+@theme {
+  /* Color */
+  --color-obsidian: #16150f; /* primary ground */
+  --color-obsidian-2: #1f1d15; /* raised surfaces, cards */
+  --color-ivory: #ede7d8; /* primary text on dark */
+  --color-ivory-dim: #b8b2a2; /* secondary text */
+  --color-gold: #b68a3e; /* accent, the hallmark, "Assayed" */
+  --color-gold-soft: #cda75a; /* hover/active gold */
+  --color-oxblood: #7a332e; /* the "Held" / flagged state — used rarely */
+  --color-ash: #6e695c; /* muted captions, metadata */
+  --color-line: #36332a; /* hairline borders */
+
+  /* Type roles (font CSS vars are set by next/font in layout.tsx) */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Radius */
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-pill: 999px;
+
+  /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */
+  --spacing-34: 34px;
+
+  /* Motion */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    background-color: var(--color-obsidian);
+    color: var(--color-ivory);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Fraunces carries the editorial voice: optical sizing on, headline contrast. */
+  .font-display {
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 120;
+  }
+
+  /* A single, consistent gold focus ring on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+    color: var(--color-ivory);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+/*
+  HallmarkStamp "stamp-in": a quick strike that settles, once.
+  Boldness is spent here and nowhere else.
+*/
+@keyframes hallmark-strike {
+  0% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hallmark-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hallmark-animate {
+  animation: hallmark-strike 180ms var(--ease-settle) both;
+}
+
+/*
+  Atmosphere. The expensive feel lives here: a fine film grain over the whole
+  surface and one faint warm glow. Both barely there — texture, not decoration.
+*/
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.atmosphere::before {
+  /* Film grain — fractal noise, held to a whisper. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.atmosphere::after {
+  /* A single warm glow, top center, fading to nothing. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    60% 38% at 50% -4%,
+    color-mix(in srgb, var(--color-gold) 12%, transparent),
+    transparent 70%
+  );
+}
+
+/* Scroll reveal — a quiet fade-up, set by the <Reveal> client wrapper. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-settle),
+    transform 600ms var(--ease-settle);
+  will-change: opacity, transform;
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No scale — just a quiet fade. Respected everywhere. */
+  .hallmark-animate {
+    animation: hallmark-fade 180ms ease both;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
