@@ -7,8 +7,8 @@ export function HallmarkApplied() {
     <section className="border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="04" label="The hallmark, applied" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
+          <Eyebrow label="The hallmark, applied" />
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
             The same change, judged two ways.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim">

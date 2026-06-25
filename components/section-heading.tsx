@@ -1,27 +1,20 @@
 import { cn } from "@/lib/utils";
 
 /**
- * A numbered editorial eyebrow: a short gold rule, the section index, and a
- * mono label. The quiet signature on every section.
+ * A crisp mono section label — a small gold tick and the label. No decorative
+ * numbering; structure should encode meaning, not ornament.
  */
 export function Eyebrow({
-  index,
   label,
   className,
 }: {
-  index?: string;
   label: string;
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <span aria-hidden className="h-px w-6 bg-gold/70" />
-      {index && (
-        <span className="font-mono text-xs tracking-[0.2em] text-ash">
-          {index}
-        </span>
-      )}
-      <span className="font-mono text-xs uppercase tracking-[0.2em] text-gold">
+    <div className={cn("flex items-center gap-2.5", className)}>
+      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
+      <span className="font-mono text-xs uppercase tracking-[0.22em] text-gold-text">
         {label}
       </span>
     </div>

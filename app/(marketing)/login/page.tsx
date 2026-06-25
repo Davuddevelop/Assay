@@ -19,7 +19,7 @@ export default function LoginPage() {
       />
       <HallmarkMark metallic className="relative h-10 w-10" />
 
-      <h1 className="mt-8 font-display text-3xl text-ivory">Sign in</h1>
+      <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">
         Connect your GitHub to begin. Assay reads the repositories you choose and
         the checks it runs — nothing else.

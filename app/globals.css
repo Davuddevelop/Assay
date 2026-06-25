@@ -1,36 +1,45 @@
 @import "tailwindcss";
+@import "@radix-ui/colors/slate-dark.css"; /* cool charcoal — the systematic neutral */
 
 /*
   Assay design tokens.
-  The hallmark: a mark struck on code to certify it is sound.
-  Dark, luxurious, restrained. Elevation is almost nothing — restraint, not shadows.
+  Technical-precise: a perceptual slate scale (real elevation via lightness steps)
+  with one distinctive accent — warm gold, spent only on the struck hallmark.
 */
 @theme {
-  /* Color — depth steps, two temperatures */
-  --color-onyx: #0b0c09; /* page ground */
-  --color-surface: #14150f; /* cards, a clear step lighter */
-  --color-forest: #12241b; /* secondary section band, for depth */
-  --color-ivory: #f1ecdf; /* primary text on dark */
-  --color-ivory-dim: #c6bfae; /* secondary text */
-  --color-gold: #c9a24b; /* the hallmark mid-tone — flat fallback */
-  --color-gold-soft: #e8ce8f; /* light stop — hover */
+  /* Neutral system — Radix slate dark, mapped to semantic roles */
+  --color-onyx: var(--slate-1); /* page ground (#111113) */
+  --color-bg-subtle: var(--slate-2); /* subtle zones */
+  --color-surface: var(--slate-3); /* cards — a clear step lighter (#212225) */
+  --color-surface-hover: var(--slate-4); /* card / row hover */
+  --color-line: var(--slate-6); /* subtle hairline border */
+  --color-border: var(--slate-7); /* interactive border */
+  --color-border-strong: var(--slate-8); /* strong border / focus */
+  --color-ash: var(--slate-10); /* faint metadata */
+  --color-ivory-dim: var(--slate-11); /* secondary text */
+  --color-ivory: var(--slate-12); /* primary text (#edeef0) */
+
+  /* Accent — distinctive warm gold (Radix gold is too khaki); pops on cool slate */
+  --color-gold: #c9a24b; /* borders, focus, solid mid */
+  --color-gold-soft: #e8ce8f; /* light — hover / labels */
   --color-gold-deep: #8a6a2e; /* dark stop */
-  --color-oxblood: #8e3a2f; /* the "Held" / flagged state — borders, fills */
-  --color-oxblood-soft: #c07a68; /* held text/glyphs — passes AA on the dark grounds */
-  --color-ash: #767160; /* muted captions, metadata */
-  --color-line: #36332a; /* hairline borders */
+  --color-gold-text: #e3c885; /* gold label text — AA on slate */
+
+  /* Held / flagged — used rarely */
+  --color-oxblood: #b5443a; /* border / fill */
+  --color-oxblood-soft: #e08a78; /* held text — AA on the dark grounds */
 
   /* The hallmark, struck in metal */
   --gradient-gold: linear-gradient(145deg, #e8ce8f 0%, #c9a24b 52%, #8a6a2e 100%);
 
   /* Type roles (font CSS vars are set by next/font in layout.tsx) */
-  --font-display: var(--font-fraunces);
-  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-geist);
   --font-mono: var(--font-jetbrains-mono);
 
-  /* Radius */
-  --radius-control: 10px;
-  --radius-card: 14px;
+  /* Radius — tighter, more technical */
+  --radius-control: 8px;
+  --radius-card: 12px;
   --radius-pill: 999px;
 
   /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */
@@ -62,15 +71,14 @@
     background-color: var(--color-onyx);
     color: var(--color-ivory);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Fraunces carries the editorial voice: optical sizing on, headline contrast. */
+  /* Space Grotesk carries the headlines — tight tracking at display sizes. */
   .font-display {
-    font-optical-sizing: auto;
-    font-variation-settings: "opsz" 120;
+    letter-spacing: -0.02em;
+    font-feature-settings: "ss01";
   }
 
   /* A single, consistent gold focus ring on every interactive element. */

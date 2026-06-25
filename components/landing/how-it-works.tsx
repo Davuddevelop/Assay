@@ -21,11 +21,11 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-mt-16 border-b border-line bg-forest">
+    <section id="how-it-works" className="scroll-mt-16 border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="03" label="How it works" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
+          <Eyebrow label="How it works" />
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
             Three steps, then it stays out of your way.
           </h2>
         </Reveal>

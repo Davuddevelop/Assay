@@ -3,12 +3,12 @@ import { Reveal } from "@/components/reveal";
 
 export function Problem() {
   return (
-    <section className="border-b border-line bg-forest">
+    <section className="border-b border-line">
       <div className="mx-auto w-full max-w-3xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="01" label="The problem" />
-          <h2 className="mt-6 font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
-            AI writes code that <span className="italic">looks</span> right.
+          <Eyebrow label="The problem" />
+          <h2 className="mt-6 font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
+            AI writes code that <span className="text-ivory-dim">looks</span> right.
           </h2>
           <div className="mt-7 space-y-4 text-base leading-relaxed text-ivory-dim sm:text-lg">
             <p>

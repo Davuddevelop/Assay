@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
   display: "swap",
-  style: ["normal", "italic"],
-  axes: ["opsz"],
+  weight: ["400", "500", "700"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
   display: "swap",
 });
@@ -36,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`dark ${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-onyx text-ivory">
         {/* Shared metallic-gold gradient for hallmark strokes (referenced by url()). */}
@@ -44,7 +43,7 @@ export default function RootLayout({
           <defs>
             <linearGradient id="assay-gold-metallic" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#e8ce8f" />
-              <stop offset="52%" stopColor="#c9a24b" />
+              <stop offset="55%" stopColor="#c9a24b" />
               <stop offset="100%" stopColor="#8a6a2e" />
             </linearGradient>
           </defs>

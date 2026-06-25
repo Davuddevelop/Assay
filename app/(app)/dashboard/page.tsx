@@ -20,7 +20,7 @@ export default function DashboardPage() {
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           {mockUser.name}&rsquo;s workspace
         </p>
-        <h1 className="mt-3 font-display text-3xl text-ivory sm:text-4xl">
+        <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
           Nothing assayed yet.
         </h1>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-ivory-dim">

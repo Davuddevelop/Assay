@@ -23,7 +23,7 @@ function Cell({
         className,
       )}
     >
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gold">
+      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
         {label}
       </p>
       <h3 className="mt-4 text-lg font-medium text-ivory">{title}</h3>
@@ -44,8 +44,8 @@ export function FeatureBento() {
     <section className="border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="02" label="What it checks" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
+          <Eyebrow label="What it checks" />
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
             Three reads on every change, then one mark.
           </h2>
         </Reveal>
@@ -73,7 +73,7 @@ export function FeatureBento() {
                       <span
                         className={cn(
                           "text-[10px] uppercase tracking-[0.16em]",
-                          r.held ? "text-oxblood-soft" : "text-gold",
+                          r.held ? "text-oxblood-soft" : "text-ivory-dim",
                         )}
                       >
                         {r.held ? "held" : "ok"}
@@ -107,7 +107,7 @@ export function FeatureBento() {
               body="Secrets, injection, and the patterns that quietly leak."
             >
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-gold/50 text-sm text-gold">
+                <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-border text-sm text-ivory-dim">
                   ✓
                 </span>
                 <span className="font-mono text-xs text-ivory-dim">

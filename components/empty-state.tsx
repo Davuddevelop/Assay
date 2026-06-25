@@ -25,7 +25,7 @@ export function EmptyState({ title, body, action, className }: EmptyStateProps) 
         <span aria-hidden className="glow absolute inset-0 -z-10 scale-150" />
         <HallmarkMark metallic className="h-6 w-6" />
       </span>
-      <h3 className="mt-6 font-display text-xl text-ivory">{title}</h3>
+      <h3 className="mt-6 font-display text-xl font-semibold text-ivory">{title}</h3>
       <p className="mt-3 max-w-sm text-sm leading-relaxed text-ivory-dim">{body}</p>
       {action && (
         <Button href={action.href} variant="primary" size="md" className="mt-7">

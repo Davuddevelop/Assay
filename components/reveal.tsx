@@ -1,59 +1,48 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType } from "react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 
-import { cn } from "@/lib/utils";
+const variants: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  shown: { opacity: 1, y: 0 },
+};
 
 type RevealProps = {
   children: React.ReactNode;
   /** Stagger the fade-up; milliseconds of delay. */
   delay?: number;
-  as?: ElementType;
+  as?: "div" | "li";
   className?: string;
 };
 
 /**
- * A quiet fade-up as the element scrolls into view, once. Honors
- * prefers-reduced-motion via CSS (the .reveal rule resolves to no motion).
+ * A quiet spring fade-up as the element scrolls into view, once. Honors
+ * prefers-reduced-motion (renders static, no transform).
  */
-export function Reveal({
-  children,
-  delay = 0,
-  as: Tag = "div",
-  className,
-}: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+export function Reveal({ children, delay = 0, as = "div", className }: RevealProps) {
+  const reduce = useReducedMotion();
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || shown) return;
+  if (reduce) {
+    if (as === "li") return <li className={className}>{children}</li>;
+    return <div className={className}>{children}</div>;
+  }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setShown(true);
-            observer.disconnect();
-            break;
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [shown]);
+  const M = as === "li" ? motion.li : motion.div;
 
   return (
-    <Tag
-      ref={ref}
-      data-shown={shown}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-      className={cn("reveal", className)}
+    <M
+      className={className}
+      initial="hidden"
+      whileInView="shown"
+      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+      variants={variants}
+      transition={{
+        duration: 0.6,
+        delay: delay / 1000,
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
       {children}
-    </Tag>
+    </M>
   );
 }

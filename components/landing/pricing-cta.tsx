@@ -12,8 +12,8 @@ export function PricingCta() {
               className="glow absolute inset-x-0 -top-24 mx-auto h-64 max-w-md"
             />
             <div className="relative flex flex-col items-center">
-              <h2 className="font-display text-4xl leading-[1.05] text-ivory sm:text-5xl">
-                Strike your first <span className="italic">hallmark</span>.
+              <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl">
+                Strike your first hallmark.
               </h2>
               <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ivory-dim">
                 Free for solo work. Connect a repository and see the next change
