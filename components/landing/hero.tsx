@@ -86,11 +86,12 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div
-            aria-hidden
-            className="aurora pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2"
-          />
-          <ProductMock className="relative mx-auto max-w-3xl text-left" />
+          <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
+            <div aria-hidden className="aurora absolute inset-0" />
+          </div>
+          <div className="float-soft relative">
+            <ProductMock className="mx-auto max-w-3xl text-left" />
+          </div>
         </motion.div>
       </div>
     </section>

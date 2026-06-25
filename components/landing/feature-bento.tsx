@@ -1,6 +1,8 @@
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
+import { SpotlightCard } from "@/components/spotlight-card";
+import { CountUp } from "@/components/count-up";
 import { cn } from "@/lib/utils";
 
 function Cell({
@@ -19,7 +21,7 @@ function Cell({
   children?: React.ReactNode;
 }) {
   return (
-    <div
+    <SpotlightCard
       className={cn(
         "panel lift flex flex-col p-6 hover:border-iris/40 sm:p-7",
         className,
@@ -36,7 +38,7 @@ function Cell({
       <h3 className="mt-5 text-lg font-medium text-ivory">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ivory-dim">{body}</p>
       {children && <div className="mt-6 flex-1">{children}</div>}
-    </div>
+    </SpotlightCard>
   );
 }
 
@@ -125,7 +127,7 @@ export function FeatureBento() {
               body="The change has to pass the tests your repo already defines."
             >
               <div className="flex items-baseline gap-2">
-                <span className="font-display text-5xl text-ivory">42</span>
+                <CountUp to={42} className="font-display text-5xl text-ivory" />
                 <span className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
                   / 42 passed
                 </span>
