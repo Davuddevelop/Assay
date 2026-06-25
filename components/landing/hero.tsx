@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 
 import { Button } from "@/components/ui/button";
@@ -23,11 +22,6 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* aurora — the cool glow blooming up from below, behind the product */}
-      <div
-        aria-hidden
-        className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-[26%]"
-      />
 
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
         <motion.div variants={container} initial={initial} animate="shown">
@@ -68,25 +62,34 @@ export function Hero() {
                 Connect
               </Button>
             </div>
-            <div className="mt-4">
-              <Link
-                href="/#how-it-works"
-                className="text-sm text-ivory-dim transition-colors hover:text-ivory"
-              >
-                See how it works →
-              </Link>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              {["Your tests", "Security scan", "Your rules", "AI review"].map(
+                (chip) => (
+                  <span
+                    key={chip}
+                    className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim"
+                  >
+                    <span className="h-1 w-1 rounded-full bg-iris-soft" />
+                    {chip}
+                  </span>
+                ),
+              )}
             </div>
           </motion.div>
         </motion.div>
 
-        {/* the product, framed, centered */}
+        {/* the product, framed, centered, on its aurora */}
         <motion.div
-          className="mt-16"
+          className="relative mt-20"
           initial={reduce ? false : { opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <ProductMock className="mx-auto max-w-3xl text-left" />
+          <div
+            aria-hidden
+            className="aurora pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2"
+          />
+          <ProductMock className="relative mx-auto max-w-3xl text-left" />
         </motion.div>
       </div>
     </section>

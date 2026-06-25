@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 
 function Cell({
   className,
+  icon,
   label,
   title,
   body,
   children,
 }: {
   className?: string;
+  icon: React.ReactNode;
   label: string;
   title: string;
   body: string;
@@ -19,19 +21,48 @@ function Cell({
   return (
     <div
       className={cn(
-        "panel lift flex flex-col p-6 hover:border-gold/30 sm:p-7",
+        "panel lift flex flex-col p-6 hover:border-iris/40 sm:p-7",
         className,
       )}
     >
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
-        {label}
-      </p>
-      <h3 className="mt-4 text-lg font-medium text-ivory">{title}</h3>
+      <div className="flex items-center gap-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-control)] border border-border bg-surface text-iris-soft">
+          {icon}
+        </span>
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
+          {label}
+        </p>
+      </div>
+      <h3 className="mt-5 text-lg font-medium text-ivory">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ivory-dim">{body}</p>
       {children && <div className="mt-6 flex-1">{children}</div>}
     </div>
   );
 }
+
+const I = {
+  rules: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M5 4h14M5 9h14M5 14h9M5 19h9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  tests: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M5 12.5 10 17 19 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  security: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  ),
+  hallmark: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8.2 12.3 10.8 14.8 15.8 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+};
 
 const RULES = [
   { text: "never log card data", held: false },
@@ -55,6 +86,7 @@ export function FeatureBento() {
             {/* Rules — the differentiator, given the room */}
             <Cell
               className="md:col-span-4"
+              icon={I.rules}
               label="Your rules"
               title="The rules you wrote, in plain language"
               body="Assay holds each change against your .assay rules — the conventions you'd otherwise have to catch by eye in every review."
@@ -87,6 +119,7 @@ export function FeatureBento() {
             {/* Tests */}
             <Cell
               className="md:col-span-2"
+              icon={I.tests}
               label="Your tests"
               title="Your suite, run for real"
               body="The change has to pass the tests your repo already defines."
@@ -102,6 +135,7 @@ export function FeatureBento() {
             {/* Security */}
             <Cell
               className="md:col-span-2"
+              icon={I.security}
               label="Security scan"
               title="Nothing unsafe ships"
               body="Secrets, injection, and the patterns that quietly leak."
@@ -119,6 +153,7 @@ export function FeatureBento() {
             {/* The hallmark */}
             <Cell
               className="md:col-span-4"
+              icon={I.hallmark}
               label="The hallmark"
               title="One mark you can trust"
               body="Sound work is Assayed. Anything that breaks a test or a rule is Held — never a vague green light."
