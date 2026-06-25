@@ -1,4 +1,3 @@
-import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { HallmarkMark } from "@/components/wordmark";
 import { cn } from "@/lib/utils";
 
@@ -9,8 +8,8 @@ const CHECKS = [
 ];
 
 /**
- * The product, rendered. A struck check detail — the hallmark moment shown in
- * the real interface rather than described. This is the hero's anchor.
+ * The product, rendered. A concrete check detail — repo, branch, commit, and the
+ * three reads. Kept monochrome ivory/ash so the hallmark seal owns the gold.
  */
 export function ProductMock({ className }: { className?: string }) {
   return (
@@ -18,7 +17,7 @@ export function ProductMock({ className }: { className?: string }) {
       {/* window chrome */}
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <HallmarkMark className="h-4 w-4 text-gold" />
+          <HallmarkMark className="h-4 w-4 text-ivory-dim" />
           <span className="font-mono text-xs text-ivory-dim">davud/checkout</span>
         </div>
         <span className="font-mono text-xs text-ash">feat/idempotency-key</span>
@@ -26,23 +25,20 @@ export function ProductMock({ className }: { className?: string }) {
 
       {/* body */}
       <div className="p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
-              Check · 8f21a3c
-            </p>
-            <h3 className="mt-2 text-lg font-medium leading-snug text-ivory">
-              Add idempotency key to checkout
-            </h3>
-          </div>
-          <HallmarkStamp state="assayed" />
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
+            Check · 8f21a3c
+          </p>
+          <h3 className="mt-2 text-lg font-medium leading-snug text-ivory">
+            Add idempotency key to checkout
+          </h3>
         </div>
 
-        {/* the three checks, struck */}
+        {/* the three reads */}
         <div className="mt-6 grid grid-cols-3 gap-px overflow-hidden rounded-[var(--radius-control)] border border-line bg-line">
           {CHECKS.map((c) => (
             <div key={c.label} className="bg-obsidian-2 px-3 py-3.5 sm:px-4">
-              <div className="flex items-center gap-1.5 text-gold">
+              <div className="flex items-center gap-1.5 text-ivory-dim">
                 <span aria-hidden className="text-xs leading-none">
                   ✓
                 </span>

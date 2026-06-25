@@ -1,35 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { HallmarkMark } from "@/components/wordmark";
 import { ProductMock } from "@/components/landing/product-mock";
+import { HallmarkSeal } from "@/components/hallmark-seal";
 import { Reveal } from "@/components/reveal";
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-line">
-      {/* engineering grid + the warm glow, both faint */}
-      <div aria-hidden className="bg-grid absolute inset-0 opacity-[0.5]" />
+      {/* engineering grid, faint */}
+      <div aria-hidden className="bg-grid absolute inset-0 opacity-50" />
+      {/* asymmetric light source — behind the card on the right */}
+      <div
+        aria-hidden
+        className="glow absolute right-0 top-10 hidden h-96 w-[34rem] lg:block"
+      />
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pb-28 sm:pt-32">
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <Reveal className="flex flex-col items-center">
-            <span className="mb-8 inline-flex items-center gap-2.5 rounded-[var(--radius-pill)] border border-line bg-obsidian-2/60 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-ivory-dim">
-              <HallmarkMark className="h-3.5 w-3.5 text-gold" />
-              For solo developers and vibe-coders
-            </span>
-
-            <h1 className="font-display text-[2.75rem] leading-[1.0] tracking-[-0.02em] text-ivory sm:text-7xl">
+      <div className="relative mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-28 lg:py-36">
+        <div className="grid items-center gap-16 lg:grid-cols-12 lg:gap-8">
+          {/* Left — the words, left-aligned */}
+          <Reveal className="lg:col-span-5">
+            <h1 className="font-display text-[2.75rem] leading-[1.0] tracking-[-0.02em] text-ivory sm:text-6xl xl:text-7xl">
               Certified,
               <br />
               <span className="italic text-ivory-dim">not assumed.</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-balance text-base leading-relaxed text-ivory-dim sm:text-lg">
-              An independent checkpoint for AI-written code. Assay runs your tests,
-              a security scan, and a review against your own rules — then strikes
-              the hallmark.
+            <p className="mt-7 max-w-md text-base leading-relaxed text-ivory-dim sm:text-lg">
+              An independent checkpoint for the code you ship with AI — for solo
+              developers and vibe-coders. Assay runs your tests, a security scan,
+              and a review against your own rules, then strikes the hallmark.
             </p>
 
-            <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button href="/login" variant="primary" size="lg">
                 Connect a repo
               </Button>
@@ -38,16 +39,18 @@ export function Hero() {
               </Button>
             </div>
           </Reveal>
-        </div>
 
-        {/* the product, struck — the hero's anchor */}
-        <Reveal delay={140} className="relative mx-auto mt-20 max-w-3xl">
-          <div
-            aria-hidden
-            className="glow absolute -inset-x-10 -top-10 bottom-8 -z-10"
-          />
-          <ProductMock />
-        </Reveal>
+          {/* Right — the product, off-grid, with the seal struck on its corner */}
+          <div className="relative lg:col-span-7 lg:-mr-6 lg:translate-y-2 xl:-mr-12">
+            {/* glow for mobile/tablet, where the side glow is hidden */}
+            <div
+              aria-hidden
+              className="glow absolute -inset-x-8 -top-8 bottom-4 -z-10 lg:hidden"
+            />
+            <ProductMock className="lg:ml-auto lg:max-w-xl" />
+            <HallmarkSeal className="absolute -right-3 -top-8 z-10 lg:left-[-3rem] lg:right-auto lg:-top-12" />
+          </div>
+        </div>
       </div>
     </section>
   );
