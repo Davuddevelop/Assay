@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Geist, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "700"],
-});
 
 const geist = Geist({
   variable: "--font-geist",
@@ -35,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${spaceGrotesk.variable} ${geist.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`dark ${geist.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-onyx text-ivory">
         {/* Shared metallic-gold gradient for hallmark strokes (referenced by url()). */}

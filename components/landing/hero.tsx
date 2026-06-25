@@ -27,26 +27,27 @@ export function Hero() {
         <motion.div variants={container} initial={initial} animate="shown">
           <motion.p
             variants={item}
-            className="mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 px-3.5 py-1.5 font-mono text-xs uppercase tracking-[0.18em] text-ivory-dim"
+            className="mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-iris" />
-            Independent check for AI code
+            <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
+              New
+            </span>
+            Independent checks for AI-written code
           </motion.p>
 
           <motion.h1
             variants={item}
-            className="mx-auto mt-7 max-w-3xl font-display text-5xl font-semibold leading-[1.0] tracking-[-0.03em] text-ivory sm:text-7xl"
+            className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-semibold leading-[1.03] tracking-[-0.035em] text-ivory sm:text-7xl"
           >
             Certified, not assumed.
           </motion.h1>
 
           <motion.p
             variants={item}
-            className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg"
+            className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-ivory-dim sm:text-lg"
           >
-            An independent checkpoint for the code you ship with AI. Assay runs
-            your tests, a security scan, and a review against your own rules —
-            then strikes the hallmark.
+            An independent checkpoint for the code you ship with AI — your tests,
+            a security scan, and your own rules, then the hallmark.
           </motion.p>
 
           <motion.div variants={item} className="mt-9">

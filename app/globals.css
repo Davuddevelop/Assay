@@ -36,8 +36,8 @@
   /* The hallmark, struck in metal */
   --gradient-gold: linear-gradient(145deg, #e8ce8f 0%, #c9a24b 52%, #8a6a2e 100%);
 
-  /* Type roles (font CSS vars are set by next/font in layout.tsx) */
-  --font-display: var(--font-space-grotesk);
+  /* Type roles — Geist throughout (clean, minimal), JetBrains Mono for detail */
+  --font-display: var(--font-geist);
   --font-sans: var(--font-geist);
   --font-mono: var(--font-jetbrains-mono);
 
@@ -80,7 +80,7 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Space Grotesk carries the headlines — tight tracking at display sizes. */
+  /* Geist headlines — tight tracking at display sizes. */
   .font-display {
     letter-spacing: -0.02em;
     font-feature-settings: "ss01";

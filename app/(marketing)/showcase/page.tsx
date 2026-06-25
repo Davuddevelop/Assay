@@ -79,7 +79,7 @@ export default function ShowcasePage() {
         <div className="space-y-8">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Display — Space Grotesk
+              Display — Geist
             </p>
             <p className="mt-2 font-display text-5xl tracking-[-0.02em] text-ivory">
               <span className="font-bold">Certified,</span>{" "}
