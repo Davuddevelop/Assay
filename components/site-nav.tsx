@@ -10,38 +10,36 @@ const LINKS = [
 ];
 
 /**
- * Minimal top bar: the wordmark, a few quiet links, and GitHub sign-in.
- * Hairline below, generous height, nothing loud.
+ * A floating glass pill nav — wordmark, a few quiet links, and a sign-in pill.
  */
 export function SiteNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-onyx/85 backdrop-blur">
-      <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+    <div className="sticky top-3 z-40 px-4 sm:top-4">
+      <nav className="glass mx-auto flex h-14 w-full max-w-3xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
         <Link
           href="/"
           aria-label="Assay home"
-          className="rounded-sm transition-opacity hover:opacity-80"
+          className="rounded-pill transition-opacity hover:opacity-80"
         >
           <Wordmark />
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 md:flex">
           {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
+              className="text-sm text-ivory-dim transition-colors hover:text-ivory"
             >
               {link.label}
             </Link>
           ))}
         </div>
 
-        {/* href is stubbed to /login (not built this pass). */}
         <Button href="/login" variant="primary" size="sm">
-          Sign in with GitHub
+          Sign in
         </Button>
       </nav>
-    </header>
+    </div>
   );
 }

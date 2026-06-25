@@ -19,11 +19,15 @@
   --color-ivory-dim: var(--slate-11); /* secondary text */
   --color-ivory: var(--slate-12); /* primary text (#edeef0) */
 
-  /* Accent — distinctive warm gold (Radix gold is too khaki); pops on cool slate */
+  /* Accent — distinctive warm gold (Radix gold is too khaki); the hallmark */
   --color-gold: #c9a24b; /* borders, focus, solid mid */
   --color-gold-soft: #e8ce8f; /* light — hover / labels */
   --color-gold-deep: #8a6a2e; /* dark stop */
   --color-gold-text: #e3c885; /* gold label text — AA on slate */
+
+  /* Iris — the cool aurora accent (modern AI-startup glow) */
+  --color-iris: #8b8bf0; /* accent text/border */
+  --color-iris-soft: #b9b6f7; /* lighter */
 
   /* Held / flagged — used rarely */
   --color-oxblood: #b5443a; /* border / fill */
@@ -37,9 +41,10 @@
   --font-sans: var(--font-geist);
   --font-mono: var(--font-jetbrains-mono);
 
-  /* Radius — tighter, more technical */
-  --radius-control: 8px;
-  --radius-card: 12px;
+  /* Radius — soft, modern */
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-frame: 22px;
   --radius-pill: 999px;
 
   /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */
@@ -146,20 +151,39 @@
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.04;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.atmosphere::after {
-  /* A single warm glow, top center, fading to nothing. */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    60% 38% at 50% -4%,
-    color-mix(in srgb, var(--color-gold) 12%, transparent),
-    transparent 70%
-  );
+/*
+  Aurora — a soft cool glow blooming from below, the modern AI-startup signature.
+  Layered violet / indigo / blue radials, heavily blurred.
+*/
+.aurora {
+  background:
+    radial-gradient(
+      48% 52% at 50% 52%,
+      color-mix(in srgb, var(--color-iris) 60%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 46% at 26% 60%,
+      color-mix(in srgb, #6d5cf0 52%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 46% at 74% 64%,
+      color-mix(in srgb, #4f86f0 44%, transparent),
+      transparent 70%
+    );
+  filter: blur(72px);
+}
+
+/* Glass — for the floating pill nav and glassy surfaces. */
+.glass {
+  background-color: color-mix(in srgb, var(--color-surface) 65%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
 }
 
 /* Scroll reveal — a quiet fade-up, set by the <Reveal> client wrapper. */
