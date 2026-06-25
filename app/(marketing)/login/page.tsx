@@ -17,7 +17,7 @@ export default function LoginPage() {
         aria-hidden
         className="glow absolute left-1/2 top-24 h-40 w-40 -translate-x-1/2"
       />
-      <HallmarkMark className="relative h-10 w-10 text-gold" />
+      <HallmarkMark metallic className="relative h-10 w-10" />
 
       <h1 className="mt-8 font-display text-3xl text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">

@@ -48,6 +48,11 @@ export function Hero() {
               className="glow absolute -inset-x-8 -top-8 bottom-4 -z-10 lg:hidden"
             />
             <ProductMock className="lg:ml-auto lg:max-w-xl" />
+            {/* a faint gold halo, ~10%, behind the hallmark only */}
+            <div
+              aria-hidden
+              className="glow absolute -right-8 -top-14 h-44 w-44 opacity-40 lg:left-[-4.5rem] lg:right-auto lg:-top-20"
+            />
             <HallmarkSeal className="absolute -right-3 -top-8 z-10 lg:left-[-3rem] lg:right-auto lg:-top-12" />
           </div>
         </div>

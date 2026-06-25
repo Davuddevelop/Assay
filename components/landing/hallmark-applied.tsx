@@ -37,7 +37,7 @@ export function HallmarkApplied() {
 
           {/* Held */}
           <Reveal delay={110}>
-            <article className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-obsidian-2 p-8">
+            <article className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="held" />
                 <span className="font-mono text-xs text-ash">checks/8f21b</span>
@@ -51,7 +51,7 @@ export function HallmarkApplied() {
                 logger writes the full request body, including the card number.
               </p>
 
-              <figure className="mt-5 overflow-hidden rounded-[var(--radius-control)] border border-line bg-obsidian">
+              <figure className="mt-5 overflow-hidden rounded-[var(--radius-control)] border border-line bg-onyx">
                 <figcaption className="border-b border-line px-4 py-2 font-mono text-xs text-ash">
                   payments/charge.ts:48
                 </figcaption>

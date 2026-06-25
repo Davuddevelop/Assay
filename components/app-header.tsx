@@ -14,7 +14,7 @@ const LINKS = [
  */
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-obsidian/85 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-onyx/85 backdrop-blur">
       <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-8">
           <Link

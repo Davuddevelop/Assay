@@ -21,7 +21,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-mt-16 border-b border-line">
+    <section id="how-it-works" className="scroll-mt-16 border-b border-line bg-forest">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow index="03" label="How it works" />

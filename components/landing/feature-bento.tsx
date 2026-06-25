@@ -59,7 +59,7 @@ export function FeatureBento() {
               title="The rules you wrote, in plain language"
               body="Assay holds each change against your .assay rules — the conventions you'd otherwise have to catch by eye in every review."
             >
-              <div className="overflow-hidden rounded-[var(--radius-control)] border border-line bg-obsidian">
+              <div className="overflow-hidden rounded-[var(--radius-control)] border border-line bg-onyx">
                 <div className="border-b border-line px-4 py-2 font-mono text-xs text-ash">
                   .assay/rules
                 </div>
@@ -73,7 +73,7 @@ export function FeatureBento() {
                       <span
                         className={cn(
                           "text-[10px] uppercase tracking-[0.16em]",
-                          r.held ? "text-oxblood" : "text-gold",
+                          r.held ? "text-oxblood-soft" : "text-gold",
                         )}
                       >
                         {r.held ? "held" : "ok"}

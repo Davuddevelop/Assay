@@ -8,7 +8,7 @@ type HallmarkSealProps = {
 
 /**
  * The hallmark, made physical: a large round struck seal — the brand's single
- * gold moment. Distinct from the small pill `HallmarkStamp`. Strikes in on load.
+ * gold moment, struck in metal (gradient ring + glyph). Strikes in on load.
  */
 export function HallmarkSeal({ animate = true, className }: HallmarkSealProps) {
   return (
@@ -16,19 +16,24 @@ export function HallmarkSeal({ animate = true, className }: HallmarkSealProps) {
       role="status"
       aria-label="Assayed — sound"
       className={cn(
-        "flex h-24 w-24 flex-col items-center justify-center rounded-[var(--radius-pill)] border border-gold/80 bg-obsidian/85 text-gold shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)] backdrop-blur-sm sm:h-32 sm:w-32",
+        "h-24 w-24 rounded-[var(--radius-pill)] bg-[image:var(--gradient-gold)] p-px shadow-[0_20px_50px_-20px_rgba(0,0,0,0.85)] sm:h-32 sm:w-32",
         animate && "hallmark-animate",
         className,
       )}
     >
-      {/* inner hairline — the second ring of a struck seal */}
-      <div className="flex h-[88%] w-[88%] flex-col items-center justify-center rounded-[var(--radius-pill)] border border-gold/40">
-        <span aria-hidden className="text-xl leading-none text-gold-soft sm:text-3xl">
-          ✓
-        </span>
-        <span className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-gold">
-          Assayed
-        </span>
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-[var(--radius-pill)] bg-onyx/90 backdrop-blur-sm">
+        {/* inner hairline — the second ring of a struck seal */}
+        <div className="flex h-[86%] w-[86%] flex-col items-center justify-center rounded-[var(--radius-pill)] border border-gold/25">
+          <span
+            aria-hidden
+            className="gold-metallic text-xl font-semibold leading-none sm:text-3xl"
+          >
+            ✓
+          </span>
+          <span className="gold-metallic mt-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.28em]">
+            Assayed
+          </span>
+        </div>
       </div>
     </div>
   );

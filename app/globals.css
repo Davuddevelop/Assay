@@ -6,16 +6,22 @@
   Dark, luxurious, restrained. Elevation is almost nothing — restraint, not shadows.
 */
 @theme {
-  /* Color */
-  --color-obsidian: #16150f; /* primary ground */
-  --color-obsidian-2: #1f1d15; /* raised surfaces, cards */
-  --color-ivory: #ede7d8; /* primary text on dark */
-  --color-ivory-dim: #b8b2a2; /* secondary text */
-  --color-gold: #b68a3e; /* accent, the hallmark, "Assayed" */
-  --color-gold-soft: #cda75a; /* hover/active gold */
-  --color-oxblood: #7a332e; /* the "Held" / flagged state — used rarely */
-  --color-ash: #6e695c; /* muted captions, metadata */
+  /* Color — depth steps, two temperatures */
+  --color-onyx: #0b0c09; /* page ground */
+  --color-surface: #14150f; /* cards, a clear step lighter */
+  --color-forest: #12241b; /* secondary section band, for depth */
+  --color-ivory: #f1ecdf; /* primary text on dark */
+  --color-ivory-dim: #c6bfae; /* secondary text */
+  --color-gold: #c9a24b; /* the hallmark mid-tone — flat fallback */
+  --color-gold-soft: #e8ce8f; /* light stop — hover */
+  --color-gold-deep: #8a6a2e; /* dark stop */
+  --color-oxblood: #8e3a2f; /* the "Held" / flagged state — borders, fills */
+  --color-oxblood-soft: #c07a68; /* held text/glyphs — passes AA on the dark grounds */
+  --color-ash: #767160; /* muted captions, metadata */
   --color-line: #36332a; /* hairline borders */
+
+  /* The hallmark, struck in metal */
+  --gradient-gold: linear-gradient(145deg, #e8ce8f 0%, #c9a24b 52%, #8a6a2e 100%);
 
   /* Type roles (font CSS vars are set by next/font in layout.tsx) */
   --font-display: var(--font-fraunces);
@@ -34,6 +40,14 @@
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Metallic gold for hallmark glyphs and labels (clips the ramp to the text). */
+.gold-metallic {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @layer base {
   :root {
     color-scheme: dark;
@@ -45,7 +59,7 @@
 
   body {
     min-height: 100%;
-    background-color: var(--color-obsidian);
+    background-color: var(--color-onyx);
     color: var(--color-ivory);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "cv11", "ss01";
@@ -164,8 +178,8 @@
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--color-ivory) 3%, var(--color-obsidian-2)),
-      var(--color-obsidian-2)
+      color-mix(in srgb, var(--color-ivory) 3%, var(--color-surface)),
+      var(--color-surface)
     );
   border: 1px solid var(--color-line);
   border-radius: var(--radius-card);

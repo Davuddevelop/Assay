@@ -42,7 +42,7 @@ export default function DashboardPage() {
 
       <section className="mt-16">
         <Eyebrow label="Recent checks" />
-        <div className="mt-6 rounded-[var(--radius-card)] border border-line bg-obsidian-2/40 px-6 py-12 text-center">
+        <div className="mt-6 rounded-[var(--radius-card)] border border-line bg-surface/40 px-6 py-12 text-center">
           <p className="text-sm text-ivory-dim">
             No checks yet. The first will appear here once a repository is
             connected and a change lands.

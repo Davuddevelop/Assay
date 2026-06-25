@@ -37,7 +37,7 @@ export function ProductMock({ className }: { className?: string }) {
         {/* the three reads */}
         <div className="mt-6 grid grid-cols-3 gap-px overflow-hidden rounded-[var(--radius-control)] border border-line bg-line">
           {CHECKS.map((c) => (
-            <div key={c.label} className="bg-obsidian-2 px-3 py-3.5 sm:px-4">
+            <div key={c.label} className="bg-surface px-3 py-3.5 sm:px-4">
               <div className="flex items-center gap-1.5 text-ivory-dim">
                 <span aria-hidden className="text-xs leading-none">
                   ✓
