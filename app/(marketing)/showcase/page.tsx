@@ -9,13 +9,14 @@ export const metadata: Metadata = {
 };
 
 const COLORS = [
-  { name: "obsidian", value: "#16150F", className: "bg-obsidian" },
-  { name: "obsidian-2", value: "#1F1D15", className: "bg-obsidian-2" },
-  { name: "ivory", value: "#EDE7D8", className: "bg-ivory" },
-  { name: "ivory-dim", value: "#B8B2A2", className: "bg-ivory-dim" },
-  { name: "gold", value: "#B68A3E", className: "bg-gold" },
-  { name: "gold-soft", value: "#CDA75A", className: "bg-gold-soft" },
-  { name: "oxblood", value: "#7A332E", className: "bg-oxblood" },
+  { name: "onyx", value: "#0B0C09", className: "bg-onyx" },
+  { name: "surface", value: "#14150F", className: "bg-surface" },
+  { name: "forest", value: "#12241B", className: "bg-forest" },
+  { name: "ivory", value: "#F1ECDF", className: "bg-ivory" },
+  { name: "ivory-dim", value: "#C6BFAE", className: "bg-ivory-dim" },
+  { name: "gold (metallic)", value: "gradient", className: "bg-[image:var(--gradient-gold)]" },
+  { name: "gold", value: "#C9A24B", className: "bg-gold" },
+  { name: "oxblood", value: "#8E3A2F", className: "bg-oxblood" },
   { name: "ash", value: "#6E695C", className: "bg-ash" },
   { name: "line", value: "#36332A", className: "bg-line" },
 ];
@@ -61,7 +62,7 @@ export default function ShowcasePage() {
           {COLORS.map((c) => (
             <div
               key={c.name}
-              className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-obsidian-2"
+              className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface"
             >
               <div className={`h-16 w-full ${c.className}`} />
               <div className="px-3 py-2.5">

@@ -1,10 +1,18 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The hallmark mark — a struck seal. A gold ring with a check punched through,
- * reading as a maker's stamp at small sizes.
+ * The hallmark mark — a struck seal. A ring with a check punched through,
+ * reading as a maker's stamp at small sizes. Inherits `currentColor` by default;
+ * pass `metallic` to stroke it with the gold ramp (shared def in the layout).
  */
-export function HallmarkMark({ className }: { className?: string }) {
+export function HallmarkMark({
+  className,
+  metallic = false,
+}: {
+  className?: string;
+  metallic?: boolean;
+}) {
+  const stroke = metallic ? "url(#assay-gold-metallic)" : "currentColor";
   return (
     <svg
       viewBox="0 0 24 24"
@@ -12,10 +20,10 @@ export function HallmarkMark({ className }: { className?: string }) {
       aria-hidden
       className={cn("h-6 w-6", className)}
     >
-      <circle cx="12" cy="12" r="10.25" stroke="currentColor" strokeWidth="1.25" />
+      <circle cx="12" cy="12" r="10.25" stroke={stroke} strokeWidth="1.25" />
       <path
         d="M7.75 12.4 10.7 15.3 16.4 8.9"
-        stroke="currentColor"
+        stroke={stroke}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -39,7 +47,7 @@ export function Wordmark({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      {showMark && <HallmarkMark className={cn("text-gold", markClassName)} />}
+      {showMark && <HallmarkMark metallic className={markClassName} />}
       <span className="font-display text-lg leading-none tracking-[0.22em] text-ivory">
         ASSAY
       </span>

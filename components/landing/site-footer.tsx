@@ -19,7 +19,7 @@ const COLUMNS = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-obsidian">
+    <footer className="bg-onyx">
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
           <div className="max-w-xs">

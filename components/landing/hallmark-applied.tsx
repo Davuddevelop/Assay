@@ -7,7 +7,7 @@ export function HallmarkApplied() {
     <section className="border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="03" label="The hallmark, applied" />
+          <Eyebrow index="04" label="The hallmark, applied" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
             The same change, judged two ways.
           </h2>
@@ -20,7 +20,7 @@ export function HallmarkApplied() {
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
-            <article className="h-full rounded-[var(--radius-card)] border border-line bg-obsidian-2 p-8 transition-colors duration-300 hover:border-gold/40">
+            <article className="panel lift h-full p-8 hover:border-gold/40">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="assayed" />
                 <span className="font-mono text-xs text-ash">checks/8f21a</span>
@@ -37,7 +37,7 @@ export function HallmarkApplied() {
 
           {/* Held */}
           <Reveal delay={110}>
-            <article className="h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-obsidian-2 p-8">
+            <article className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="held" />
                 <span className="font-mono text-xs text-ash">checks/8f21b</span>
@@ -51,7 +51,7 @@ export function HallmarkApplied() {
                 logger writes the full request body, including the card number.
               </p>
 
-              <figure className="mt-5 overflow-hidden rounded-[var(--radius-control)] border border-line bg-obsidian">
+              <figure className="mt-5 overflow-hidden rounded-[var(--radius-control)] border border-line bg-onyx">
                 <figcaption className="border-b border-line px-4 py-2 font-mono text-xs text-ash">
                   payments/charge.ts:48
                 </figcaption>

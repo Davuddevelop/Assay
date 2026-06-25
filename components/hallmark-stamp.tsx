@@ -22,8 +22,8 @@ const STATE = {
   held: {
     label: "HELD",
     glyph: "⚠",
-    ring: "border-oxblood text-oxblood",
-    glyphColor: "text-oxblood",
+    ring: "border-oxblood text-oxblood-soft",
+    glyphColor: "text-oxblood-soft",
   },
 } satisfies Record<HallmarkState, unknown>;
 
@@ -50,23 +50,33 @@ export function HallmarkStamp({
   className,
 }: HallmarkStampProps) {
   const s = STATE[state];
+  const metallic = state === "assayed";
 
   return (
     <span
       role="status"
       aria-label={state === "assayed" ? "Assayed — sound" : "Held — flagged"}
       className={cn(
-        "inline-flex select-none items-center rounded-[var(--radius-pill)] border bg-obsidian-2/60 font-mono font-medium uppercase tracking-[0.22em]",
+        "inline-flex select-none items-center rounded-[var(--radius-pill)] border bg-surface/60 font-mono font-medium uppercase tracking-[0.22em]",
         SIZE[size],
         s.ring,
         animate && "hallmark-animate",
         className,
       )}
     >
-      <span aria-hidden className={cn("leading-none", GLYPH_SIZE[size], s.glyphColor)}>
+      <span
+        aria-hidden
+        className={cn(
+          "leading-none",
+          GLYPH_SIZE[size],
+          metallic ? "gold-metallic" : s.glyphColor,
+        )}
+      >
         {s.glyph}
       </span>
-      <span className="leading-none">{s.label}</span>
+      <span className={cn("leading-none", metallic && "gold-metallic")}>
+        {s.label}
+      </span>
     </span>
   );
 }

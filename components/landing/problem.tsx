@@ -3,7 +3,7 @@ import { Reveal } from "@/components/reveal";
 
 export function Problem() {
   return (
-    <section className="border-b border-line">
+    <section className="border-b border-line bg-forest">
       <div className="mx-auto w-full max-w-3xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow index="01" label="The problem" />
