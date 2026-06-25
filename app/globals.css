@@ -19,22 +19,22 @@
   --color-ivory-dim: var(--slate-11); /* secondary text */
   --color-ivory: var(--slate-12); /* primary text (#edeef0) */
 
-  /* Accent — distinctive warm gold (Radix gold is too khaki); the hallmark */
-  --color-gold: #c9a24b; /* borders, focus, solid mid */
-  --color-gold-soft: #e8ce8f; /* light — hover / labels */
-  --color-gold-deep: #8a6a2e; /* dark stop */
-  --color-gold-text: #e3c885; /* gold label text — AA on slate */
-
-  /* Iris — the cool aurora accent (modern AI-startup glow) */
+  /* Iris — the single cool accent, matched to the aurora (the hallmark) */
   --color-iris: #8b8bf0; /* accent text/border */
   --color-iris-soft: #b9b6f7; /* lighter */
+
+  /* "gold" tokens now resolve to iris so the accent is cohesive everywhere */
+  --color-gold: var(--color-iris); /* borders, focus, solid */
+  --color-gold-soft: var(--color-iris-soft); /* hover / light */
+  --color-gold-deep: #5b7cf0; /* deep stop */
+  --color-gold-text: var(--color-iris-soft); /* accent label text — AA on slate */
 
   /* Held / flagged — used rarely */
   --color-oxblood: #b5443a; /* border / fill */
   --color-oxblood-soft: #e08a78; /* held text — AA on the dark grounds */
 
-  /* The hallmark, struck in metal */
-  --gradient-gold: linear-gradient(145deg, #e8ce8f 0%, #c9a24b 52%, #8a6a2e 100%);
+  /* The hallmark accent gradient (iris), used for struck marks and labels */
+  --gradient-gold: linear-gradient(145deg, #c4b5fd 0%, #8b8bf0 52%, #5b7cf0 100%);
 
   /* Type roles — Geist throughout (clean, minimal), JetBrains Mono for detail */
   --font-display: var(--font-geist);

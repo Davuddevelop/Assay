@@ -20,20 +20,19 @@ export function HallmarkMark({
         aria-hidden
         className={cn("h-6 w-6", className)}
       >
-        <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="url(#assay-gold-metallic)" />
-        {/* "A" monogram, struck into the tile */}
+        {/* sharp "A" monogram in the iris gradient */}
         <path
-          d="M7 17.2 12 6.8 17 17.2"
-          stroke="var(--color-onyx)"
-          strokeWidth="2.1"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d="M4.5 20 12 4 19.5 20"
+          stroke="url(#assay-iris)"
+          strokeWidth="2.6"
+          strokeLinejoin="miter"
+          strokeLinecap="square"
         />
         <path
-          d="M9.1 13.3H14.9"
-          stroke="var(--color-onyx)"
-          strokeWidth="2.1"
-          strokeLinecap="round"
+          d="M8 13.4H16"
+          stroke="url(#assay-iris)"
+          strokeWidth="2.6"
+          strokeLinecap="square"
         />
       </svg>
     );
