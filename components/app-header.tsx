@@ -9,27 +9,27 @@ const LINKS = [
 ];
 
 /**
- * Slim app chrome for signed-in pages: the wordmark, a couple of quiet links,
- * and a stub account chip (mocked until Supabase auth is wired).
+ * Floating glass pill chrome for signed-in pages: wordmark, quiet links, and a
+ * stub account chip (mocked until Supabase auth is wired).
  */
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-onyx/85 backdrop-blur">
-      <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+    <div className="sticky top-3 z-40 px-4 sm:top-4">
+      <nav className="glass mx-auto flex h-14 w-full max-w-4xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
         <div className="flex items-center gap-8">
           <Link
             href="/dashboard"
             aria-label="Assay dashboard"
-            className="rounded-sm transition-opacity hover:opacity-80"
+            className="rounded-pill transition-opacity hover:opacity-80"
           >
             <Wordmark />
           </Link>
-          <div className="hidden items-center gap-7 md:flex">
+          <div className="hidden items-center gap-6 md:flex">
             {LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
+                className="text-sm text-ivory-dim transition-colors hover:text-ivory"
               >
                 {link.label}
               </Link>
@@ -37,8 +37,8 @@ export function AppHeader() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-pill)] border border-gold/60 font-mono text-xs text-gold">
+        <div className="flex items-center gap-2.5 rounded-pill border border-border bg-surface/50 py-1 pl-1 pr-3">
+          <span className="flex h-7 w-7 items-center justify-center rounded-pill bg-iris/20 font-mono text-xs text-iris-soft">
             {mockUser.initial}
           </span>
           <span className="hidden font-mono text-xs text-ivory-dim sm:inline">
@@ -46,6 +46,6 @@ export function AppHeader() {
           </span>
         </div>
       </nav>
-    </header>
+    </div>
   );
 }

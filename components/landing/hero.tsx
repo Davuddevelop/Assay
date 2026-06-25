@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 
 import { Button } from "@/components/ui/button";
+import { GitHubMark } from "@/components/icons";
 import { ProductMock } from "@/components/landing/product-mock";
 
 const container: Variants = {
@@ -21,10 +23,10 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* aurora — the cool glow blooming behind the hero */}
+      {/* aurora — the cool glow blooming up from below, behind the product */}
       <div
         aria-hidden
-        className="aurora pointer-events-none absolute left-1/2 top-[20%] h-[840px] w-[1120px] max-w-[140vw] -translate-x-1/2 opacity-90"
+        className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-[26%]"
       />
 
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
@@ -53,16 +55,27 @@ export function Hero() {
             then strikes the hallmark.
           </motion.p>
 
-          <motion.div
-            variants={item}
-            className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
-            <Button href="/login" variant="primary" size="lg">
-              Connect a repo
-            </Button>
-            <Button href="/#how-it-works" variant="ghost" size="lg">
-              See how it works
-            </Button>
+          <motion.div variants={item} className="mt-9">
+            {/* glassy connect-a-repo field */}
+            <div className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5">
+              <GitHubMark className="h-4 w-4 shrink-0 text-ash" />
+              <input
+                aria-label="Repository URL"
+                placeholder="github.com/you/your-repo"
+                className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
+              />
+              <Button href="/login" variant="primary" size="sm">
+                Connect
+              </Button>
+            </div>
+            <div className="mt-4">
+              <Link
+                href="/#how-it-works"
+                className="text-sm text-ivory-dim transition-colors hover:text-ivory"
+              >
+                See how it works →
+              </Link>
+            </div>
           </motion.div>
         </motion.div>
 

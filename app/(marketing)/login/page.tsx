@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
+    <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
         aria-hidden
-        className="glow absolute left-1/2 top-24 h-40 w-40 -translate-x-1/2"
+        className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-1/3 opacity-90"
       />
       <HallmarkMark metallic className="relative h-10 w-10" />
 

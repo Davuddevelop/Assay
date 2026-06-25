@@ -14,7 +14,7 @@ export default function DashboardPage() {
     <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
       <div
         aria-hidden
-        className="bg-grid absolute inset-x-0 top-0 -z-10 h-64 opacity-50"
+        className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 opacity-40"
       />
       <header>
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
