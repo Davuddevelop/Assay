@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "motion/react";
+import { useRef } from "react";
+
+import { gsap, useGSAP } from "@/lib/gsap";
 
 /** Counts up to `to` once it scrolls into view. Static under reduced-motion. */
 export function CountUp({
@@ -14,28 +15,34 @@ export function CountUp({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
-  const reduce = useReducedMotion();
-  const [n, setN] = useState(0);
 
-  useEffect(() => {
-    if (!inView) return;
-    let raf = 0;
-    const dur = reduce ? 0 : duration;
-    const start = performance.now();
-    const tick = (t: number) => {
-      const p = dur <= 0 ? 1 : Math.min((t - start) / (dur * 1000), 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setN(Math.round(to * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, to, duration, reduce]);
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const counter = { v: 0 };
+        el.textContent = "0";
+        gsap.to(counter, {
+          v: to,
+          duration,
+          ease: "power2.out",
+          snap: { v: 1 },
+          onUpdate: () => {
+            el.textContent = String(counter.v);
+          },
+          scrollTrigger: { trigger: el, start: "top 85%", once: true },
+        });
+      });
+    },
+    { scope: ref, dependencies: [to, duration] },
+  );
 
+  // Render the final value by default (correct under reduced-motion / no JS).
   return (
     <span ref={ref} className={className}>
-      {n}
+      {to}
     </span>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { useRef } from "react";
 
+import { gsap, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 
@@ -11,26 +12,42 @@ const CHECKS = [
   { label: "Rules", value: "3 of 3 held" },
 ];
 
-const checks: Variants = {
-  hidden: {},
-  shown: { transition: { staggerChildren: 0.16, delayChildren: 0.5 } },
-};
-
-const checkItem: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  shown: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
-};
-
 /**
  * The product in a browser window. On view it "resolves": the three checks tick
  * in one by one, then the hallmark strikes — the app looks like it's running.
  */
 export function ProductMock({ className }: { className?: string }) {
-  const reduce = useReducedMotion();
-  const initial = reduce ? false : "hidden";
+  const root = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const el = root.current;
+      if (!el) return;
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: el, start: "top 75%", once: true },
+        });
+        tl.from(".pm-check", {
+          autoAlpha: 0,
+          y: 8,
+          duration: 0.4,
+          ease: "power3.out",
+          stagger: 0.16,
+          delay: 0.4,
+        }).from(
+          ".pm-stamp",
+          { autoAlpha: 0, scale: 1.18, duration: 0.5, ease: "back.out(2)" },
+          "+=0.1",
+        );
+      });
+    },
+    { scope: root },
+  );
 
   return (
     <div
+      ref={root}
       className={cn(
         "overflow-hidden rounded-[var(--radius-frame)] border border-border bg-surface shadow-[0_40px_120px_-40px_rgba(0,0,0,0.8)]",
         className,
@@ -60,28 +77,16 @@ export function ProductMock({ className }: { className?: string }) {
             </h3>
           </div>
           {/* the hallmark strikes once the checks resolve */}
-          <motion.span
-            initial={reduce ? false : { opacity: 0, scale: 1.18 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1.15, type: "spring", stiffness: 320, damping: 18 }}
-          >
+          <span className="pm-stamp">
             <HallmarkStamp state="assayed" animate={false} />
-          </motion.span>
+          </span>
         </div>
 
-        <motion.div
-          className="mt-6 grid grid-cols-3 gap-3"
-          variants={checks}
-          initial={initial}
-          whileInView="shown"
-          viewport={{ once: true }}
-        >
+        <div className="mt-6 grid grid-cols-3 gap-3">
           {CHECKS.map((c) => (
-            <motion.div
+            <div
               key={c.label}
-              variants={checkItem}
-              className="rounded-[var(--radius-control)] border border-line bg-onyx/40 px-3 py-3.5 sm:px-4"
+              className="pm-check rounded-[var(--radius-control)] border border-line bg-onyx/40 px-3 py-3.5 sm:px-4"
             >
               <div className="flex items-center gap-1.5 text-iris-soft">
                 <span aria-hidden className="text-xs leading-none">
@@ -92,9 +97,9 @@ export function ProductMock({ className }: { className?: string }) {
                 </span>
               </div>
               <p className="mt-2 text-sm text-ivory">{c.value}</p>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         <p className="mt-5 text-sm leading-relaxed text-ivory-dim">
           Every check your repository defines passed. The change is sound.

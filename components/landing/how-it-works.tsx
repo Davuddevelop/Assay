@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 
+import { gsap, useGSAP } from "@/lib/gsap";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { SpotlightCard } from "@/components/spotlight-card";
@@ -54,21 +54,62 @@ const STEPS = [
 ];
 
 export function HowItWorks() {
-  const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 80%", "end 65%"],
-  });
-  const fill = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const root = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const el = root.current;
+      if (!el) return;
+      const inner = el.querySelector<HTMLElement>(".hiw-inner");
+      const mm = gsap.matchMedia();
+
+      // Desktop + motion allowed: pin the section and scrub a master timeline
+      // that fills the flow line and lights each step as the playhead reaches it.
+      mm.add(
+        "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: inner,
+              start: "center center",
+              end: "+=1300",
+              pin: inner,
+              scrub: 1,
+            },
+          });
+          tl.fromTo(
+            ".hiw-fill",
+            { scaleX: 0 },
+            { scaleX: 1, ease: "none", duration: 3 },
+            0,
+          );
+          [0, 1, 2].forEach((i) => {
+            const at = i * 1.0;
+            tl.from(
+              `.hiw-step-${i}`,
+              { autoAlpha: 0.25, y: 26, duration: 0.6, ease: "power2.out" },
+              at,
+            ).from(
+              `.hiw-node-${i}`,
+              { scale: 0, duration: 0.4, ease: "back.out(2)" },
+              at + 0.1,
+            );
+          });
+        },
+      );
+
+      // Mobile or reduced-motion: no pin — show the line filled and steps shown.
+      mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
+        gsap.set(".hiw-fill", { scaleX: 1 });
+        gsap.set([".hiw-step-0", ".hiw-step-1", ".hiw-step-2"], { autoAlpha: 1 });
+      });
+    },
+    { scope: root },
+  );
 
   return (
-    <section
-      id="how-it-works"
-      ref={ref}
-      className="scroll-mt-16 border-b border-line"
-    >
-      <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
+    <section id="how-it-works" ref={root} className="scroll-mt-16 border-b border-line">
+      <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow label="How it works" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
@@ -78,15 +119,11 @@ export function HowItWorks() {
 
         {/* flow track that fills as you scroll (desktop) */}
         <div className="relative mt-16 hidden h-px w-full bg-line md:block">
-          <motion.div
-            aria-hidden
-            className="absolute inset-y-0 left-0 w-full origin-left bg-iris"
-            style={{ scaleX: reduce ? 1 : fill }}
-          />
-          {[16.667, 50, 83.333].map((left) => (
+          <div className="hiw-fill absolute inset-y-0 left-0 w-full origin-left bg-iris" />
+          {[16.667, 50, 83.333].map((left, i) => (
             <span
               key={left}
-              className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-iris bg-onyx"
+              className={`hiw-node-${i} absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-iris bg-onyx`}
               style={{ left: `${left}%` }}
             />
           ))}
@@ -94,7 +131,7 @@ export function HowItWorks() {
 
         <ol className="mt-8 grid gap-4 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <Reveal as="li" key={step.n} delay={i * 120}>
+            <li key={step.n} className={`hiw-step-${i}`}>
               <SpotlightCard className="panel lift h-full p-8 hover:border-iris/40">
                 <div className="flex items-center justify-between">
                   <span className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)] border border-border bg-surface text-iris-soft">
@@ -111,7 +148,7 @@ export function HowItWorks() {
                   {step.body}
                 </p>
               </SpotlightCard>
-            </Reveal>
+            </li>
           ))}
         </ol>
       </div>

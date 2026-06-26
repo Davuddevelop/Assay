@@ -262,21 +262,6 @@
   opacity: 1;
 }
 
-/* Scroll reveal — a quiet fade-up, set by the <Reveal> client wrapper. */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 600ms var(--ease-settle),
-    transform 600ms var(--ease-settle);
-  will-change: opacity, transform;
-}
-
-.reveal[data-shown="true"] {
-  opacity: 1;
-  transform: none;
-}
-
 /*
   Depth, done with intent — not generic glassmorphism. A raised surface that
   catches a sliver of light along its top edge, the way real materials do.
@@ -338,12 +323,6 @@
   /* No scale — just a quiet fade. Respected everywhere. */
   .hallmark-animate {
     animation: hallmark-fade 180ms ease both;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 
   *,

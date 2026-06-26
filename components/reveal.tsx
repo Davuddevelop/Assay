@@ -1,11 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { useRef } from "react";
 
-const variants: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  shown: { opacity: 1, y: 0 },
-};
+import { gsap, useGSAP } from "@/lib/gsap";
 
 type RevealProps = {
   children: React.ReactNode;
@@ -16,33 +13,42 @@ type RevealProps = {
 };
 
 /**
- * A quiet spring fade-up as the element scrolls into view, once. Honors
- * prefers-reduced-motion (renders static, no transform).
+ * A quiet fade-up as the element scrolls into view, once. Built on GSAP +
+ * ScrollTrigger. Renders visible by default, so under prefers-reduced-motion
+ * (or before hydration) the content is simply shown — no flash, no dead end.
  */
 export function Reveal({ children, delay = 0, as = "div", className }: RevealProps) {
-  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement & HTMLLIElement>(null);
 
-  if (reduce) {
-    if (as === "li") return <li className={className}>{children}</li>;
-    return <div className={className}>{children}</div>;
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(el, {
+          autoAlpha: 0,
+          y: 18,
+          duration: 0.6,
+          ease: "power3.out",
+          delay: delay / 1000,
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
+      });
+    },
+    { scope: ref },
+  );
+
+  if (as === "li") {
+    return (
+      <li ref={ref} className={className}>
+        {children}
+      </li>
+    );
   }
-
-  const M = as === "li" ? motion.li : motion.div;
-
   return (
-    <M
-      className={className}
-      initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      variants={variants}
-      transition={{
-        duration: 0.6,
-        delay: delay / 1000,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-    >
+    <div ref={ref} className={className}>
       {children}
-    </M>
+    </div>
   );
 }
