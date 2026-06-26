@@ -323,37 +323,6 @@
   filter: blur(46px);
 }
 
-/* A faint engineering grid that fades at the edges — texture, not noise. */
-.bg-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--color-line) 60%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-line) 60%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(
-    120% 90% at 50% 0%,
-    #000 35%,
-    transparent 78%
-  );
-  mask-image: radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%);
-}
-
-/* The hero product mockup: crisp, flat, lifted by glow — not a gimmicky tilt. */
-.product-frame {
-  position: relative;
-  border-radius: var(--radius-card);
-  box-shadow:
-    0 1px 0 0 color-mix(in srgb, var(--color-ivory) 8%, transparent) inset,
-    0 40px 80px -40px rgb(0 0 0 / 0.7);
-}
-
 /* A quiet lift on hover for interactive cards. */
 .lift {
   transition:
