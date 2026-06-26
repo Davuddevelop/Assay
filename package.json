@@ -7,17 +7,26 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
+    "@octokit/app": "^16.1.2",
+    "@octokit/webhooks-methods": "^6.0.0",
     "@radix-ui/colors": "^3.0.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "inngest": "^4.11.0",
     "motion": "^12.42.0",
     "next": "16.2.9",
+    "octokit": "^5.0.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -27,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.9"
   }
 }

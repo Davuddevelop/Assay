@@ -1,0 +1,70 @@
+import { z } from "zod";
+
+/**
+ * Server-side environment validation.
+ *
+ * Validation is lazy (run on first access, then cached) so that `next build`
+ * — which imports modules without a populated runtime env — never fails to
+ * compile. The schema is enforced the first time a server handler actually
+ * needs a secret, surfacing a clear error instead of an undefined value.
+ *
+ * Never import this from a client component. Secrets here must never reach the
+ * browser bundle; only `NEXT_PUBLIC_*` values are safe for the client.
+ */
+const serverSchema = z.object({
+  // Supabase
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+
+  // Token encryption — AES-256-GCM key, 32 bytes encoded as 64 hex chars.
+  ENCRYPTION_KEY: z
+    .string()
+    .regex(/^[0-9a-fA-F]{64}$/, "ENCRYPTION_KEY must be 64 hex chars (32 bytes)"),
+
+  // GitHub App
+  GITHUB_APP_ID: z.string().min(1),
+  GITHUB_APP_PRIVATE_KEY: z.string().min(1),
+  GITHUB_WEBHOOK_SECRET: z.string().min(1),
+  GITHUB_APP_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_APP_CLIENT_SECRET: z.string().min(1).optional(),
+
+  // Anthropic
+  ANTHROPIC_API_KEY: z.string().min(1),
+
+  // Inngest (optional in local dev — the dev server runs without keys)
+  INNGEST_EVENT_KEY: z.string().min(1).optional(),
+  INNGEST_SIGNING_KEY: z.string().min(1).optional(),
+});
+
+export type ServerEnv = z.infer<typeof serverSchema>;
+
+let cached: ServerEnv | null = null;
+
+/** Validate and return the server environment. Cached after first call. */
+export function getEnv(): ServerEnv {
+  if (cached) return cached;
+
+  const parsed = serverSchema.safeParse(process.env);
+  if (!parsed.success) {
+    // Report which keys are wrong without ever printing their values.
+    const issues = parsed.error.issues
+      .map((i) => `  - ${i.path.join(".") || "(root)"}: ${i.message}`)
+      .join("\n");
+    throw new Error(
+      `Invalid server environment. Check your .env (see .env.example):\n${issues}`,
+    );
+  }
+
+  cached = parsed.data;
+  return cached;
+}
+
+/**
+ * Public environment, safe to read on the client. Only `NEXT_PUBLIC_*` values.
+ * Referenced statically so Next can inline them into the client bundle.
+ */
+export const publicEnv = {
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+} as const;
