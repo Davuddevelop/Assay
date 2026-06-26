@@ -1,36 +1,51 @@
 @import "tailwindcss";
+@import "@radix-ui/colors/slate-dark.css"; /* cool charcoal — the systematic neutral */
 
 /*
   Assay design tokens.
-  The hallmark: a mark struck on code to certify it is sound.
-  Dark, luxurious, restrained. Elevation is almost nothing — restraint, not shadows.
+  Technical-precise: a perceptual slate scale (real elevation via lightness steps)
+  with one distinctive accent — warm gold, spent only on the struck hallmark.
 */
 @theme {
-  /* Color — depth steps, two temperatures */
-  --color-onyx: #0b0c09; /* page ground */
-  --color-surface: #14150f; /* cards, a clear step lighter */
-  --color-forest: #12241b; /* secondary section band, for depth */
-  --color-ivory: #f1ecdf; /* primary text on dark */
-  --color-ivory-dim: #c6bfae; /* secondary text */
-  --color-gold: #c9a24b; /* the hallmark mid-tone — flat fallback */
-  --color-gold-soft: #e8ce8f; /* light stop — hover */
-  --color-gold-deep: #8a6a2e; /* dark stop */
-  --color-oxblood: #8e3a2f; /* the "Held" / flagged state — borders, fills */
-  --color-oxblood-soft: #c07a68; /* held text/glyphs — passes AA on the dark grounds */
-  --color-ash: #767160; /* muted captions, metadata */
-  --color-line: #36332a; /* hairline borders */
+  /* Neutral system — Radix slate dark, mapped to semantic roles */
+  --color-onyx: var(--slate-1); /* page ground (#111113) */
+  --color-bg-subtle: var(--slate-2); /* subtle zones */
+  --color-surface: var(--slate-3); /* cards — a clear step lighter (#212225) */
+  --color-surface-hover: var(--slate-4); /* card / row hover */
+  --color-line: var(--slate-6); /* subtle hairline border */
+  --color-border: var(--slate-7); /* interactive border */
+  --color-border-strong: var(--slate-8); /* strong border / focus */
+  --color-ash: var(--slate-10); /* faint metadata */
+  --color-ivory-dim: var(--slate-11); /* secondary text */
+  --color-ivory: var(--slate-12); /* primary text (#edeef0) */
 
-  /* The hallmark, struck in metal */
-  --gradient-gold: linear-gradient(145deg, #e8ce8f 0%, #c9a24b 52%, #8a6a2e 100%);
+  /* Iris — the single cool accent, matched to the aurora (the hallmark) */
+  --color-iris: #8b8bf0; /* accent text/border */
+  --color-iris-soft: #b9b6f7; /* lighter */
 
-  /* Type roles (font CSS vars are set by next/font in layout.tsx) */
-  --font-display: var(--font-fraunces);
-  --font-sans: var(--font-inter);
+  /* "gold" tokens now resolve to iris so the accent is cohesive everywhere */
+  --color-gold: var(--color-iris); /* borders, focus, solid */
+  --color-gold-soft: var(--color-iris-soft); /* hover / light */
+  --color-gold-deep: #5b7cf0; /* deep stop */
+  --color-gold-text: var(--color-iris-soft); /* accent label text — AA on slate */
+
+  /* Held / flagged — used rarely */
+  --color-oxblood: #b5443a; /* border / fill */
+  --color-oxblood-soft: #e08a78; /* held text — AA on the dark grounds */
+
+  /* The hallmark accent gradient (iris), used for struck marks and labels */
+  --gradient-gold: linear-gradient(145deg, #c4b5fd 0%, #8b8bf0 52%, #5b7cf0 100%);
+
+  /* Type roles — Geist throughout (clean, minimal), JetBrains Mono for detail */
+  --font-display: var(--font-geist);
+  --font-sans: var(--font-geist);
   --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-instrument-serif); /* editorial italic accent */
 
-  /* Radius */
-  --radius-control: 10px;
-  --radius-card: 14px;
+  /* Radius — soft, modern */
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-frame: 22px;
   --radius-pill: 999px;
 
   /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */
@@ -48,6 +63,14 @@
   color: transparent;
 }
 
+/* Editorial italic-serif accent — one word per headline. */
+.font-accent {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 @layer base {
   :root {
     color-scheme: dark;
@@ -62,15 +85,14 @@
     background-color: var(--color-onyx);
     color: var(--color-ivory);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Fraunces carries the editorial voice: optical sizing on, headline contrast. */
+  /* Geist headlines — tight tracking at display sizes. */
   .font-display {
-    font-optical-sizing: auto;
-    font-variation-settings: "opsz" 120;
+    letter-spacing: -0.02em;
+    font-feature-settings: "ss01";
   }
 
   /* A single, consistent gold focus ring on every interactive element. */
@@ -138,35 +160,106 @@
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.04;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.atmosphere::after {
-  /* A single warm glow, top center, fading to nothing. */
+/*
+  Aurora — a soft cool glow blooming from below, the modern AI-startup signature.
+  Layered violet / indigo / blue radials, heavily blurred.
+*/
+.aurora {
+  background:
+    radial-gradient(
+      42% 46% at 50% 50%,
+      color-mix(in srgb, var(--color-iris) 88%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      32% 40% at 30% 56%,
+      color-mix(in srgb, #6d5cf0 76%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      32% 40% at 70% 56%,
+      color-mix(in srgb, #4f86f0 68%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      16% 24% at 50% 60%,
+      color-mix(in srgb, #c4b5fd 60%, transparent),
+      transparent 70%
+    );
+  filter: blur(60px);
+}
+
+/* Glass — for the floating pill nav and glassy surfaces. */
+.glass {
+  background-color: color-mix(in srgb, var(--color-surface) 65%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* Movement — a consistent, soft motion system. All reduced-motion safe. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(-3%, 1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+  }
+}
+
+.aurora {
+  animation: aurora-drift 18s ease-in-out infinite;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-soft {
+  animation: float-soft 7s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 34s linear infinite;
+}
+
+/* Cursor spotlight — a radial glow following the pointer, set via --mx/--my. */
+.spotlight::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    60% 38% at 50% -4%,
-    color-mix(in srgb, var(--color-gold) 12%, transparent),
-    transparent 70%
-  );
-}
-
-/* Scroll reveal — a quiet fade-up, set by the <Reveal> client wrapper. */
-.reveal {
+  border-radius: inherit;
   opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 600ms var(--ease-settle),
-    transform 600ms var(--ease-settle);
-  will-change: opacity, transform;
+  transition: opacity 300ms var(--ease-settle);
+  background: radial-gradient(
+    220px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--color-iris) 22%, transparent),
+    transparent 60%
+  );
+  pointer-events: none;
 }
 
-.reveal[data-shown="true"] {
+.spotlight:hover::after {
   opacity: 1;
-  transform: none;
 }
 
 /*
@@ -215,37 +308,6 @@
   filter: blur(46px);
 }
 
-/* A faint engineering grid that fades at the edges — texture, not noise. */
-.bg-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--color-line) 60%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-line) 60%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(
-    120% 90% at 50% 0%,
-    #000 35%,
-    transparent 78%
-  );
-  mask-image: radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%);
-}
-
-/* The hero product mockup: crisp, flat, lifted by glow — not a gimmicky tilt. */
-.product-frame {
-  position: relative;
-  border-radius: var(--radius-card);
-  box-shadow:
-    0 1px 0 0 color-mix(in srgb, var(--color-ivory) 8%, transparent) inset,
-    0 40px 80px -40px rgb(0 0 0 / 0.7);
-}
-
 /* A quiet lift on hover for interactive cards. */
 .lift {
   transition:
@@ -261,12 +323,6 @@
   /* No scale — just a quiet fade. Respected everywhere. */
   .hallmark-animate {
     animation: hallmark-fade 180ms ease both;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 
   *,

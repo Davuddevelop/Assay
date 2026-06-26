@@ -1,15 +1,20 @@
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
+import { SpotlightCard } from "@/components/spotlight-card";
 
 export function HallmarkApplied() {
   return (
     <section className="border-b border-line">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
-          <Eyebrow index="04" label="The hallmark, applied" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl leading-[1.1] text-ivory sm:text-[2.6rem]">
-            The same change, judged two ways.
+          <Eyebrow label="The hallmark, applied" />
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
+            The same change, judged{" "}
+            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
+              two ways
+            </span>
+            .
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim">
             A mark you can trust because it says what was checked and what was
@@ -20,7 +25,7 @@ export function HallmarkApplied() {
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
-            <article className="panel lift h-full p-8 hover:border-gold/40">
+            <SpotlightCard className="panel lift h-full p-8 hover:border-iris/40">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="assayed" />
                 <span className="font-mono text-xs text-ash">checks/8f21a</span>
@@ -32,12 +37,12 @@ export function HallmarkApplied() {
                 42 tests passed. No unsafe patterns found. All three of your rules
                 held. The change is sound.
               </p>
-            </article>
+            </SpotlightCard>
           </Reveal>
 
           {/* Held */}
           <Reveal delay={110}>
-            <article className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
+            <SpotlightCard className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="held" />
                 <span className="font-mono text-xs text-ash">checks/8f21b</span>
@@ -60,7 +65,7 @@ export function HallmarkApplied() {
 //                          ^ includes card.number`}</code>
                 </pre>
               </figure>
-            </article>
+            </SpotlightCard>
           </Reveal>
         </div>
       </div>

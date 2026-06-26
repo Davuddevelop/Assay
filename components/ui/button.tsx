@@ -10,21 +10,21 @@ import { cn } from "@/lib/utils";
   the only place we lean on the accent.
 */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         primary:
-          "border border-gold text-ivory hover:bg-gold-soft hover:text-onyx hover:border-gold-soft",
+          "bg-ivory text-onyx hover:bg-ivory/90",
         ghost:
-          "border border-transparent text-ivory-dim hover:text-ivory hover:border-line",
+          "border border-border text-ivory hover:bg-surface hover:border-border-strong",
         danger:
           "border border-oxblood text-ivory hover:bg-oxblood hover:text-ivory",
       },
       size: {
-        sm: "h-8 px-3 text-sm",
-        md: "h-10 px-4 text-sm",
-        lg: "h-12 px-6 text-base",
+        sm: "h-9 px-4 text-sm",
+        md: "h-11 px-5 text-sm",
+        lg: "h-12 px-7 text-base",
       },
     },
     defaultVariants: {

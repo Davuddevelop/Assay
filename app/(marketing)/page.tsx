@@ -1,4 +1,5 @@
 import { Hero } from "@/components/landing/hero";
+import { StackStrip } from "@/components/landing/stack-strip";
 import { Problem } from "@/components/landing/problem";
 import { FeatureBento } from "@/components/landing/feature-bento";
 import { HowItWorks } from "@/components/landing/how-it-works";
@@ -10,6 +11,7 @@ export default function LandingPage() {
   return (
     <>
       <Hero />
+      <StackStrip />
       <Problem />
       <FeatureBento />
       <HowItWorks />

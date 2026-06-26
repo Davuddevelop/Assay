@@ -12,14 +12,14 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
+    <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
         aria-hidden
-        className="glow absolute left-1/2 top-24 h-40 w-40 -translate-x-1/2"
+        className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-1/3 opacity-90"
       />
       <HallmarkMark metallic className="relative h-10 w-10" />
 
-      <h1 className="mt-8 font-display text-3xl text-ivory">Sign in</h1>
+      <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">
         Connect your GitHub to begin. Assay reads the repositories you choose and
         the checks it runs — nothing else.

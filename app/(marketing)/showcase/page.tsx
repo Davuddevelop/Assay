@@ -9,16 +9,17 @@ export const metadata: Metadata = {
 };
 
 const COLORS = [
-  { name: "onyx", value: "#0B0C09", className: "bg-onyx" },
-  { name: "surface", value: "#14150F", className: "bg-surface" },
-  { name: "forest", value: "#12241B", className: "bg-forest" },
-  { name: "ivory", value: "#F1ECDF", className: "bg-ivory" },
-  { name: "ivory-dim", value: "#C6BFAE", className: "bg-ivory-dim" },
+  { name: "onyx · bg", value: "slate-1", className: "bg-onyx" },
+  { name: "surface · card", value: "slate-3", className: "bg-surface" },
+  { name: "surface-hover", value: "slate-4", className: "bg-surface-hover" },
+  { name: "line · border", value: "slate-6", className: "bg-line" },
+  { name: "border-strong", value: "slate-8", className: "bg-border-strong" },
+  { name: "ash · meta", value: "slate-10", className: "bg-ash" },
+  { name: "ivory-dim", value: "slate-11", className: "bg-ivory-dim" },
+  { name: "ivory · text", value: "slate-12", className: "bg-ivory" },
   { name: "gold (metallic)", value: "gradient", className: "bg-[image:var(--gradient-gold)]" },
   { name: "gold", value: "#C9A24B", className: "bg-gold" },
-  { name: "oxblood", value: "#8E3A2F", className: "bg-oxblood" },
-  { name: "ash", value: "#6E695C", className: "bg-ash" },
-  { name: "line", value: "#36332A", className: "bg-line" },
+  { name: "oxblood · held", value: "#B5443A", className: "bg-oxblood" },
 ];
 
 function Section({
@@ -48,7 +49,7 @@ export default function ShowcasePage() {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-ash">
           Design system
         </p>
-        <h1 className="mt-3 font-display text-4xl text-ivory">
+        <h1 className="mt-3 font-display text-4xl font-bold tracking-[-0.02em] text-ivory">
           The mark and its parts.
         </h1>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-ivory-dim">
@@ -78,15 +79,16 @@ export default function ShowcasePage() {
         <div className="space-y-8">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Display — Fraunces
+              Display — Geist
             </p>
-            <p className="mt-2 font-display text-4xl text-ivory">
-              Certified, not assumed.
+            <p className="mt-2 font-display text-5xl tracking-[-0.02em] text-ivory">
+              <span className="font-bold">Certified,</span>{" "}
+              <span className="font-light text-ivory-dim">not assumed.</span>
             </p>
           </div>
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Body — Inter
+              Body — Geist
             </p>
             <p className="mt-2 max-w-xl text-base leading-relaxed text-ivory-dim">
               Sentence case, quiet, readable. The body voice is understated and

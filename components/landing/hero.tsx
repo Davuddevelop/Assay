@@ -1,59 +1,149 @@
+"use client";
+
+import { useRef } from "react";
+
+import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
+import { GitHubMark } from "@/components/icons";
 import { ProductMock } from "@/components/landing/product-mock";
-import { HallmarkSeal } from "@/components/hallmark-seal";
-import { Reveal } from "@/components/reveal";
 
 export function Hero() {
+  const root = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const el = root.current;
+      if (!el) return;
+
+      const mm = gsap.matchMedia();
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        // Orchestrated load: eyebrow → headline words → subhead → CTA → product.
+        const tl = gsap.timeline({
+          defaults: { ease: "power3.out", duration: 0.6 },
+        });
+        tl.from(".hero-eyebrow", { autoAlpha: 0, y: 16 })
+          .from(
+            ".hero-word",
+            { autoAlpha: 0, yPercent: 60, duration: 0.55, stagger: 0.12 },
+            "-=0.2",
+          )
+          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "-=0.25")
+          .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.3")
+          .from(
+            ".hero-product",
+            { autoAlpha: 0, y: 28, duration: 0.8 },
+            "-=0.2",
+          );
+
+        // Subtle scroll parallax on the aurora behind the product.
+        gsap.to(".hero-aurora", {
+          yPercent: 16,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      });
+
+      // Cursor parallax on the product — pointer-fine devices only.
+      mm.add(
+        "(prefers-reduced-motion: no-preference) and (pointer: fine)",
+        () => {
+          const xTo = gsap.quickTo(".hero-parallax", "x", {
+            duration: 0.5,
+            ease: "power3.out",
+          });
+          const yTo = gsap.quickTo(".hero-parallax", "y", {
+            duration: 0.5,
+            ease: "power3.out",
+          });
+
+          const onMove = (e: PointerEvent) => {
+            const r = el.getBoundingClientRect();
+            xTo(((e.clientX - r.left) / r.width - 0.5) * 28);
+            yTo(((e.clientY - r.top) / r.height - 0.5) * 20);
+          };
+          const onLeave = () => {
+            xTo(0);
+            yTo(0);
+          };
+
+          el.addEventListener("pointermove", onMove);
+          el.addEventListener("pointerleave", onLeave);
+          return () => {
+            el.removeEventListener("pointermove", onMove);
+            el.removeEventListener("pointerleave", onLeave);
+          };
+        },
+      );
+    },
+    { scope: root },
+  );
+
   return (
-    <section className="relative overflow-hidden border-b border-line">
-      {/* engineering grid, faint */}
-      <div aria-hidden className="bg-grid absolute inset-0 opacity-50" />
-      {/* asymmetric light source — behind the card on the right */}
-      <div
-        aria-hidden
-        className="glow absolute right-0 top-10 hidden h-96 w-[34rem] lg:block"
-      />
+    <section ref={root} className="relative overflow-hidden">
+      <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
+        <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
+          <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
+            New
+          </span>
+          Independent checks for AI-written code
+        </p>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-28 lg:py-36">
-        <div className="grid items-center gap-16 lg:grid-cols-12 lg:gap-8">
-          {/* Left — the words, left-aligned */}
-          <Reveal className="lg:col-span-5">
-            <h1 className="font-display text-[2.75rem] leading-[1.0] tracking-[-0.02em] text-ivory sm:text-6xl xl:text-7xl">
-              Certified,
-              <br />
-              <span className="italic text-ivory-dim">not assumed.</span>
-            </h1>
+        <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-semibold leading-[1.03] tracking-[-0.035em] text-ivory sm:text-7xl">
+          <span className="hero-word inline-block">Certified,</span>{" "}
+          <span className="hero-word inline-block">not</span>{" "}
+          <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
+            assumed.
+          </span>
+        </h1>
 
-            <p className="mt-7 max-w-md text-base leading-relaxed text-ivory-dim sm:text-lg">
-              An independent checkpoint for the code you ship with AI — for solo
-              developers and vibe-coders. Assay runs your tests, a security scan,
-              and a review against your own rules, then strikes the hallmark.
-            </p>
+        <p className="hero-sub mx-auto mt-6 max-w-lg text-base leading-relaxed text-ivory-dim sm:text-lg">
+          An independent checkpoint for the code you ship with AI — your tests, a
+          security scan, and your own rules, then the hallmark.
+        </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button href="/login" variant="primary" size="lg">
-                Connect a repo
-              </Button>
-              <Button href="/#how-it-works" variant="ghost" size="lg">
-                See how it works
-              </Button>
+        <div className="hero-cta mt-9">
+          {/* glassy connect-a-repo field */}
+          <div className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5">
+            <GitHubMark className="h-4 w-4 shrink-0 text-ash" />
+            <input
+              aria-label="Repository URL"
+              placeholder="github.com/you/your-repo"
+              className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
+            />
+            <Button href="/login" variant="primary" size="sm">
+              Connect
+            </Button>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {["Your tests", "Security scan", "Your rules", "AI review"].map(
+              (chip) => (
+                <span
+                  key={chip}
+                  className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim"
+                >
+                  <span className="h-1 w-1 rounded-full bg-iris-soft" />
+                  {chip}
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+
+        {/* the product, framed, centered, on its aurora */}
+        <div className="hero-product relative mt-20">
+          <div className="hero-parallax relative">
+            <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
+              <div aria-hidden className="hero-aurora aurora absolute inset-0" />
             </div>
-          </Reveal>
-
-          {/* Right — the product, off-grid, with the seal struck on its corner */}
-          <div className="relative lg:col-span-7 lg:-mr-6 lg:translate-y-2 xl:-mr-12">
-            {/* glow for mobile/tablet, where the side glow is hidden */}
-            <div
-              aria-hidden
-              className="glow absolute -inset-x-8 -top-8 bottom-4 -z-10 lg:hidden"
-            />
-            <ProductMock className="lg:ml-auto lg:max-w-xl" />
-            {/* a faint gold halo, ~10%, behind the hallmark only */}
-            <div
-              aria-hidden
-              className="glow absolute -right-8 -top-14 h-44 w-44 opacity-40 lg:left-[-4.5rem] lg:right-auto lg:-top-20"
-            />
-            <HallmarkSeal className="absolute -right-3 -top-8 z-10 lg:left-[-3rem] lg:right-auto lg:-top-12" />
+            <div className="float-soft relative">
+              <ProductMock className="mx-auto max-w-3xl text-left" />
+            </div>
           </div>
         </div>
       </div>

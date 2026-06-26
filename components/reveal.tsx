@@ -1,59 +1,54 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType } from "react";
+import { useRef } from "react";
 
-import { cn } from "@/lib/utils";
+import { gsap, useGSAP } from "@/lib/gsap";
 
 type RevealProps = {
   children: React.ReactNode;
   /** Stagger the fade-up; milliseconds of delay. */
   delay?: number;
-  as?: ElementType;
+  as?: "div" | "li";
   className?: string;
 };
 
 /**
- * A quiet fade-up as the element scrolls into view, once. Honors
- * prefers-reduced-motion via CSS (the .reveal rule resolves to no motion).
+ * A quiet fade-up as the element scrolls into view, once. Built on GSAP +
+ * ScrollTrigger. Renders visible by default, so under prefers-reduced-motion
+ * (or before hydration) the content is simply shown — no flash, no dead end.
  */
-export function Reveal({
-  children,
-  delay = 0,
-  as: Tag = "div",
-  className,
-}: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+export function Reveal({ children, delay = 0, as = "div", className }: RevealProps) {
+  const ref = useRef<HTMLDivElement & HTMLLIElement>(null);
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || shown) return;
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(el, {
+          autoAlpha: 0,
+          y: 18,
+          duration: 0.6,
+          ease: "power3.out",
+          delay: delay / 1000,
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
+      });
+    },
+    { scope: ref },
+  );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setShown(true);
-            observer.disconnect();
-            break;
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
+  if (as === "li") {
+    return (
+      <li ref={ref} className={className}>
+        {children}
+      </li>
     );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [shown]);
-
+  }
   return (
-    <Tag
-      ref={ref}
-      data-shown={shown}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-      className={cn("reveal", className)}
-    >
+    <div ref={ref} className={className}>
       {children}
-    </Tag>
+    </div>
   );
 }
