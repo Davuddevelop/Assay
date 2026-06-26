@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 
 import { EmptyState } from "@/components/empty-state";
 import { Eyebrow } from "@/components/section-heading";
-import { mockUser } from "@/lib/mock";
+import { requireUser, toSessionUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Dashboard — Assay",
   description: "Your connected repositories and recent checks.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = toSessionUser(await requireUser());
+
   return (
     <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
       <div
@@ -18,7 +20,7 @@ export default function DashboardPage() {
       />
       <header>
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-          {mockUser.name}&rsquo;s workspace
+          {session.name}&rsquo;s workspace
         </p>
         <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
           Nothing assayed yet.
