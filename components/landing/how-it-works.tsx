@@ -63,42 +63,41 @@ export function HowItWorks() {
       const inner = el.querySelector<HTMLElement>(".hiw-inner");
       const mm = gsap.matchMedia();
 
-      // Desktop + motion allowed: pin the section and scrub a master timeline
-      // that fills the flow line and lights each step as the playhead reaches it.
+      // Desktop + motion allowed: a quick one-shot reveal as the section enters
+      // view — the flow line fills, nodes pop, steps rise. No pin, no scrub, so
+      // the page scrolls through it at normal speed.
       mm.add(
         "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
         () => {
           const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: inner,
-              start: "center center",
-              end: "+=1300",
-              pin: inner,
-              scrub: 1,
-            },
+            scrollTrigger: { trigger: inner, start: "top 75%", once: true },
           });
           tl.fromTo(
             ".hiw-fill",
             { scaleX: 0 },
-            { scaleX: 1, ease: "none", duration: 3 },
+            { scaleX: 1, ease: "power2.out", duration: 0.7 },
             0,
-          );
-          [0, 1, 2].forEach((i) => {
-            const at = i * 1.0;
-            tl.from(
-              `.hiw-step-${i}`,
-              { autoAlpha: 0.25, y: 26, duration: 0.6, ease: "power2.out" },
-              at,
-            ).from(
-              `.hiw-node-${i}`,
-              { scale: 0, duration: 0.4, ease: "back.out(2)" },
-              at + 0.1,
+          )
+            .from(
+              [".hiw-node-0", ".hiw-node-1", ".hiw-node-2"],
+              { scale: 0, duration: 0.4, ease: "back.out(2)", stagger: 0.18 },
+              0.1,
+            )
+            .from(
+              [".hiw-step-0", ".hiw-step-1", ".hiw-step-2"],
+              {
+                autoAlpha: 0,
+                y: 24,
+                duration: 0.5,
+                ease: "power3.out",
+                stagger: 0.12,
+              },
+              0.15,
             );
-          });
         },
       );
 
-      // Mobile or reduced-motion: no pin — show the line filled and steps shown.
+      // Mobile or reduced-motion: show the line filled and the steps in place.
       mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
         gsap.set(".hiw-fill", { scaleX: 1 });
         gsap.set([".hiw-step-0", ".hiw-step-1", ".hiw-step-2"], { autoAlpha: 1 });
