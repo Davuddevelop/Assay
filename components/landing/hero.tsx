@@ -1,6 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  type Variants,
+} from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { GitHubMark } from "@/components/icons";
@@ -16,13 +23,49 @@ const item: Variants = {
   shown: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
+const headline: Variants = {
+  hidden: {},
+  shown: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
+};
+
+const word: Variants = {
+  hidden: { opacity: 0, y: "0.5em" },
+  shown: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 export function Hero() {
   const reduce = useReducedMotion();
   const initial = reduce ? false : "hidden";
 
-  return (
-    <section className="relative overflow-hidden">
+  // cursor parallax for the product
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 100, damping: 20, mass: 0.4 });
+  const sy = useSpring(py, { stiffness: 100, damping: 20, mass: 0.4 });
+  const prodX = useTransform(sx, (v) => v * 14);
+  const prodY = useTransform(sy, (v) => v * 10);
 
+  function handleMove(e: React.MouseEvent) {
+    if (reduce) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width - 0.5);
+    py.set((e.clientY - r.top) / r.height - 0.5);
+  }
+  function handleLeave() {
+    px.set(0);
+    py.set(0);
+  }
+
+  return (
+    <section
+      className="relative overflow-hidden"
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+    >
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
         <motion.div variants={container} initial={initial} animate="shown">
           <motion.p
@@ -36,10 +79,21 @@ export function Hero() {
           </motion.p>
 
           <motion.h1
-            variants={item}
+            variants={headline}
             className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-semibold leading-[1.03] tracking-[-0.035em] text-ivory sm:text-7xl"
           >
-            Certified, not assumed.
+            <motion.span variants={word} className="inline-block">
+              Certified,
+            </motion.span>{" "}
+            <motion.span variants={word} className="inline-block">
+              not
+            </motion.span>{" "}
+            <motion.span
+              variants={word}
+              className="font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft"
+            >
+              assumed.
+            </motion.span>
           </motion.h1>
 
           <motion.p
@@ -79,19 +133,21 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* the product, framed, centered, on its aurora */}
-        <motion.div
-          className="relative mt-20"
-          initial={reduce ? false : { opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
-            <div aria-hidden className="aurora absolute inset-0" />
-          </div>
-          <div className="float-soft relative">
-            <ProductMock className="mx-auto max-w-3xl text-left" />
-          </div>
+        {/* the product, framed, centered, on its aurora — with cursor parallax */}
+        <motion.div style={{ x: prodX, y: prodY }} className="relative">
+          <motion.div
+            className="relative mt-20"
+            initial={reduce ? false : { opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
+              <div aria-hidden className="aurora absolute inset-0" />
+            </div>
+            <div className="float-soft relative">
+              <ProductMock className="mx-auto max-w-3xl text-left" />
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

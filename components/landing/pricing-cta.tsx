@@ -13,7 +13,11 @@ export function PricingCta() {
             />
             <div className="relative flex flex-col items-center">
               <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl">
-                Strike your first hallmark.
+                Strike your first{" "}
+                <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
+                  hallmark
+                </span>
+                .
               </h2>
               <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ivory-dim">
                 Free for solo work. Connect a repository and see the next change

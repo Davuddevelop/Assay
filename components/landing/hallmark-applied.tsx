@@ -9,7 +9,11 @@ export function HallmarkApplied() {
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
-            The same change, judged two ways.
+            The same change, judged{" "}
+            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
+              two ways
+            </span>
+            .
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim">
             A mark you can trust because it says what was checked and what was

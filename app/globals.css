@@ -40,6 +40,7 @@
   --font-display: var(--font-geist);
   --font-sans: var(--font-geist);
   --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-instrument-serif); /* editorial italic accent */
 
   /* Radius — soft, modern */
   --radius-control: 12px;
@@ -60,6 +61,14 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Editorial italic-serif accent — one word per headline. */
+.font-accent {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 @layer base {

@@ -79,7 +79,11 @@ export function FeatureBento() {
         <Reveal>
           <Eyebrow label="What it checks" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
-            Three reads on every change, then one mark.
+            Three reads on every change, then one{" "}
+            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
+              mark
+            </span>
+            .
           </h2>
         </Reveal>
 

@@ -1,3 +1,7 @@
+"use client";
+
+import { motion, useReducedMotion, type Variants } from "motion/react";
+
 import { cn } from "@/lib/utils";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 
@@ -7,11 +11,24 @@ const CHECKS = [
   { label: "Rules", value: "3 of 3 held" },
 ];
 
+const checks: Variants = {
+  hidden: {},
+  shown: { transition: { staggerChildren: 0.16, delayChildren: 0.5 } },
+};
+
+const checkItem: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+};
+
 /**
- * The product in a browser window — a concrete check detail, the way the best
- * AI-startup pages show their app. Clean, framed, lifted.
+ * The product in a browser window. On view it "resolves": the three checks tick
+ * in one by one, then the hallmark strikes — the app looks like it's running.
  */
 export function ProductMock({ className }: { className?: string }) {
+  const reduce = useReducedMotion();
+  const initial = reduce ? false : "hidden";
+
   return (
     <div
       className={cn(
@@ -42,16 +59,31 @@ export function ProductMock({ className }: { className?: string }) {
               Add idempotency key to checkout
             </h3>
           </div>
-          <HallmarkStamp state="assayed" animate={false} />
+          {/* the hallmark strikes once the checks resolve */}
+          <motion.span
+            initial={reduce ? false : { opacity: 0, scale: 1.18 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 1.15, type: "spring", stiffness: 320, damping: 18 }}
+          >
+            <HallmarkStamp state="assayed" animate={false} />
+          </motion.span>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-3">
+        <motion.div
+          className="mt-6 grid grid-cols-3 gap-3"
+          variants={checks}
+          initial={initial}
+          whileInView="shown"
+          viewport={{ once: true }}
+        >
           {CHECKS.map((c) => (
-            <div
+            <motion.div
               key={c.label}
+              variants={checkItem}
               className="rounded-[var(--radius-control)] border border-line bg-onyx/40 px-3 py-3.5 sm:px-4"
             >
-              <div className="flex items-center gap-1.5 text-ivory-dim">
+              <div className="flex items-center gap-1.5 text-iris-soft">
                 <span aria-hidden className="text-xs leading-none">
                   ✓
                 </span>
@@ -60,9 +92,9 @@ export function ProductMock({ className }: { className?: string }) {
                 </span>
               </div>
               <p className="mt-2 text-sm text-ivory">{c.value}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <p className="mt-5 text-sm leading-relaxed text-ivory-dim">
           Every check your repository defines passed. The change is sound.

@@ -8,7 +8,11 @@ export function Problem() {
         <Reveal>
           <Eyebrow label="The problem" />
           <h2 className="mt-6 font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
-            AI writes code that <span className="text-ivory-dim">looks</span> right.
+            AI writes code that{" "}
+            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
+              looks
+            </span>{" "}
+            right.
           </h2>
           <div className="mt-7 space-y-4 text-base leading-relaxed text-ivory-dim sm:text-lg">
             <p>
