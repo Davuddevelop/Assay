@@ -115,6 +115,14 @@ export interface Database {
         Args: { p_install_id: string; p_month: string; p_limit: number };
         Returns: boolean;
       };
+      match_embeddings: {
+        Args: {
+          p_repo_id: string;
+          query_embedding: number[];
+          match_count?: number;
+        };
+        Returns: { path: string; chunk: string; similarity: number }[];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

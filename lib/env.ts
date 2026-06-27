@@ -32,6 +32,12 @@ const serverSchema = z.object({
   // Anthropic
   ANTHROPIC_API_KEY: z.string().min(1),
 
+  // Voyage embeddings (optional — repo-aware review degrades gracefully without it)
+  VOYAGE_API_KEY: z.string().min(1).optional(),
+
+  // E2B sandbox for running untrusted repo tests (optional until Phase 6 is live)
+  E2B_API_KEY: z.string().min(1).optional(),
+
   // Inngest (optional in local dev — the dev server runs without keys)
   INNGEST_EVENT_KEY: z.string().min(1).optional(),
   INNGEST_SIGNING_KEY: z.string().min(1).optional(),
