@@ -77,6 +77,23 @@ export const publicEnv = {
   githubAppSlug: process.env.NEXT_PUBLIC_GITHUB_APP_SLUG ?? "",
 } as const;
 
+/**
+ * Supabase configuration read directly from env, independent of the full
+ * `getEnv()` validation. This lets Supabase (auth, data) work as soon as its
+ * own keys are set, before GitHub/Anthropic/etc. are configured.
+ */
+export function supabaseConfig(): { url: string; anonKey: string; serviceKey: string } {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  if (!url || !anonKey) {
+    throw new Error(
+      "Supabase is not configured: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+    );
+  }
+  return { url, anonKey, serviceKey };
+}
+
 /** URL to install/configure the GitHub App on the user's repos. */
 export function githubAppInstallUrl(): string {
   return publicEnv.githubAppSlug

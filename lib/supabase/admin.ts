@@ -1,6 +1,6 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
-import { getEnv } from "@/lib/env";
+import { supabaseConfig } from "@/lib/env";
 import type { Database } from "@/lib/db/types";
 
 /**
@@ -10,11 +10,11 @@ import type { Database } from "@/lib/db/types";
  * explicit ownership check. Never expose this key to the client.
  */
 export function createAdminClient() {
-  const env = getEnv();
-  return createSupabaseClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    {
+  const { url, serviceKey } = supabaseConfig();
+  if (!serviceKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
+  }
+  return createSupabaseClient<Database>(url, serviceKey, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
