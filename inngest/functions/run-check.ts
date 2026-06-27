@@ -8,12 +8,18 @@ import { decrypt } from "@/lib/crypto";
 import { log } from "@/lib/log";
 import { consumeUsage } from "@/lib/usage";
 import { getInstallationOctokit } from "@/lib/github/app";
-import { fetchPullDiff } from "@/lib/github/diff";
+import { fetchPullDiff, renderDiff } from "@/lib/github/diff";
+import { fetchRootManifest } from "@/lib/github/files";
 import { reviewDiff } from "@/lib/anthropic/review";
+import { scanDiff } from "@/lib/security/scan";
+import { retrieveContext, renderContext } from "@/lib/embeddings/retrieve";
+import { runRepoTests, testResultToFindings } from "@/lib/sandbox/run";
+import { skippedResult } from "@/lib/sandbox/parse";
 import { decideVerdict } from "@/lib/verdict";
 import { postCheckRun } from "@/lib/github/checks";
 import { upsertPrComment } from "@/lib/github/comments";
 import { renderComment, renderCheckDetails } from "@/lib/report";
+import type { Finding } from "@/lib/findings";
 
 /**
  * The check pipeline. On a pull request: enforce the usage limit, record a
@@ -105,10 +111,48 @@ export const runCheck = inngest.createFunction(
       return fetchPullDiff(octokit, fullName, prNumber);
     });
 
-    // Structured AI review.
-    const findings = await step.run("ai-review", () =>
-      reviewDiff({ rules: ctx.repo.rules, diff }),
-    );
+    // Three check sources, aggregated into one finding list:
+    //  1. security scan — fast, deterministic, inline (no I/O).
+    //  2. AI review — repo-aware via retrieved embeddings context.
+    //  3. sandboxed test run — actually runs the suite off our infra.
+    // (2) and (3) run in parallel as durable steps; each source degrades
+    // gracefully when its dependency (embeddings / sandbox) isn't configured.
+    const securityFindings = scanDiff(diff);
+
+    const [reviewFindings, testResult] = await Promise.all([
+      (async () => {
+        const context = await step.run("retrieve-context", () =>
+          retrieveContext(ctx.repo.id, renderDiff(diff)),
+        );
+        return step.run("ai-review", () =>
+          reviewDiff({
+            rules: ctx.repo.rules,
+            diff,
+            context: renderContext(context),
+          }),
+        );
+      })(),
+      step.run("run-tests", async () => {
+        if (!ctx.install.encrypted_token) {
+          return skippedResult("No installation token.");
+        }
+        const token = decrypt(ctx.install.encrypted_token);
+        const octokit = await getInstallationOctokit(githubInstallId);
+        const manifest = await fetchRootManifest(octokit, fullName, commitSha);
+        return runRepoTests({
+          cloneToken: token,
+          fullName,
+          ref: commitSha,
+          manifest,
+        });
+      }),
+    ]);
+
+    const findings: Finding[] = [
+      ...reviewFindings,
+      ...securityFindings,
+      ...testResultToFindings(testResult),
+    ];
 
     const { verdict, summary } = decideVerdict(findings);
 
