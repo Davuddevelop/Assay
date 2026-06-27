@@ -1,10 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-
-/** Monthly check allowance per plan. */
-export const PLAN_LIMITS: Record<string, number> = {
-  free: 100,
-  pro: 2000,
-};
+import { checksLimit } from "@/lib/plans";
 
 /** Current month key, `YYYY-MM`, in UTC. */
 export function monthKey(date = new Date()): string {
@@ -13,8 +8,40 @@ export function monthKey(date = new Date()): string {
   return `${y}-${m}`;
 }
 
+/** Monthly check allowance for a plan — sourced from the plan catalog. */
 export function limitForPlan(plan: string): number {
-  return PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+  return checksLimit(plan);
+}
+
+export interface UsageSummary {
+  used: number;
+  limit: number;
+  remaining: number;
+  /** 0–1 fraction of the allowance consumed. */
+  fraction: number;
+}
+
+/** This month's usage for an installation against its plan limit. */
+export async function getUsageSummary(
+  installId: string,
+  plan: string,
+): Promise<UsageSummary> {
+  const db = createAdminClient();
+  const { data } = await db
+    .from("usage")
+    .select("count")
+    .eq("install_id", installId)
+    .eq("month", monthKey())
+    .maybeSingle();
+
+  const used = data?.count ?? 0;
+  const limit = limitForPlan(plan);
+  return {
+    used,
+    limit,
+    remaining: Math.max(0, limit - used),
+    fraction: limit > 0 ? Math.min(1, used / limit) : 0,
+  };
 }
 
 /**

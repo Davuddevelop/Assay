@@ -1,10 +1,14 @@
 import { AppHeader } from "@/components/app-header";
+import { requireUser } from "@/lib/auth";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Every page under (app) requires a signed-in user.
+  await requireUser();
+
   return (
     <>
       <AppHeader />

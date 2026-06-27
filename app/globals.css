@@ -239,7 +239,7 @@
 }
 
 .marquee-track {
-  animation: marquee 34s linear infinite;
+  animation: marquee 26s linear infinite;
 }
 
 /* Cursor spotlight — a radial glow following the pointer, set via --mx/--my. */

@@ -1,18 +1,23 @@
 import Link from "next/link";
 
 import { Wordmark } from "@/components/wordmark";
-import { mockUser } from "@/lib/mock";
+import { getUser, toSessionUser } from "@/lib/auth";
+import { signOut } from "@/app/auth/actions";
 
 const LINKS = [
   { href: "/dashboard", label: "Repositories" },
   { href: "/rules", label: "Rules" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 /**
- * Floating glass pill chrome for signed-in pages: wordmark, quiet links, and a
- * stub account chip (mocked until Supabase auth is wired).
+ * Floating glass pill chrome for signed-in pages: wordmark, quiet links, and
+ * the account chip with sign-out, backed by the real Supabase session.
  */
-export function AppHeader() {
+export async function AppHeader() {
+  const user = await getUser();
+  const session = user ? toSessionUser(user) : null;
+
   return (
     <div className="sticky top-3 z-40 px-4 sm:top-4">
       <nav className="glass mx-auto flex h-14 w-full max-w-4xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
@@ -37,13 +42,30 @@ export function AppHeader() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 rounded-pill border border-border bg-surface/50 py-1 pl-1 pr-3">
-          <span className="flex h-7 w-7 items-center justify-center rounded-pill bg-iris/20 font-mono text-xs text-iris-soft">
-            {mockUser.initial}
-          </span>
-          <span className="hidden font-mono text-xs text-ivory-dim sm:inline">
-            {mockUser.handle}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 rounded-pill border border-border bg-surface/50 py-1 pl-1 pr-3">
+            <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-pill bg-iris/20 font-mono text-xs text-iris-soft">
+              {session?.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={session.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                session?.initial ?? "?"
+              )}
+            </span>
+            <span className="hidden font-mono text-xs text-ivory-dim sm:inline">
+              {session?.handle ?? "guest"}
+            </span>
+          </div>
+          {session && (
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="rounded-pill px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-ash transition-colors hover:text-ivory"
+              >
+                Sign out
+              </button>
+            </form>
+          )}
         </div>
       </nav>
     </div>

@@ -4,13 +4,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
+import { signInWithGitHub } from "@/app/auth/actions";
 
 export const metadata: Metadata = {
   title: "Sign in — Assay",
   description: "Connect your GitHub to begin.",
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+
   return (
     <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
@@ -25,11 +32,18 @@ export default function LoginPage() {
         the checks it runs — nothing else.
       </p>
 
-      {/* Mocked: advances to the dashboard. Supabase OAuth is wired later. */}
-      <Button href="/dashboard" variant="primary" size="lg" className="mt-9 w-full">
-        <GitHubMark />
-        Continue with GitHub
-      </Button>
+      {error && (
+        <p className="mt-6 w-full rounded-[var(--radius-control)] border border-oxblood/50 bg-oxblood/10 px-4 py-3 text-sm text-oxblood-soft">
+          Sign-in didn&rsquo;t complete. Please try again.
+        </p>
+      )}
+
+      <form action={signInWithGitHub} className="mt-9 w-full">
+        <Button type="submit" variant="primary" size="lg" className="w-full">
+          <GitHubMark />
+          Continue with GitHub
+        </Button>
+      </form>
 
       <p className="mt-6 font-mono text-xs leading-relaxed text-ash">
         You grant read access to the repositories you select. Revoke it anytime

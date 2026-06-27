@@ -4,6 +4,7 @@ import { Problem } from "@/components/landing/problem";
 import { FeatureBento } from "@/components/landing/feature-bento";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { HallmarkApplied } from "@/components/landing/hallmark-applied";
+import { Pricing } from "@/components/landing/pricing";
 import { PricingCta } from "@/components/landing/pricing-cta";
 import { SiteFooter } from "@/components/landing/site-footer";
 
@@ -16,6 +17,7 @@ export default function LandingPage() {
       <FeatureBento />
       <HowItWorks />
       <HallmarkApplied />
+      <Pricing />
       <PricingCta />
       <SiteFooter />
     </>

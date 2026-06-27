@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { EmptyState } from "@/components/empty-state";
 import { Eyebrow } from "@/components/section-heading";
-import { mockUser } from "@/lib/mock";
+import { RepoCard } from "@/components/repo-card";
+import { CheckStatus } from "@/components/check-status";
+import { PlanSummary } from "@/components/billing/plan-summary";
+import { requireUser, toSessionUser } from "@/lib/auth";
+import { getWorkspace } from "@/lib/data/queries";
+import { githubAppInstallUrl } from "@/lib/env";
+import { relativeTime } from "@/lib/data/derive";
 
 export const metadata: Metadata = {
   title: "Dashboard — Assay",
   description: "Your connected repositories and recent checks.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = toSessionUser(await requireUser());
+  const { repos, recentChecks, usage, plan } = await getWorkspace();
+  const installUrl = githubAppInstallUrl();
+  const hasRepos = repos.length > 0;
+
   return (
     <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
       <div
@@ -18,35 +30,71 @@ export default function DashboardPage() {
       />
       <header>
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-          {mockUser.name}&rsquo;s workspace
+          {session.name}&rsquo;s workspace
         </p>
         <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
-          Nothing assayed yet.
+          {hasRepos ? "Your repositories" : "Nothing assayed yet."}
         </h1>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-ivory-dim">
-          Connect a repository and Assay will check the next change — your tests,
-          a security scan, and your rules — then strike the hallmark.
-        </p>
       </header>
+
+      {usage && (
+        <div className="mt-8">
+          <PlanSummary planId={plan} used={usage.used} limit={usage.limit} />
+        </div>
+      )}
 
       <section className="mt-14">
         <Eyebrow label="Repositories" />
         <div className="mt-6">
-          <EmptyState
-            title="Connect your first repo"
-            body="Assay watches a repository and strikes a hallmark on every change. Connect one to begin."
-            action={{ label: "Connect a repo", href: "/login" }}
-          />
+          {hasRepos ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {repos.map((repo) => (
+                <RepoCard key={repo.id} repo={repo} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Connect your first repo"
+              body="Assay watches a repository and strikes a hallmark on every change. Install the GitHub App on a repo to begin."
+              action={{ label: "Connect a repo", href: installUrl }}
+            />
+          )}
         </div>
       </section>
 
       <section className="mt-16">
         <Eyebrow label="Recent checks" />
-        <div className="mt-6 rounded-[var(--radius-card)] border border-line bg-surface/40 px-6 py-12 text-center">
-          <p className="text-sm text-ivory-dim">
-            No checks yet. The first will appear here once a repository is
-            connected and a change lands.
-          </p>
+        <div className="mt-6">
+          {recentChecks.length > 0 ? (
+            <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface/40">
+              {recentChecks.map((check) => (
+                <li key={check.id}>
+                  <Link
+                    href={`/checks/${check.id}`}
+                    className="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface-hover/40"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-mono text-sm text-ivory">
+                        {check.commit_sha.slice(0, 7)}
+                        {check.pr_number ? ` · PR #${check.pr_number}` : ""}
+                      </p>
+                      <p className="mt-1 font-mono text-xs text-ash">
+                        {relativeTime(check.created_at)}
+                      </p>
+                    </div>
+                    <CheckStatus check={check} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-[var(--radius-card)] border border-line bg-surface/40 px-6 py-12 text-center">
+              <p className="text-sm text-ivory-dim">
+                No checks yet. The first will appear here once a repository is
+                connected and a change lands.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </div>

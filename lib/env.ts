@@ -32,6 +32,12 @@ const serverSchema = z.object({
   // Anthropic
   ANTHROPIC_API_KEY: z.string().min(1),
 
+  // Voyage embeddings (optional — repo-aware review degrades gracefully without it)
+  VOYAGE_API_KEY: z.string().min(1).optional(),
+
+  // E2B sandbox for running untrusted repo tests (optional until Phase 6 is live)
+  E2B_API_KEY: z.string().min(1).optional(),
+
   // Inngest (optional in local dev — the dev server runs without keys)
   INNGEST_EVENT_KEY: z.string().min(1).optional(),
   INNGEST_SIGNING_KEY: z.string().min(1).optional(),
@@ -67,4 +73,13 @@ export function getEnv(): ServerEnv {
 export const publicEnv = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+  /** GitHub App slug, for the "install on a repo" link. */
+  githubAppSlug: process.env.NEXT_PUBLIC_GITHUB_APP_SLUG ?? "",
 } as const;
+
+/** URL to install/configure the GitHub App on the user's repos. */
+export function githubAppInstallUrl(): string {
+  return publicEnv.githubAppSlug
+    ? `https://github.com/apps/${publicEnv.githubAppSlug}/installations/new`
+    : "/docs";
+}

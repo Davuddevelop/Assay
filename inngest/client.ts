@@ -21,7 +21,15 @@ export interface InstallationSyncEventData {
   githubInstallId: number;
 }
 
+export interface RepoIndexEventData {
+  githubInstallId: number;
+  repoId: string;
+  fullName: string;
+  ref: string;
+}
+
 export const EVENTS = {
   pullRequest: "github/pull_request",
   installationSync: "github/installation.sync",
+  repoIndex: "github/repo.index",
 } as const;

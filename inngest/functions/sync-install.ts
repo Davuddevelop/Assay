@@ -61,21 +61,42 @@ export const syncInstall = inngest.createFunction(
       listInstallationRepos(githubInstallId),
     );
 
-    await step.run("upsert-repos", async () => {
-      if (repos.length === 0) return;
+    const stored = await step.run("upsert-repos", async () => {
+      if (repos.length === 0) return [];
       const db = createAdminClient();
-      const { error } = await db.from("repos").upsert(
-        repos.map((r) => ({
-          install_id: installId,
-          github_repo_id: r.githubRepoId,
-          name: r.name,
-          full_name: r.fullName,
-          default_branch: r.defaultBranch,
-        })),
-        { onConflict: "github_repo_id" },
-      );
+      const { data, error } = await db
+        .from("repos")
+        .upsert(
+          repos.map((r) => ({
+            install_id: installId,
+            github_repo_id: r.githubRepoId,
+            name: r.name,
+            full_name: r.fullName,
+            default_branch: r.defaultBranch,
+          })),
+          { onConflict: "github_repo_id" },
+        )
+        .select("id, full_name, default_branch");
       if (error) throw new Error(`upsert repos: ${error.message}`);
+      return data ?? [];
     });
+
+    // Kick off embedding indexing for each repo (the job no-ops if embeddings
+    // aren't configured, so this is safe to always emit).
+    if (stored.length > 0) {
+      await step.sendEvent(
+        "enqueue-index",
+        stored.map((r) => ({
+          name: EVENTS.repoIndex,
+          data: {
+            githubInstallId,
+            repoId: r.id,
+            fullName: r.full_name,
+            ref: r.default_branch,
+          },
+        })),
+      );
+    }
 
     log.info("installation synced", {
       githubInstallId,

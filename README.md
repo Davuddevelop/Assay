@@ -52,14 +52,37 @@ GitHub PR ─▶ /api/webhooks/github ─▶ (verify signature, <1s) ─▶ Inng
               2. enforce monthly usage limit  (lib/usage.ts → consume_usage RPC)
               3. record a running check
               4. fetch the PR diff             (lib/github/diff.ts)
-              5. AI review → structured findings (lib/anthropic/review.ts, Sonnet 4.6)
+              5. THREE check sources, aggregated:
+                   • security scan   (lib/security/scan.ts — inline, deterministic)
+                   • AI review       (lib/anthropic/review.ts, Sonnet 4.6) with
+                                     repo context retrieved via embeddings
+                                     (lib/embeddings, pgvector)
+                   • sandboxed tests (lib/sandbox → E2B, off our infra)
               6. decide the hallmark            (lib/verdict.ts, pure)
               7. persist findings + verdict
               8. post Check Run + PR comment    (lib/github/{checks,comments}.ts)
 ```
 
-Installations are kept in sync by `inngest/functions/sync-install.ts`, which
-upserts the installation (with an **encrypted** access token) and its repos.
+The AI review and sandbox test run execute as parallel durable steps; each
+source degrades gracefully when its optional dependency (Voyage embeddings /
+E2B sandbox) isn't configured. Installations are kept in sync by
+`inngest/functions/sync-install.ts` (encrypted token + repos), which also
+enqueues `index-repo` to embed each repo for retrieval.
+
+### Auth, dashboard & pricing
+
+- **Auth** is Supabase Auth → GitHub OAuth (`lib/auth.ts`, `middleware.ts`,
+  `app/auth/*`). On sign-in the user's GitHub account claims the installations
+  it owns (`owner_user_id`), so RLS scopes everything to them.
+- **Dashboard** (`/dashboard`, `/repos/[id]`, `/checks/[id]`, `/rules`) reads
+  real data through the user-scoped client (`lib/data/queries.ts`) — repos with
+  their current hallmark, check history, findings, and a plain-language rules
+  editor.
+- **Pricing** is a single catalog (`lib/plans.ts` — Free / Pro $19 / Team $99)
+  surfaced on `/pricing`, the landing page, and the dashboard (plan badge +
+  usage meter + upgrade nudge). Limits are enforced by the usage meter today;
+  **Stripe checkout/billing is the next phase** (the catalog and enforcement
+  are already in place).
 
 ### Security properties
 
@@ -87,41 +110,47 @@ upserts the installation (with an **encrypted** access token) and its repos.
    supabase db push        # applies supabase/migrations/0001_init.sql
    ```
 
-   This creates the tables (installations, repos, checks, findings, embeddings,
-   usage), the RLS policies, and the `consume_usage` meter function.
+   This applies `0001_init.sql` (tables, RLS, `consume_usage`) and
+   `0002_embeddings.sql` (HNSW index + `match_embeddings`).
 
 3. **GitHub App** — register at <https://github.com/settings/apps>. Permissions:
    Checks (write), Pull requests (write), Contents (read), Metadata (read).
    Subscribe to **Pull request**, **Installation**, and **Installation
    repositories** events. Set the webhook URL to
    `https://<your-host>/api/webhooks/github` and the webhook secret to
-   `GITHUB_WEBHOOK_SECRET`. Put the App id, private key, and client id/secret in
-   the env.
+   `GITHUB_WEBHOOK_SECRET`. Put the App id, private key, client id/secret, and
+   `NEXT_PUBLIC_GITHUB_APP_SLUG` in the env.
 
-4. **Inngest** — in dev, run the dev server (`npx inngest-cli@latest dev`) which
+4. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with the
+   OAuth client id/secret, and add `<your-site>/auth/callback` as a redirect URL.
+
+5. **Inngest** — in dev, run the dev server (`npx inngest-cli@latest dev`) which
    discovers `/api/inngest`. In prod, set `INNGEST_EVENT_KEY` and
    `INNGEST_SIGNING_KEY`.
 
-5. **Anthropic** — set `ANTHROPIC_API_KEY`.
+6. **Anthropic** — set `ANTHROPIC_API_KEY`.
 
-### Verifying each gate
+7. **Optional** — `VOYAGE_API_KEY` (repo-aware review) and `E2B_API_KEY`
+   (sandboxed test runs). Both degrade gracefully when unset.
 
-- **Phase 0 (webhook):** install the App on a test repo and open a PR. The
-  webhook should return `202` quickly; the Inngest dashboard shows a
-  `github/pull_request` event.
-- **Phase 1 (install sync):** after install, the `installations` and `repos`
-  tables hold a row for your repo (token stored encrypted).
-- **Phase 2 (pipeline):** a `checks` row appears with status `running`, then
-  `completed`; `usage` increments for the month.
-- **Phase 3 (verdict):** the PR gets an **Assay** Check Run and a single comment
-  — ✓ Assayed for a clean change, ⚠ Held with file/line/finding for a change
-  that breaks one of your rules.
+### Go-live checklist (each needs your keys)
 
-### Roadmap (later phases)
+- [ ] Supabase project created, `supabase db push` applied, GitHub provider on.
+- [ ] GitHub App registered + installed on a test repo; webhook reachable.
+- [ ] `ANTHROPIC_API_KEY` set. (Optional: `VOYAGE_API_KEY`, `E2B_API_KEY`.)
+- [ ] Deploy (Vercel) + Inngest keys set.
+- [ ] **Verify:** sign in with GitHub → dashboard shows your repo. Open a PR →
+      webhook `202` → Inngest runs `run-check` → security + AI review (+ tests if
+      E2B on) → the PR gets an **Assay** Check Run + comment (✓ Assayed / ⚠ Held).
+      `usage` increments; the dashboard usage meter moves.
 
-Semgrep security pass (4), repo embeddings + retrieval with pgvector (5), a
-sandboxed test runner (6, E2B/Modal), and Stripe-backed plan limits with a live
-dashboard (7). The data model and usage meter for these already exist.
+### Roadmap
+
+**Done:** auth, the full check pipeline (security scan, repo-aware AI review,
+sandboxed tests), real dashboard, pricing catalog + enforcement. **Next:** Stripe
+checkout, the customer portal, and subscription webhooks that set
+`installations.plan` (the catalog, limits, and every pricing surface already
+exist).
 
 ## What's built
 

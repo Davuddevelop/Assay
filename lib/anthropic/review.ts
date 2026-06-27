@@ -58,35 +58,46 @@ unless the type is rule/security/test. Set "file" and "line" to the location in
 the diff when you can; use null when not applicable. Put a short, actionable fix
 in "suggestion" (or null).`;
 
-function buildUserPrompt(rules: string, diff: PullDiff): string {
+function buildUserPrompt(rules: string, diff: PullDiff, context: string): string {
   const rulesBlock = rules.trim()
     ? rules.trim()
     : "(The user has not written any custom rules. Apply general correctness and security judgment.)";
-  return [
-    "## The user's rules",
-    rulesBlock,
-    "",
+  const parts = ["## The user's rules", rulesBlock, ""];
+
+  if (context.trim()) {
+    parts.push(
+      "## Relevant repository context",
+      "Existing code retrieved for context (do not review it; use it to judge the change):",
+      context,
+      "",
+    );
+  }
+
+  parts.push(
     "## The pull request diff",
     renderDiff(diff),
     "",
     "Report every concrete problem you find as a finding. If the change is sound, return an empty findings list.",
-  ].join("\n");
+  );
+  return parts.join("\n");
 }
 
 export interface ReviewInput {
   rules: string;
   diff: PullDiff;
+  /** Optional repo context retrieved via embeddings; improves judgment. */
+  context?: string;
 }
 
 /** Run the AI review and return validated findings. */
-export async function reviewDiff({ rules, diff }: ReviewInput): Promise<ReviewFinding[]> {
+export async function reviewDiff({ rules, diff, context = "" }: ReviewInput): Promise<ReviewFinding[]> {
   const client = new Anthropic({ apiKey: getEnv().ANTHROPIC_API_KEY });
 
   const response = await client.messages.parse({
     model: MODEL,
     max_tokens: 8000,
     system: SYSTEM,
-    messages: [{ role: "user", content: buildUserPrompt(rules, diff) }],
+    messages: [{ role: "user", content: buildUserPrompt(rules, diff, context) }],
     output_config: {
       format: zodOutputFormat(ReviewSchema),
     },
