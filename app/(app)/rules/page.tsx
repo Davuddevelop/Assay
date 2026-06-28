@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 
 import { EmptyState } from "@/components/empty-state";
 import { Eyebrow } from "@/components/section-heading";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { RulesForm } from "@/components/rules-form";
 import { getReposForRules } from "@/lib/data/queries";
 import { githubAppInstallUrl } from "@/lib/env";
-import { saveRules } from "@/app/(app)/rules/actions";
 
 export const metadata: Metadata = {
   title: "Rules — Assay",
@@ -37,30 +36,7 @@ export default async function RulesPage() {
             action={{ label: "Connect a repo", href: githubAppInstallUrl() }}
           />
         ) : (
-          repos.map((repo) => (
-            <form
-              key={repo.id}
-              action={saveRules}
-              className="rounded-[var(--radius-card)] border border-line bg-surface/40 p-5"
-            >
-              <input type="hidden" name="repoId" value={repo.id} />
-              <div className="flex items-center justify-between">
-                <p className="font-mono text-sm text-ivory">{repo.full_name}</p>
-              </div>
-              <textarea
-                name="rules"
-                rows={6}
-                defaultValue={repo.rules}
-                placeholder="never log card data&#10;all API routes require auth&#10;no secrets in source"
-                className="mt-4 w-full resize-y rounded-[var(--radius-control)] border border-border bg-onyx/60 px-4 py-3 font-mono text-sm leading-relaxed text-ivory outline-none placeholder:text-ash focus:border-iris/50"
-              />
-              <div className="mt-4 flex justify-end">
-                <SubmitButton variant="ghost" size="sm" pendingText="Saving…">
-                  Save rules
-                </SubmitButton>
-              </div>
-            </form>
-          ))
+          repos.map((repo) => <RulesForm key={repo.id} repo={repo} />)
         )}
       </div>
     </div>

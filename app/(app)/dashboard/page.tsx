@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EmptyState } from "@/components/empty-state";
 import { Eyebrow } from "@/components/section-heading";
 import { RepoCard } from "@/components/repo-card";
 import { CheckStatus } from "@/components/check-status";
 import { PlanSummary } from "@/components/billing/plan-summary";
+import { Onboarding } from "@/components/onboarding";
+import { Button } from "@/components/ui/button";
 import { requireUser, toSessionUser } from "@/lib/auth";
 import { getWorkspace } from "@/lib/data/queries";
 import { githubAppInstallUrl } from "@/lib/env";
@@ -63,7 +64,14 @@ export default async function DashboardPage({
       )}
 
       <section className="mt-14">
-        <Eyebrow label="Repositories" />
+        <div className="flex items-center justify-between gap-4">
+          <Eyebrow label="Repositories" />
+          {hasRepos && (
+            <Button href={installUrl} variant="ghost" size="sm">
+              + Add repository
+            </Button>
+          )}
+        </div>
         <div className="mt-6">
           {hasRepos ? (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -72,11 +80,7 @@ export default async function DashboardPage({
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="Connect your first repo"
-              body="Assay watches a repository and strikes a hallmark on every change. Install the GitHub App on a repo to begin."
-              action={{ label: "Connect a repo", href: installUrl }}
-            />
+            <Onboarding installUrl={installUrl} />
           )}
         </div>
       </section>

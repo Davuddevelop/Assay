@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Wordmark } from "@/components/wordmark";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NavLink } from "@/components/nav-link";
 import { SignOutButton } from "@/components/sign-out-button";
 import { getUser, toSessionUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
@@ -33,13 +34,7 @@ export async function AppHeader() {
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             {LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-ivory-dim transition-colors hover:text-ivory"
-              >
-                {link.label}
-              </Link>
+              <NavLink key={link.href} href={link.href} label={link.label} />
             ))}
           </div>
         </div>
