@@ -3,20 +3,13 @@ import {
   EVENTS,
   type InstallationSyncEventData,
 } from "@/inngest/client";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { encrypt } from "@/lib/crypto";
+import { syncInstallation } from "@/lib/github/sync";
 import { log } from "@/lib/log";
-import {
-  createInstallationToken,
-  getInstallationAccount,
-  listInstallationRepos,
-} from "@/lib/github/app";
 
 /**
- * Reconcile a GitHub App installation into our database: upsert the
- * installation (with a freshly minted, encrypted access token) and the set of
- * repositories it can access. Runs on install/uninstall and whenever the repo
- * selection changes. Idempotent — repeated syncs converge to the same state.
+ * Reconcile a GitHub App installation into our database (webhook path). The
+ * actual work lives in `syncInstallation` so the post-install redirect and this
+ * durable handler stay in sync. Idempotent.
  */
 export const syncInstall = inngest.createFunction(
   {
@@ -27,66 +20,13 @@ export const syncInstall = inngest.createFunction(
   async ({ event, step }) => {
     const { githubInstallId } = event.data as InstallationSyncEventData;
 
-    const account = await step.run("fetch-account", () =>
-      getInstallationAccount(githubInstallId),
-    );
+    const result = await step.run("sync", () => syncInstallation(githubInstallId));
 
-    // Mint + encrypt a token inside the step so the plaintext never leaves it.
-    const encryptedToken = await step.run("mint-token", async () => {
-      const { token, expiresAt } = await createInstallationToken(githubInstallId);
-      return { ciphertext: encrypt(token), expiresAt };
-    });
-
-    const installId = await step.run("upsert-installation", async () => {
-      const db = createAdminClient();
-      const { data, error } = await db
-        .from("installations")
-        .upsert(
-          {
-            github_install_id: githubInstallId,
-            account_login: account.accountLogin,
-            account_id: account.accountId,
-            encrypted_token: encryptedToken.ciphertext,
-            token_expires_at: encryptedToken.expiresAt,
-          },
-          { onConflict: "github_install_id" },
-        )
-        .select("id")
-        .single();
-      if (error) throw new Error(`upsert installation: ${error.message}`);
-      return data.id;
-    });
-
-    const repos = await step.run("fetch-repos", () =>
-      listInstallationRepos(githubInstallId),
-    );
-
-    const stored = await step.run("upsert-repos", async () => {
-      if (repos.length === 0) return [];
-      const db = createAdminClient();
-      const { data, error } = await db
-        .from("repos")
-        .upsert(
-          repos.map((r) => ({
-            install_id: installId,
-            github_repo_id: r.githubRepoId,
-            name: r.name,
-            full_name: r.fullName,
-            default_branch: r.defaultBranch,
-          })),
-          { onConflict: "github_repo_id" },
-        )
-        .select("id, full_name, default_branch");
-      if (error) throw new Error(`upsert repos: ${error.message}`);
-      return data ?? [];
-    });
-
-    // Kick off embedding indexing for each repo (the job no-ops if embeddings
-    // aren't configured, so this is safe to always emit).
-    if (stored.length > 0) {
+    // Kick off embedding indexing per repo (no-ops if embeddings are disabled).
+    if (result.repos.length > 0) {
       await step.sendEvent(
         "enqueue-index",
-        stored.map((r) => ({
+        result.repos.map((r) => ({
           name: EVENTS.repoIndex,
           data: {
             githubInstallId,
@@ -100,9 +40,9 @@ export const syncInstall = inngest.createFunction(
 
     log.info("installation synced", {
       githubInstallId,
-      repoCount: repos.length,
+      repoCount: result.repos.length,
     });
 
-    return { installId, repoCount: repos.length };
+    return { installId: result.installId, repoCount: result.repos.length };
   },
 );
