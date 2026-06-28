@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { Wordmark } from "@/components/wordmark";
+import { MobileMenu } from "@/components/mobile-menu";
+import { SignOutButton } from "@/components/sign-out-button";
 import { getUser, toSessionUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
 
@@ -57,15 +59,14 @@ export async function AppHeader() {
             </span>
           </div>
           {session && (
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="rounded-pill px-2 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-ash transition-colors hover:text-ivory"
-              >
-                Sign out
-              </button>
-            </form>
+            <div className="hidden md:block">
+              <SignOutButton action={signOut} />
+            </div>
           )}
+          <MobileMenu
+            links={LINKS}
+            footer={session ? <SignOutButton action={signOut} /> : undefined}
+          />
         </div>
       </nav>
     </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { EmptyState } from "@/components/empty-state";
 import { Eyebrow } from "@/components/section-heading";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { getReposForRules } from "@/lib/data/queries";
 import { githubAppInstallUrl } from "@/lib/env";
 import { saveRules } from "@/app/(app)/rules/actions";
@@ -55,9 +55,9 @@ export default async function RulesPage() {
                 className="mt-4 w-full resize-y rounded-[var(--radius-control)] border border-border bg-onyx/60 px-4 py-3 font-mono text-sm leading-relaxed text-ivory outline-none placeholder:text-ash focus:border-iris/50"
               />
               <div className="mt-4 flex justify-end">
-                <Button type="submit" variant="ghost" size="sm">
+                <SubmitButton variant="ghost" size="sm" pendingText="Saving…">
                   Save rules
-                </Button>
+                </SubmitButton>
               </div>
             </form>
           ))
