@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   description: "Your connected repositories and recent checks.",
 };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ connected?: string; connect_error?: string }>;
+}) {
+  const { connected, connect_error: connectError } = await searchParams;
   const session = toSessionUser(await requireUser());
   const { repos, recentChecks, usage, plan } = await getWorkspace();
   const installUrl = githubAppInstallUrl();
@@ -36,6 +41,20 @@ export default async function DashboardPage() {
           {hasRepos ? "Your repositories" : "Nothing assayed yet."}
         </h1>
       </header>
+
+      {connected !== undefined && (
+        <div className="mt-8 rounded-[var(--radius-card)] border border-iris/40 bg-iris/10 px-5 py-4 text-sm text-ivory">
+          ✓ Connected. {Number(connected) > 0
+            ? `${connected} ${Number(connected) === 1 ? "repository is" : "repositories are"} ready — the next change will be assayed.`
+            : "Pick at least one repository on GitHub to start checking it."}
+        </div>
+      )}
+      {connectError && (
+        <div className="mt-8 rounded-[var(--radius-card)] border border-oxblood/50 bg-oxblood/10 px-5 py-4 text-sm text-oxblood-soft">
+          We couldn&rsquo;t finish connecting. Please try again, or reinstall the
+          GitHub App.
+        </div>
+      )}
 
       {usage && (
         <div className="mt-8">
