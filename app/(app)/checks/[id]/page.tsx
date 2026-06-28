@@ -6,6 +6,7 @@ import { CheckStatus } from "@/components/check-status";
 import { FindingItem } from "@/components/finding-item";
 import { getCheckDetail } from "@/lib/data/queries";
 import { relativeTime } from "@/lib/data/derive";
+import { checkUrl } from "@/lib/github/urls";
 
 export default async function CheckPage({
   params,
@@ -36,6 +37,16 @@ export default async function CheckPage({
             {check.commit_sha.slice(0, 7)}
             {check.pr_number ? ` · PR #${check.pr_number}` : ""}
           </h1>
+          {repo && (
+            <a
+              href={checkUrl(repo.full_name, check.commit_sha, check.pr_number)}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center gap-1 font-mono text-xs text-iris-soft transition-colors hover:text-ivory"
+            >
+              View on GitHub ↗
+            </a>
+          )}
         </div>
         <CheckStatus check={check} size="md" />
       </header>

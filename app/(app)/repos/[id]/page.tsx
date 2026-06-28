@@ -5,6 +5,7 @@ import { Eyebrow } from "@/components/section-heading";
 import { CheckStatus } from "@/components/check-status";
 import { getRepo, getRepoChecks } from "@/lib/data/queries";
 import { relativeTime } from "@/lib/data/derive";
+import { repoUrl } from "@/lib/github/urls";
 
 export default async function RepoPage({
   params,
@@ -28,9 +29,19 @@ export default async function RepoPage({
 
       <header className="mt-6">
         <h1 className="font-mono text-2xl text-ivory">{repo.full_name}</h1>
-        <p className="mt-2 font-mono text-xs text-ash">
-          default branch · {repo.default_branch}
-        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <p className="font-mono text-xs text-ash">
+            default branch · {repo.default_branch}
+          </p>
+          <a
+            href={repoUrl(repo.full_name)}
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-xs text-iris-soft transition-colors hover:text-ivory"
+          >
+            View on GitHub ↗
+          </a>
+        </div>
       </header>
 
       <section className="mt-12">

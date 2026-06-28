@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/wordmark";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NavLink } from "@/components/nav-link";
 
 const LINKS = [
   { href: "/#how-it-works", label: "How it works" },
@@ -27,13 +28,7 @@ export function SiteNav() {
 
         <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 md:flex">
           {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm text-ivory-dim transition-colors hover:text-ivory"
-            >
-              {link.label}
-            </Link>
+            <NavLink key={link.href} href={link.href} label={link.label} />
           ))}
         </div>
 
