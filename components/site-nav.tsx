@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "@/components/wordmark";
+import { MobileMenu } from "@/components/mobile-menu";
 
 const LINKS = [
   { href: "/#how-it-works", label: "How it works" },
@@ -36,9 +37,12 @@ export function SiteNav() {
           ))}
         </div>
 
-        <Button href="/login" variant="primary" size="sm">
-          Sign in
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button href="/login" variant="primary" size="sm">
+            Sign in
+          </Button>
+          <MobileMenu links={LINKS} />
+        </div>
       </nav>
     </div>
   );

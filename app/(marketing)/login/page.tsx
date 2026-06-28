@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
+import { LoginError } from "@/components/login-error";
 import { signInWithGitHub } from "@/app/auth/actions";
 
 export const metadata: Metadata = {
@@ -11,13 +13,9 @@ export const metadata: Metadata = {
   description: "Connect your GitHub to begin.",
 };
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
-  const { error } = await searchParams;
-
+// Static shell → served instantly from the edge; only the OAuth action hits the
+// server. The error message is read client-side so this page never cold-starts.
+export default function LoginPage() {
   return (
     <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
@@ -32,17 +30,20 @@ export default async function LoginPage({
         the checks it runs — nothing else.
       </p>
 
-      {error && (
-        <p className="mt-6 w-full rounded-[var(--radius-control)] border border-oxblood/50 bg-oxblood/10 px-4 py-3 text-sm text-oxblood-soft">
-          Sign-in didn&rsquo;t complete. Please try again.
-        </p>
-      )}
+      <Suspense fallback={null}>
+        <LoginError />
+      </Suspense>
 
       <form action={signInWithGitHub} className="mt-9 w-full">
-        <Button type="submit" variant="primary" size="lg" className="w-full">
+        <SubmitButton
+          variant="primary"
+          size="lg"
+          className="w-full"
+          pendingText="Connecting to GitHub…"
+        >
           <GitHubMark />
           Continue with GitHub
-        </Button>
+        </SubmitButton>
       </form>
 
       <p className="mt-6 font-mono text-xs leading-relaxed text-ash">
