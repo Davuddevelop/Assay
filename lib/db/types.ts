@@ -75,6 +75,55 @@ export type UsageRow = {
   count: number;
 }
 
+// ── Pivot: app security scans ────────────────────────────────────────────────
+export type ScanStatus = "queued" | "running" | "completed" | "error";
+export type ScanVerdict = "certified" | "at_risk";
+export type ScanFindingSeverity = "critical" | "risky" | "minor";
+
+export type ScanRow = {
+  id: string;
+  user_id: string | null;
+  app_url: string;
+  platform: string;
+  status: ScanStatus;
+  score: number | null;
+  verdict: ScanVerdict | null;
+  is_demo: boolean;
+  error: string | null;
+  created_at: string;
+  completed_at: string | null;
+};
+
+export type ScanFindingRow = {
+  id: string;
+  scan_id: string;
+  kind: string;
+  severity: ScanFindingSeverity;
+  title: string;
+  plain_explanation: string;
+  fix_prompt: string;
+  manual_steps: string;
+  redacted_location: string | null;
+  created_at: string;
+};
+
+export type OwnershipProofRow = {
+  id: string;
+  user_id: string;
+  app_url: string;
+  method: string;
+  token: string;
+  verified_at: string | null;
+  created_at: string;
+};
+
+export type BadgeRow = {
+  id: string;
+  scan_id: string;
+  public_token: string;
+  created_at: string;
+};
+
 /**
  * An Insert type: the columns in `Req` are required, everything else (defaults
  * and nullables) is optional. Update is always a partial. Relationships is an
@@ -108,6 +157,10 @@ export interface Database {
       >;
       embeddings: Table<EmbeddingRow, "repo_id" | "path" | "chunk">;
       usage: Table<UsageRow, "install_id" | "month">;
+      scans: Table<ScanRow, "app_url">;
+      scan_findings: Table<ScanFindingRow, "scan_id" | "kind" | "severity" | "title">;
+      ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
+      badges: Table<BadgeRow, "scan_id" | "public_token">;
     };
     Views: Record<string, never>;
     Functions: {

@@ -8,8 +8,8 @@ import { getUser, toSessionUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
 
 const LINKS = [
-  { href: "/dashboard", label: "Repositories" },
-  { href: "/rules", label: "Rules" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/scan", label: "New scan" },
   { href: "/pricing", label: "Pricing" },
 ];
 
