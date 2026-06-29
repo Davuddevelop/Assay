@@ -94,6 +94,11 @@ export function supabaseConfig(): { url: string; anonKey: string; serviceKey: st
   return { url, anonKey, serviceKey };
 }
 
+/** The Anthropic API key, read directly so callers don't need the full env. */
+export function anthropicKey(): string | null {
+  return process.env.ANTHROPIC_API_KEY ?? null;
+}
+
 /** URL to install/configure the GitHub App on the user's repos. */
 export function githubAppInstallUrl(): string {
   return publicEnv.githubAppSlug

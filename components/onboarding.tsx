@@ -1,34 +1,32 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
-import { GitHubMark } from "@/components/icons";
 
 const STEPS = [
   {
     n: "1",
-    title: "Connect a repository",
-    body: "Install the GitHub App on a repo you want checked. You choose exactly which ones.",
+    title: "Paste your app's link",
+    body: "The live URL of an app you built with Lovable, Bolt, Replit, or v0.",
   },
   {
     n: "2",
-    title: "Write your rules (optional)",
-    body: "In plain language, tell Assay what must never happen — it checks every change against them.",
+    title: "Confirm it's yours",
+    body: "Add one tag to your app so we know you own it. We only ever scan your apps.",
   },
   {
     n: "3",
-    title: "Open a pull request",
-    body: "On each PR, Assay runs your tests, a security scan, and your rules.",
+    title: "Get your report",
+    body: "Every issue in plain English, with the exact prompt to paste back to fix it.",
   },
   {
     n: "4",
-    title: "Get the hallmark",
-    body: "✓ Assayed if it's sound, ⚠ Held if it breaks something — right on the PR, with the file and line.",
+    title: "Earn the hallmark",
+    body: "Once it's clean, get a 'Certified safe to publish' badge you can show off.",
   },
 ];
 
-/**
- * First-run experience for the empty dashboard. A clear, numbered path instead
- * of a dead-end empty state — so a brand-new user always knows the next move.
- */
-export function Onboarding({ installUrl }: { installUrl: string }) {
+/** First-run guide for the empty dashboard — points at the first scan. */
+export function Onboarding() {
   return (
     <div className="panel relative overflow-hidden p-8 sm:p-10">
       <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 -top-32 h-64 opacity-30" />
@@ -37,12 +35,8 @@ export function Onboarding({ installUrl }: { installUrl: string }) {
           Get started
         </p>
         <h2 className="mt-3 font-display text-2xl font-bold tracking-[-0.02em] text-ivory">
-          Strike your first hallmark in four steps
+          Check your first app in under a minute
         </h2>
-        <p className="mt-3 max-w-lg text-sm leading-relaxed text-ivory-dim">
-          It takes about a minute. Connect a repo and the next change you push
-          gets assayed automatically.
-        </p>
 
         <ol className="mt-8 grid gap-4 sm:grid-cols-2">
           {STEPS.map((step) => (
@@ -55,23 +49,22 @@ export function Onboarding({ installUrl }: { installUrl: string }) {
               </span>
               <div>
                 <p className="text-sm font-medium text-ivory">{step.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-ivory-dim">
-                  {step.body}
-                </p>
+                <p className="mt-1 text-sm leading-relaxed text-ivory-dim">{step.body}</p>
               </div>
             </li>
           ))}
         </ol>
 
-        <div className="mt-8">
-          <Button href={installUrl} variant="primary" size="lg">
-            <GitHubMark />
-            Connect a repository
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Button href="/scan" variant="primary" size="lg">
+            Scan my app
           </Button>
-          <p className="mt-3 font-mono text-xs text-ash">
-            GitHub will ask you to choose repositories and confirm — that&rsquo;s
-            normal. You&rsquo;ll come right back here.
-          </p>
+          <Link
+            href="/sample"
+            className="font-mono text-xs uppercase tracking-[0.14em] text-iris-soft hover:text-ivory"
+          >
+            See a sample report →
+          </Link>
         </div>
       </div>
     </div>

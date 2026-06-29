@@ -1,0 +1,61 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import { requireUser } from "@/lib/auth";
+import { assertScannableUrl } from "@/lib/scan/fetch";
+import {
+  createScan,
+  isOwnershipVerified,
+  verifyOwnership,
+} from "@/lib/data/scans";
+import { inngest, EVENTS } from "@/inngest/client";
+import { log } from "@/lib/log";
+
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+async function launch(userId: string, appUrl: string): Promise<never> {
+  const scanId = await createScan(userId, appUrl);
+  try {
+    await inngest.send({ name: EVENTS.scanRequested, data: { scanId } });
+  } catch {
+    // Inngest not configured yet — the scan stays queued; documented live gate.
+    log.warn("inngest send failed (scan queued)", { scanId });
+  }
+  redirect(`/scan/${scanId}`);
+}
+
+/** Submit a URL to scan. Routes through ownership verification first. */
+export async function startScan(formData: FormData) {
+  const user = await requireUser();
+  const appUrl = normalizeUrl(String(formData.get("url") ?? ""));
+
+  try {
+    await assertScannableUrl(appUrl);
+  } catch {
+    redirect(`/scan?error=url`);
+  }
+
+  if (!(await isOwnershipVerified(user.id, appUrl))) {
+    redirect(`/scan?url=${encodeURIComponent(appUrl)}&verify=1`);
+  }
+
+  await launch(user.id, appUrl);
+}
+
+/** Re-fetch the app, confirm the meta tag, then start the scan. */
+export async function confirmOwnership(formData: FormData) {
+  const user = await requireUser();
+  const appUrl = String(formData.get("url") ?? "");
+  if (!appUrl) redirect("/scan");
+
+  const ok = await verifyOwnership(user.id, appUrl);
+  if (!ok) {
+    redirect(`/scan?url=${encodeURIComponent(appUrl)}&verify=1&failed=1`);
+  }
+  await launch(user.id, appUrl);
+}
