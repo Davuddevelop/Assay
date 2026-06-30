@@ -14,7 +14,7 @@ This repository holds the Assay web frontend **and** the scan-engine backend.
 
 - Next.js (App Router) + TypeScript (strict)
 - Tailwind CSS v4 + shadcn/ui conventions; GSAP for motion
-- Fonts: Geist (display/body), JetBrains Mono (code/labels), Instrument Serif (accent)
+- Fonts: Fraunces (editorial serif display), Hanken Grotesk (body), JetBrains Mono (code/labels), Instrument Serif (accent)
 - Backend: Supabase (Postgres + RLS), Inngest (durable jobs), Anthropic SDK
   (Claude Sonnet 4.6 for plain-language explanations)
 

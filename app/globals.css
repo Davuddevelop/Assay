@@ -36,9 +36,10 @@
   /* The hallmark accent gradient (iris), used for struck marks and labels */
   --gradient-gold: linear-gradient(145deg, #c4b5fd 0%, #8b8bf0 52%, #5b7cf0 100%);
 
-  /* Type roles — Geist throughout (clean, minimal), JetBrains Mono for detail */
-  --font-display: var(--font-geist);
-  --font-sans: var(--font-geist);
+  /* Type roles — Fraunces (editorial serif display), Hanken Grotesk (body),
+     JetBrains Mono for detail, Instrument Serif for the italic accent. */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-hanken);
   --font-mono: var(--font-jetbrains-mono);
   --font-serif: var(--font-instrument-serif); /* editorial italic accent */
 
@@ -89,10 +90,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Geist headlines — tight tracking at display sizes. */
+  /* Fraunces display — optical sizing sharpens contrast at large sizes; a
+     gentle negative tracking tightens headlines without colliding serifs. */
   .font-display {
-    letter-spacing: -0.02em;
-    font-feature-settings: "ss01";
+    letter-spacing: -0.018em;
+    font-optical-sizing: auto;
   }
 
   /* A single, consistent gold focus ring on every interactive element. */
