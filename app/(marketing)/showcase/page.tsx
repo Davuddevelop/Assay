@@ -79,7 +79,7 @@ export default function ShowcasePage() {
         <div className="space-y-8">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Display — Geist
+              Display — Fraunces
             </p>
             <p className="mt-2 font-display text-5xl tracking-[-0.02em] text-ivory">
               <span className="font-bold">Certified,</span>{" "}
@@ -88,7 +88,7 @@ export default function ShowcasePage() {
           </div>
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Body — Geist
+              Body — Hanken Grotesk
             </p>
             <p className="mt-2 max-w-xl text-base leading-relaxed text-ivory-dim">
               Sentence case, quiet, readable. The body voice is understated and

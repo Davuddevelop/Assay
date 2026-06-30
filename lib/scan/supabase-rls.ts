@@ -5,6 +5,8 @@ import { assertScannableUrl } from "@/lib/scan/fetch";
 import {
   detectSupabase,
   decodeJwtRole,
+  tablesFromOpenApi,
+  isExposedResponse,
   type SupabaseRef,
 } from "@/lib/scan/supabase-detect";
 
@@ -70,14 +72,7 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
 
   // List tables from the PostgREST OpenAPI root.
   const root = await getJson(`${ref.url}/rest/v1/`, ref.anonKey);
-  const paths =
-    root.body && typeof root.body === "object" && "paths" in root.body
-      ? Object.keys((root.body as { paths: Record<string, unknown> }).paths)
-      : [];
-  const tables = paths
-    .map((p) => p.replace(/^\//, ""))
-    .filter((t) => t && !t.startsWith("rpc/"))
-    .slice(0, MAX_TABLES);
+  const tables = tablesFromOpenApi(root.body).slice(0, MAX_TABLES);
 
   const exposed: string[] = [];
   for (const table of tables) {
@@ -87,9 +82,7 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
     );
     // Rows returned to an unauthenticated request → RLS is not protecting it.
     // We use ONLY the array length; the data itself is discarded.
-    if (res.status === 200 && Array.isArray(res.body) && res.body.length > 0) {
-      exposed.push(table);
-    }
+    if (isExposedResponse(res.status, res.body)) exposed.push(table);
   }
 
   if (exposed.length > 0) {

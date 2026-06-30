@@ -2,7 +2,13 @@ import { describe, it, expect } from "vitest";
 
 import { scanText } from "@/lib/scan/patterns";
 import { isPrivateIp } from "@/lib/scan/ssrf";
-import { detectSupabase, decodeJwtRole } from "@/lib/scan/supabase-detect";
+import {
+  detectSupabase,
+  decodeJwtRole,
+  tablesFromOpenApi,
+  isExposedResponse,
+} from "@/lib/scan/supabase-detect";
+import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
 import { scoreFindings } from "@/lib/scan/score";
 import { checkHeaders } from "@/lib/scan/headers";
 
@@ -51,6 +57,57 @@ describe("supabase detection", () => {
   it("decodes the JWT role", () => {
     const payload = Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url");
     expect(decodeJwtRole(`eyJhbGciOiJIUzI1NiJ9.${payload}.sig`)).toBe("service_role");
+  });
+});
+
+describe("bundle discovery (where the anon key actually hides)", () => {
+  it("finds script src, modulepreload, and preload-as-script chunks", () => {
+    const html = `
+      <link rel="modulepreload" href="/assets/supabase-9f8.js">
+      <link rel="preload" as="script" href="/assets/vendor-1a2.js">
+      <link rel="stylesheet" href="/assets/index.css">
+      <link rel="icon" href="/favicon.ico">
+      <script type="module" src="/assets/index-abc.js"></script>
+    `;
+    const urls = discoverBundleUrls(html);
+    expect(urls).toContain("/assets/index-abc.js");
+    expect(urls).toContain("/assets/supabase-9f8.js");
+    expect(urls).toContain("/assets/vendor-1a2.js");
+    // not the stylesheet or the icon
+    expect(urls).not.toContain("/assets/index.css");
+    expect(urls).not.toContain("/favicon.ico");
+  });
+
+  it("does not invent bundles for clean HTML", () => {
+    expect(discoverBundleUrls("<html><body>hi</body></html>")).toEqual([]);
+  });
+
+  it("follows one level of in-JS chunk imports under build dirs", () => {
+    const js = `import("/assets/supabase-client-77.js");a="/_next/static/chunks/42.js";b="https://cdn.tld/x.js";c="notes.js"`;
+    const refs = discoverChunkRefs(js);
+    expect(refs).toContain("/assets/supabase-client-77.js");
+    expect(refs).toContain("/_next/static/chunks/42.js");
+    // bare / third-party paths without a build dir are ignored (low noise)
+    expect(refs).not.toContain("notes.js");
+  });
+});
+
+describe("RLS exposure decision (the make-or-break logic)", () => {
+  it("enumerates tables from the PostgREST OpenAPI, dropping root + rpc", () => {
+    const spec = { paths: { "/": {}, "/profiles": {}, "/orders": {}, "/rpc/do_thing": {} } };
+    expect(tablesFromOpenApi(spec)).toEqual(["profiles", "orders"]);
+  });
+
+  it("returns no tables for a non-spec body", () => {
+    expect(tablesFromOpenApi(null)).toEqual([]);
+    expect(tablesFromOpenApi({ message: "JWT expired" })).toEqual([]);
+  });
+
+  it("flags a table only when an unauth read returns rows", () => {
+    expect(isExposedResponse(200, [{ id: 1 }])).toBe(true); // RLS off → exposed
+    expect(isExposedResponse(200, [])).toBe(false); // empty → protected/empty
+    expect(isExposedResponse(401, { message: "no" })).toBe(false); // blocked
+    expect(isExposedResponse(200, { count: 1 })).toBe(false); // not an array
   });
 });
 

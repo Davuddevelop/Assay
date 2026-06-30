@@ -102,7 +102,7 @@ export function Hero() {
           For apps built with Lovable, Bolt, Replit &amp; v0
         </p>
 
-        <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-semibold leading-[1.03] tracking-[-0.035em] text-ivory sm:text-7xl">
+        <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl">
           <span className="hero-word inline-block">Is</span>{" "}
           <span className="hero-word inline-block">your</span>{" "}
           <span className="hero-word inline-block">app</span>{" "}
