@@ -1,29 +1,27 @@
 const STACK = [
-  "TypeScript",
-  "Python",
-  "Go",
-  "Rust",
-  "Node.js",
+  "Lovable",
+  "Bolt",
+  "Replit",
+  "v0",
+  "Supabase",
+  "Vercel",
   "Next.js",
   "React",
-  "pytest",
-  "Jest",
-  "Vitest",
-  "GitHub Actions",
-  "ESLint",
-  "Ruby",
-  "Java",
+  "Firebase",
+  "Stripe",
+  "Netlify",
+  "Cursor",
 ];
 
 /**
- * A quiet, infinitely-scrolling strip of the stacks Assay checks — movement
+ * A quiet, infinitely-scrolling strip of the builders Assay scans — movement
  * and credibility in one band. Pauses under reduced-motion.
  */
 export function StackStrip() {
   return (
     <section className="border-y border-line py-10">
       <p className="mb-6 text-center font-mono text-xs uppercase tracking-[0.2em] text-ash">
-        Works with your stack
+        Scans apps built with
       </p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
         {/* Two identical copies; each cell carries equal trailing space (pr-12)

@@ -66,10 +66,10 @@ const I = {
   ),
 };
 
-const RULES = [
-  { text: "never log card data", held: false },
-  { text: "all API routes require auth", held: false },
-  { text: "no secrets in source", held: true },
+const TABLES = [
+  { text: "profiles — open to the public", held: true },
+  { text: "orders — open to the public", held: true },
+  { text: "messages — protected", held: false },
 ];
 
 export function FeatureBento() {
@@ -79,7 +79,7 @@ export function FeatureBento() {
         <Reveal>
           <Eyebrow label="What it checks" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
-            Three reads on every change, then one{" "}
+            The holes vibe-coded apps ship with, then one honest{" "}
             <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
               mark
             </span>
@@ -89,20 +89,20 @@ export function FeatureBento() {
 
         <Reveal delay={90}>
           <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-6">
-            {/* Rules — the differentiator, given the room */}
+            {/* Open database — the #1 failure, given the room */}
             <Cell
               className="md:col-span-4"
-              icon={I.rules}
-              label="Your rules"
-              title="The rules you wrote, in plain language"
-              body="Assay holds each change against your .assay rules — the conventions you'd otherwise have to catch by eye in every review."
+              icon={I.security}
+              label="Open database"
+              title="Your database, locked down"
+              body="The most common vibe-coding failure: Supabase row-level security left off, so anyone can read — or change — every user's data. Assay probes it the safe, read-only way and tells you what's exposed."
             >
               <div className="overflow-hidden rounded-[var(--radius-control)] border border-line bg-onyx">
                 <div className="border-b border-line px-4 py-2 font-mono text-xs text-ash">
-                  .assay/rules
+                  your tables
                 </div>
                 <ul className="divide-y divide-line/70">
-                  {RULES.map((r) => (
+                  {TABLES.map((r) => (
                     <li
                       key={r.text}
                       className="flex items-center justify-between gap-3 px-4 py-2.5 font-mono text-xs"
@@ -114,7 +114,7 @@ export function FeatureBento() {
                           r.held ? "text-oxblood-soft" : "text-ivory-dim",
                         )}
                       >
-                        {r.held ? "held" : "ok"}
+                        {r.held ? "exposed" : "ok"}
                       </span>
                     </li>
                   ))}
@@ -122,36 +122,31 @@ export function FeatureBento() {
               </div>
             </Cell>
 
-            {/* Tests */}
+            {/* Exposed secrets */}
             <Cell
               className="md:col-span-2"
               icon={I.tests}
-              label="Your tests"
-              title="Your suite, run for real"
-              body="The change has to pass the tests your repo already defines."
+              label="Exposed secrets"
+              title="Keys that shouldn't ship"
+              body="Secret keys, Stripe keys, and tokens hiding in your app's code — found and flagged, never stored."
             >
-              <div className="flex items-baseline gap-2">
-                <CountUp to={42} className="font-display text-5xl text-ivory" />
-                <span className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-                  / 42 passed
-                </span>
+              <div className="rounded-[var(--radius-control)] border border-oxblood/40 bg-oxblood/5 px-3 py-2.5 font-mono text-xs text-oxblood-soft">
+                sk_live_••••••••••••  exposed
               </div>
             </Cell>
 
-            {/* Security */}
+            {/* Safety score */}
             <Cell
               className="md:col-span-2"
-              icon={I.security}
-              label="Security scan"
-              title="Nothing unsafe ships"
-              body="Secrets, injection, and the patterns that quietly leak."
+              icon={I.rules}
+              label="Safety score"
+              title="One number to act on"
+              body="Every finding rolls up into a single score, worst issues first."
             >
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-border text-sm text-ivory-dim">
-                  ✓
-                </span>
-                <span className="font-mono text-xs text-ivory-dim">
-                  no issues found
+              <div className="flex items-baseline gap-2">
+                <CountUp to={92} className="font-display text-5xl text-ivory" />
+                <span className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
+                  / 100
                 </span>
               </div>
             </Cell>
@@ -161,8 +156,8 @@ export function FeatureBento() {
               className="md:col-span-4"
               icon={I.hallmark}
               label="The hallmark"
-              title="One mark you can trust"
-              body="Sound work is Assayed. Anything that breaks a test or a rule is Held — never a vague green light."
+              title="Safe to publish, proven"
+              body="No critical or risky issues? Your app earns the hallmark — a public badge you can share. Anything unsafe is Held, with the exact fix."
             >
               <div className="flex flex-wrap items-center gap-3">
                 <HallmarkStamp state="assayed" animate={false} />

@@ -15,10 +15,16 @@ export const metadata: Metadata = {
 export default async function ScanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ url?: string; verify?: string; error?: string; failed?: string }>;
+  searchParams: Promise<{
+    url?: string;
+    verify?: string;
+    error?: string;
+    failed?: string;
+    prefill?: string;
+  }>;
 }) {
   const user = await requireUser();
-  const { url, verify, error, failed } = await searchParams;
+  const { url, verify, error, failed, prefill } = await searchParams;
 
   // Step 2 — ownership verification.
   if (verify && url) {
@@ -89,6 +95,7 @@ export default async function ScanPage({
         <div className="glass flex items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5">
           <input
             name="url"
+            defaultValue={prefill ?? ""}
             inputMode="url"
             autoComplete="off"
             placeholder="yourapp.lovable.app"

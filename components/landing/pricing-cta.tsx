@@ -13,22 +13,23 @@ export function PricingCta() {
             />
             <div className="relative flex flex-col items-center">
               <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl">
-                Strike your first{" "}
+                Is your app safe to{" "}
                 <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
-                  hallmark
+                  publish
                 </span>
-                .
+                ?
               </h2>
               <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ivory-dim">
-                Free for solo work. Connect a repository and see the next change
-                assayed — it takes about a minute to set up.
+                Free to find out. Paste your app&rsquo;s link and get your first
+                report — issues in plain language, with the exact fix — in about a
+                minute.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button href="/login" variant="primary" size="lg">
-                  Connect a repo
+                <Button href="/scan" variant="primary" size="lg">
+                  Scan my app
                 </Button>
-                <Button href="/pricing" variant="ghost" size="lg">
-                  See pricing
+                <Button href="/sample" variant="ghost" size="lg">
+                  See a sample report
                 </Button>
               </div>
             </div>

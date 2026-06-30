@@ -3,16 +3,20 @@ import { notFound } from "next/navigation";
 
 import { ScanReport } from "@/components/scan/scan-report";
 import { ScanPoller } from "@/components/scan/scan-poller";
+import { BadgeShare } from "@/components/scan/badge-share";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { getScan, getScanFindings } from "@/lib/data/scans";
 
 export default async function ScanReportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ badge?: string }>;
 }) {
   const { id } = await params;
+  const { badge } = await searchParams;
   const scan = await getScan(id);
   if (!scan) notFound();
 
@@ -62,7 +66,15 @@ export default async function ScanReportPage({
         ← Dashboard
       </Link>
       <div className="mt-6">
-        <ScanReport scan={scan} findings={findings} />
+        <ScanReport
+          scan={scan}
+          findings={findings}
+          badgeSlot={
+            scan.verdict === "certified" ? (
+              <BadgeShare scanId={scan.id} token={badge} />
+            ) : undefined
+          }
+        />
       </div>
       <div className="mt-8 flex justify-center">
         <Button href="/scan" variant="ghost" size="md">

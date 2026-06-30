@@ -5,21 +5,21 @@ import { Eyebrow } from "@/components/section-heading";
 
 export const metadata: Metadata = {
   title: "Docs — Assay",
-  description: "How Assay checks your code and strikes the hallmark.",
+  description: "How Assay checks your app and strikes the hallmark.",
 };
 
 const STEPS = [
   {
-    title: "1. Install the GitHub App",
-    body: "Add Assay to the repositories you want checked. It reads the repos you select and the checks they define — nothing else.",
+    title: "1. Paste your app's link",
+    body: "Sign in, then drop in the URL of your live app — the one built with Lovable, Bolt, Replit, or v0. No install, no code to touch.",
   },
   {
-    title: "2. Write your rules",
-    body: "In plain language, tell Assay what must never happen — “never log card data”, “all API routes require auth”. It checks every change against them.",
+    title: "2. Confirm you own it",
+    body: "Add the one-line verification tag we give you to your app and republish. In your builder, just say: “add this exact tag to the page head.” Assay only scans apps you own.",
   },
   {
-    title: "3. Open a pull request",
-    body: "On each push Assay runs your tests, a security scan, and your rules, then posts a Check Run and a single comment: ✓ Assayed or ⚠ Held, with the file and line.",
+    title: "3. Get your report and fixes",
+    body: "Assay checks for exposed keys, an open database (Supabase RLS), and missing protections — then explains each issue in plain language with the exact prompt to paste back. Clean apps earn the hallmark: ✓ Safe to publish or ⚠ Held.",
   },
 ];
 
@@ -31,8 +31,8 @@ export default function DocsPage() {
         Getting started
       </h1>
       <p className="mt-5 text-base leading-relaxed text-ivory-dim">
-        Assay is an independent checkpoint for the code you ship with AI. Three
-        steps to your first hallmark.
+        Assay is a security checkpoint for apps built with AI. Three steps to
+        your first hallmark.
       </p>
 
       <div className="mt-12 space-y-8">
@@ -46,8 +46,8 @@ export default function DocsPage() {
 
       <p className="mt-12 text-sm text-ash">
         Ready?{" "}
-        <Link href="/login" className="text-iris-soft hover:text-ivory">
-          Connect a repository →
+        <Link href="/scan" className="text-iris-soft hover:text-ivory">
+          Scan your app →
         </Link>
       </p>
     </div>

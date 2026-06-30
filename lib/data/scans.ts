@@ -101,6 +101,32 @@ export async function verifyOwnership(userId: string, appUrl: string): Promise<b
   return true;
 }
 
+/**
+ * Create (or fetch) the public badge token for a scan. Only works for a scan
+ * the caller owns that earned a "certified" verdict.
+ */
+export async function ensureBadge(scanId: string): Promise<string | null> {
+  const userDb = await createClient();
+  const { data: scan } = await userDb
+    .from("scans")
+    .select("id, verdict")
+    .eq("id", scanId)
+    .maybeSingle();
+  if (!scan || scan.verdict !== "certified") return null;
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("badges")
+    .select("public_token")
+    .eq("scan_id", scanId)
+    .maybeSingle();
+  if (existing) return existing.public_token;
+
+  const token = `badge-${randomBytes(9).toString("hex")}`;
+  await admin.from("badges").insert({ scan_id: scanId, public_token: token });
+  return token;
+}
+
 // ── public badge report (service role, by token) ──────────────────────────────
 export async function getBadgeReport(
   publicToken: string,

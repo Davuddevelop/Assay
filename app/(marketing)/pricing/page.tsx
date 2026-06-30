@@ -30,8 +30,8 @@ export default function PricingPage() {
             .
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-ivory-dim">
-            Start free on a single repo. Upgrade when Assay is part of how you
-            work. No seat minimums, cancel anytime.
+            Start free with your first app. Upgrade when Assay is part of how you
+            ship. No seat minimums, cancel anytime.
           </p>
         </div>
       </Reveal>
@@ -41,8 +41,9 @@ export default function PricingPage() {
       </div>
 
       <p className="mx-auto mt-12 max-w-md text-center text-sm text-ash">
-        Every plan runs your tests, a security scan, and your own rules — then
-        strikes the hallmark. Checks reset on the first of each month.
+        Every plan scans for exposed keys, an open database, and missing
+        protections — then strikes the hallmark. Scans reset on the first of each
+        month.
       </p>
     </div>
   );
