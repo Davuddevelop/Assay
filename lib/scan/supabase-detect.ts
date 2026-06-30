@@ -13,6 +13,29 @@ export function detectSupabase(text: string): SupabaseRef | null {
   return { url, anonKey };
 }
 
+/**
+ * Table names exposed by a PostgREST OpenAPI root (`/rest/v1/`). The spec lists
+ * every table as a path regardless of RLS, so this is how we enumerate what to
+ * probe. We drop the root path and `rpc/*` (stored procedures, not tables). Pure.
+ */
+export function tablesFromOpenApi(body: unknown): string[] {
+  if (!body || typeof body !== "object" || !("paths" in body)) return [];
+  const paths = (body as { paths: Record<string, unknown> }).paths;
+  if (!paths || typeof paths !== "object") return [];
+  return Object.keys(paths)
+    .map((p) => p.replace(/^\//, ""))
+    .filter((t) => t.length > 0 && !t.startsWith("rpc/"));
+}
+
+/**
+ * Whether an unauthenticated table read came back with data — the signal that
+ * RLS is off or misconfigured. We look ONLY at the shape (200 + non-empty
+ * array); the row contents are never inspected or stored. Pure.
+ */
+export function isExposedResponse(status: number, body: unknown): boolean {
+  return status === 200 && Array.isArray(body) && body.length > 0;
+}
+
 /** Decode a JWT's `role` claim without verifying (we only read it). Pure. */
 export function decodeJwtRole(jwt: string): string | null {
   const parts = jwt.split(".");

@@ -3,6 +3,7 @@ import "server-only";
 import { lookup } from "node:dns/promises";
 
 import { isPrivateIp } from "@/lib/scan/ssrf";
+import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
 
 /**
  * SSRF-safe fetching of a user-submitted app URL. We only ever scan a public
@@ -13,7 +14,7 @@ import { isPrivateIp } from "@/lib/scan/ssrf";
 const FETCH_TIMEOUT_MS = 10_000;
 const MAX_HTML_BYTES = 3_000_000;
 const MAX_BUNDLE_BYTES = 1_500_000;
-const MAX_BUNDLES = 10;
+const MAX_BUNDLES = 12;
 
 /** Validate a URL is a public http(s) target, resolving DNS. Throws if not. */
 export async function assertScannableUrl(rawUrl: string): Promise<URL> {
@@ -89,22 +90,41 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
   const headers: Record<string, string> = {};
   main.headers.forEach((v, k) => (headers[k] = v));
 
-  // Discover <script src> bundle URLs and inline module imports.
-  const srcs = [...main.text.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(
-    (m) => m[1],
-  );
+  // Crawl the JS the app ships: <script src> + preloaded module chunks from the
+  // HTML, then one level of chunk-to-chunk imports found inside those bundles —
+  // the Supabase anon key commonly lives in a preloaded or secondary chunk.
   const bundles: { url: string; content: string }[] = [];
-  for (const src of srcs.slice(0, MAX_BUNDLES)) {
-    let abs: string;
+  const seen = new Set<string>();
+  const queue: string[] = [];
+  const enqueue = (ref: string, base: string) => {
     try {
-      abs = new URL(src, url).toString();
+      queue.push(new URL(ref, base).toString());
     } catch {
-      continue;
+      /* unresolvable ref */
     }
+  };
+
+  for (const src of discoverBundleUrls(main.text)) enqueue(src, url.toString());
+
+  while (queue.length > 0 && bundles.length < MAX_BUNDLES) {
+    const abs = queue.shift()!;
+    if (seen.has(abs)) continue;
+    seen.add(abs);
     try {
-      await assertScannableUrl(abs); // re-guard every fetched URL
+      await assertScannableUrl(abs); // re-guard every fetched URL (SSRF)
       const b = await fetchBounded(abs, MAX_BUNDLE_BYTES);
       bundles.push({ url: abs, content: b.text });
+      // Follow deeper chunk imports, but only same-origin (the app's own code).
+      for (const ref of discoverChunkRefs(b.text)) {
+        const resolved = (() => {
+          try {
+            return new URL(ref, abs);
+          } catch {
+            return null;
+          }
+        })();
+        if (resolved && resolved.origin === url.origin) enqueue(resolved.toString(), abs);
+      }
     } catch {
       // skip unreachable / blocked bundles
     }
