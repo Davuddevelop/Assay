@@ -87,6 +87,14 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
   const url = await assertScannableUrl(rawUrl);
   const main = await fetchBounded(url.toString(), MAX_HTML_BYTES);
 
+  // Never certify an error/placeholder page: if the app didn't return a real
+  // 200, we couldn't actually reach it — surface that instead of a false pass.
+  if (main.status >= 400) {
+    throw new Error(
+      `We couldn't reach that app — it returned HTTP ${main.status}. Check the URL is live and public.`,
+    );
+  }
+
   const headers: Record<string, string> = {};
   main.headers.forEach((v, k) => (headers[k] = v));
 
