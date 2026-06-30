@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import {
   createScan,
+  ensureBadge,
   isOwnershipVerified,
   verifyOwnership,
 } from "@/lib/data/scans";
@@ -58,4 +59,19 @@ export async function confirmOwnership(formData: FormData) {
     redirect(`/scan?url=${encodeURIComponent(appUrl)}&verify=1&failed=1`);
   }
   await launch(user.id, appUrl);
+}
+
+/**
+ * Mint (or fetch) the public badge for a certified scan, then return to the
+ * report with the shareable link revealed. Ownership + verdict are re-checked
+ * server-side in `ensureBadge` — this can't badge a scan you don't own.
+ */
+export async function createBadgeAction(formData: FormData) {
+  await requireUser();
+  const scanId = String(formData.get("scanId") ?? "");
+  if (!scanId) redirect("/dashboard");
+
+  const token = await ensureBadge(scanId);
+  if (!token) redirect(`/scan/${scanId}`);
+  redirect(`/scan/${scanId}?badge=${encodeURIComponent(token)}`);
 }

@@ -36,20 +36,20 @@ const STEPS = [
   {
     n: "01",
     icon: I.connect,
-    title: "Connect your repo",
-    body: "Sign in with GitHub and point Assay at a repository. No config to write — it reads your tests and your rules.",
+    title: "Paste your link",
+    body: "Drop in the URL of your live app. No install, no code to touch — Assay reads it the way the public does.",
   },
   {
     n: "02",
     icon: I.scan,
-    title: "It checks every change",
-    body: "On each push, Assay runs your test suite, a security scan, and a review against the rules you wrote in plain language.",
+    title: "Confirm it's yours",
+    body: "Add a one-line tag we give you so we know you own the app. Then Assay checks it for exposed keys, an open database, and missing protections.",
   },
   {
     n: "03",
     icon: I.strike,
-    title: "It strikes the hallmark",
-    body: "Sound work is marked Assayed. Anything that breaks a test or a rule is Held — with the file, the line, and a plain explanation.",
+    title: "Get your report + fixes",
+    body: "Every issue is explained in plain language — with the exact prompt to paste back into your builder. Clean apps earn the hallmark.",
   },
 ];
 
@@ -112,7 +112,7 @@ export function HowItWorks() {
         <Reveal>
           <Eyebrow label="How it works" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
-            Three steps, then it stays out of your way.
+            Three steps, no code required.
           </h2>
         </Reveal>
 

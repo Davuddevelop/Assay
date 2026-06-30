@@ -23,9 +23,9 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Assay — Certified, not assumed.",
+  title: "Assay — Is your app safe to publish?",
   description:
-    "An independent checkpoint for AI-written code. Assay runs your tests, a security scan, and a review against your own rules — then strikes the hallmark.",
+    "A security checkpoint for apps built with Lovable, Bolt, Replit, and v0. Assay finds exposed keys, an open database, and missing protections — then hands you the exact fix and the hallmark.",
 };
 
 export default function RootLayout({

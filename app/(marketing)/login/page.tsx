@@ -26,8 +26,8 @@ export default function LoginPage() {
 
       <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">
-        Connect your GitHub to begin. Assay reads the repositories you choose and
-        the checks it runs — nothing else.
+        Sign in with GitHub to begin. Then paste the link to an app you own and
+        Assay will check it for security issues — nothing else.
       </p>
 
       <Suspense fallback={null}>
@@ -47,8 +47,8 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-6 font-mono text-xs leading-relaxed text-ash">
-        You grant read access to the repositories you select. Revoke it anytime
-        from GitHub.
+        We use GitHub only to sign you in — no access to your repositories.
+        Revoke it anytime from GitHub.
       </p>
 
       <Link

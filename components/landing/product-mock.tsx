@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 
 const CHECKS = [
-  { label: "Tests", value: "42 passed" },
-  { label: "Security", value: "No issues" },
-  { label: "Rules", value: "3 of 3 held" },
+  { label: "Secrets", value: "None exposed" },
+  { label: "Database", value: "RLS enforced" },
+  { label: "Headers", value: "All present" },
 ];
 
 /**
@@ -61,7 +61,7 @@ export function ProductMock({ className }: { className?: string }) {
           <span className="h-3 w-3 rounded-full bg-border-strong" />
         </div>
         <div className="flex h-7 flex-1 items-center justify-center rounded-pill bg-onyx/60 px-4 font-mono text-xs text-ash">
-          assay.dev/davud/checkout/checks/8f21a3c
+          assay.dev/report/my-saas.lovable.app
         </div>
       </div>
 
@@ -70,10 +70,10 @@ export function ProductMock({ className }: { className?: string }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ash">
-              Check · feat/idempotency-key
+              Scan · my-saas.lovable.app
             </p>
             <h3 className="mt-2 text-lg font-semibold leading-snug text-ivory">
-              Add idempotency key to checkout
+              Safe to publish
             </h3>
           </div>
           {/* the hallmark strikes once the checks resolve */}
@@ -102,7 +102,7 @@ export function ProductMock({ className }: { className?: string }) {
         </div>
 
         <p className="mt-5 text-sm leading-relaxed text-ivory-dim">
-          Every check your repository defines passed. The change is sound.
+          No critical or risky issues found. This app earned the hallmark.
         </p>
       </div>
     </div>

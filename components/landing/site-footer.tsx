@@ -25,8 +25,8 @@ export function SiteFooter() {
           <div className="max-w-xs">
             <Wordmark />
             <p className="mt-4 text-sm leading-relaxed text-ash">
-              An independent checkpoint for AI-written code. A mark struck on
-              work that&rsquo;s sound.
+              A security checkpoint for apps built with AI. A mark struck on work
+              that&rsquo;s safe to publish.
             </p>
           </div>
 

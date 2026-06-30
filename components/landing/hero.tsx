@@ -1,14 +1,22 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
-import { GitHubMark } from "@/components/icons";
 import { ProductMock } from "@/components/landing/product-mock";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
+  const router = useRouter();
+  const [url, setUrl] = useState("");
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = url.trim();
+    router.push(trimmed ? `/scan?prefill=${encodeURIComponent(trimmed)}` : "/scan");
+  }
 
   useGSAP(
     () => {
@@ -91,37 +99,47 @@ export function Hero() {
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
             New
           </span>
-          Independent checks for AI-written code
+          For apps built with Lovable, Bolt, Replit &amp; v0
         </p>
 
         <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-semibold leading-[1.03] tracking-[-0.035em] text-ivory sm:text-7xl">
-          <span className="hero-word inline-block">Certified,</span>{" "}
-          <span className="hero-word inline-block">not</span>{" "}
+          <span className="hero-word inline-block">Is</span>{" "}
+          <span className="hero-word inline-block">your</span>{" "}
+          <span className="hero-word inline-block">app</span>{" "}
           <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
-            assumed.
-          </span>
+            safe
+          </span>{" "}
+          <span className="hero-word inline-block">to</span>{" "}
+          <span className="hero-word inline-block">publish?</span>
         </h1>
 
-        <p className="hero-sub mx-auto mt-6 max-w-lg text-base leading-relaxed text-ivory-dim sm:text-lg">
-          An independent checkpoint for the code you ship with AI — your tests, a
-          security scan, and your own rules, then the hallmark.
+        <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
+          You built it with AI and wired it to real users and payments. Before you
+          ship, Assay finds the security holes vibe-coded apps leak with — and hands
+          you the exact fix to paste back into your builder.
         </p>
 
         <div className="hero-cta mt-9">
-          {/* glassy connect-a-repo field */}
-          <div className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5">
-            <GitHubMark className="h-4 w-4 shrink-0 text-ash" />
+          {/* glassy URL scan field */}
+          <form
+            onSubmit={onSubmit}
+            className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5"
+          >
             <input
-              aria-label="Repository URL"
-              placeholder="github.com/you/your-repo"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              inputMode="url"
+              autoComplete="off"
+              aria-label="Your app URL"
+              placeholder="yourapp.lovable.app"
               className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
             />
-            <Button href="/login" variant="primary" size="sm">
-              Connect
+            <Button type="submit" variant="primary" size="sm">
+              Scan my app
             </Button>
-          </div>
+          </form>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            {["Your tests", "Security scan", "Your rules", "AI review"].map(
+            {["Exposed keys", "Open database", "Missing protections", "Plain-language fixes"].map(
               (chip) => (
                 <span
                   key={chip}
@@ -133,6 +151,12 @@ export function Hero() {
               ),
             )}
           </div>
+          <a
+            href="/sample"
+            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft transition-colors hover:text-ivory"
+          >
+            See a sample report →
+          </a>
         </div>
 
         {/* the product, framed, centered, on its aurora */}

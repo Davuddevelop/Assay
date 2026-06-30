@@ -1,19 +1,22 @@
 # Assay
 
-An independent checkpoint for AI-written code. Assay connects to your GitHub and,
-on every change, runs your tests, a security scan, and a review against your own
-rules — then strikes a **hallmark**: ✓ Assayed (sound) or ⚠ Held (looks right, but
-breaks something).
+A security checkpoint for apps built with **Lovable, Bolt, Replit, and v0**. You
+paste the link to an app **you own**; Assay scans it for the security holes
+vibe-coded apps ship with — an exposed key in the browser, a Supabase database
+left open to the public, missing protections — explains each one in plain
+language, and hands you the **exact prompt to paste back into your builder** to
+fix it. Clean apps earn a **hallmark**: ✓ Safe to publish or ⚠ Held, with a
+public, shareable badge.
 
-This repository holds the Assay web frontend **and** the verdict-engine backend.
+This repository holds the Assay web frontend **and** the scan-engine backend.
 
 ## Stack
 
 - Next.js (App Router) + TypeScript (strict)
-- Tailwind CSS v4 + shadcn/ui conventions
+- Tailwind CSS v4 + shadcn/ui conventions; GSAP for motion
 - Fonts: Geist (display/body), JetBrains Mono (code/labels), Instrument Serif (accent)
-- Backend: Supabase (Postgres + RLS + pgvector), GitHub App (Octokit), Inngest
-  (durable jobs), Anthropic SDK (Claude Sonnet 4.6)
+- Backend: Supabase (Postgres + RLS), Inngest (durable jobs), Anthropic SDK
+  (Claude Sonnet 4.6 for plain-language explanations)
 
 ## Develop
 
@@ -23,6 +26,8 @@ npm run dev      # http://localhost:3000
 ```
 
 - `/` — landing page
+- `/sample` — a seeded demo report (works with no keys — the demo never fails)
+- `/scan` — submit a URL → confirm ownership → scan
 - `/showcase` — the design system: tokens, type roles, and the components
 
 ## Checks
@@ -30,131 +35,118 @@ npm run dev      # http://localhost:3000
 ```bash
 npm run lint        # eslint
 npm run typecheck   # tsc --noEmit
-npm run test        # vitest (verdict engine, signature, parsing, crypto, redaction)
+npm run test        # vitest (scan patterns, SSRF guard, scoring, detection)
 npm run build       # production build
 ```
 
-## Backend — the verdict engine
+## Backend — the scan engine
 
-On a pull request, Assay runs a check against the changed code and posts a
-verdict back to GitHub: a **Check Run** (✓ Assayed / ⚠ Held) and a single
-plain-language PR comment.
+A scan is a durable async job. The user submits a URL for an app they've
+verified they own; Assay fetches it the way the public does, runs detection-only
+checks, scores the result, and turns raw findings into plain-language fixes.
 
 ### Architecture
 
 ```
-GitHub PR ─▶ /api/webhooks/github ─▶ (verify signature, <1s) ─▶ Inngest event
-                                                                    │
-                          ┌─────────────────────────────────────────┘
-                          ▼
-            inngest/functions/run-check.ts (durable, step-by-step)
-              1. load repo + installation
-              2. enforce monthly usage limit  (lib/usage.ts → consume_usage RPC)
-              3. record a running check
-              4. fetch the PR diff             (lib/github/diff.ts)
-              5. THREE check sources, aggregated:
-                   • security scan   (lib/security/scan.ts — inline, deterministic)
-                   • AI review       (lib/anthropic/review.ts, Sonnet 4.6) with
-                                     repo context retrieved via embeddings
-                                     (lib/embeddings, pgvector)
-                   • sandboxed tests (lib/sandbox → E2B, off our infra)
-              6. decide the hallmark            (lib/verdict.ts, pure)
-              7. persist findings + verdict
-              8. post Check Run + PR comment    (lib/github/{checks,comments}.ts)
+/scan (URL + ownership) ─▶ createScan ─▶ Inngest event (app/scan.requested)
+                                              │
+                    ┌──────────────────────────┘
+                    ▼
+        inngest/functions/run-scan.ts (durable, step-by-step)
+          1. mark the scan running
+          2. fetch the app, SSRF-guarded     (lib/scan/fetch.ts)
+          3. run detection-only checks        (lib/scan/run.ts):
+               • exposed secrets in HTML + JS bundles   (lib/scan/patterns.ts — redacted)
+               • Supabase RLS exposure, read-only probe  (lib/scan/supabase-rls.ts)
+               • missing security headers                (lib/scan/headers.ts)
+          4. score + verdict                  (lib/scan/score.ts, pure)
+          5. plain-language + paste-back fixes (lib/anthropic/explain.ts, Sonnet 4.6)
+          6. persist findings + score + verdict
 ```
 
-The AI review and sandbox test run execute as parallel durable steps; each
-source degrades gracefully when its optional dependency (Voyage embeddings /
-E2B sandbox) isn't configured. Installations are kept in sync by
-`inngest/functions/sync-install.ts` (encrypted token + repos), which also
-enqueues `index-repo` to embed each repo for retrieval.
+The Claude layer (`lib/anthropic/explain.ts`) turns each raw finding into
+`{ title, plain_explanation, fix_prompt, manual_steps[] }` via structured
+output (`zodOutputFormat`). Without an `ANTHROPIC_API_KEY` it falls back to the
+raw finding text, so scans still complete. A seeded **demo report**
+(`lib/scan/demo.ts`, surfaced at `/sample`) renders end-to-end with no keys at
+all.
+
+### Ethics & safety (non-negotiable, built in)
+
+- **Scan only apps you own.** Every non-demo scan requires **ownership
+  verification**: the user adds a one-time `<meta name="assay-verify"
+  content="…">` tag to their app and we re-fetch to confirm it
+  (`lib/data/scans.ts → verifyOwnership`). The UI states "Assay only scans apps
+  you own."
+- **SSRF-guarded fetching** (`lib/scan/fetch.ts`, `lib/scan/ssrf.ts`): only
+  public http(s) targets; localhost and private/loopback/link-local IP ranges
+  are rejected, every resolved address is checked (anti-DNS-rebinding), and
+  responses are bounded by time and size.
+- **Never store secrets.** Secret detection reports the *type* and a **redacted**
+  location only — the raw value is never persisted or logged
+  (`lib/scan/patterns.ts → redact`).
+- **Detection only.** No exploit payloads. The Supabase check is a single
+  bounded, read-only probe that uses only whether a table returns rows
+  unauthenticated (row *count*, never the data) to decide if RLS is off.
+- **Rate-limited** via the usage meter (`lib/usage.ts → consume_usage`), enforced
+  before a scan runs.
+- **Row-Level Security** on every user-facing table; jobs use the service role.
+  Public badge reports are served by token via the service role (no public RLS).
 
 ### Auth, dashboard & pricing
 
-- **Auth** is Supabase Auth → GitHub OAuth (`lib/auth.ts`, `middleware.ts`,
-  `app/auth/*`). On sign-in the user's GitHub account claims the installations
-  it owns (`owner_user_id`), so RLS scopes everything to them.
-- **Dashboard** (`/dashboard`, `/repos/[id]`, `/checks/[id]`, `/rules`) reads
-  real data through the user-scoped client (`lib/data/queries.ts`) — repos with
-  their current hallmark, check history, findings, and a plain-language rules
-  editor.
+- **Auth** is Supabase Auth → GitHub OAuth, used **only to sign you in** — Assay
+  requests no repository access (`lib/auth.ts`, `middleware.ts`, `app/auth/*`).
+- **Dashboard** (`/dashboard`) lists your scans; `/scan/[id]` is the report
+  (findings as plain-language cards, the paste-back fix with a copy button, the
+  score, and the badge box when certified); `/badge/[token]` is the public,
+  shareable "safe to publish" report.
 - **Pricing** is a single catalog (`lib/plans.ts` — Free / Pro $19 / Team $99)
-  surfaced on `/pricing`, the landing page, and the dashboard (plan badge +
-  usage meter + upgrade nudge). Limits are enforced by the usage meter today;
-  **Stripe checkout/billing is the next phase** (the catalog and enforcement
-  are already in place).
-
-### Security properties
-
-- The webhook **verifies the GitHub HMAC signature** and returns in well under a
-  second — all real work is handed to Inngest.
-- GitHub tokens are **encrypted at rest** with AES-256-GCM (`lib/crypto.ts`).
-- The logger **redacts** secrets and never logs user code (`lib/log.ts`).
-- The monthly check limit is **metered and enforced** before any check runs,
-  atomically via the `consume_usage` Postgres function.
-- Every Claude call returns **structured JSON** (a validated findings list) — no
-  loose free-text parsing.
-- **Row-Level Security** is enabled on every user-facing table; jobs use the
-  service role.
-- Webhook handling is **idempotent**: GitHub's at-least-once retries dedupe by
-  delivery id, and DB writes upsert on natural keys.
+  surfaced on `/pricing`, the landing page, and the dashboard. Limits are
+  enforced by the usage meter today; **Stripe billing and continuous re-scans are
+  the next phase** (catalog + enforcement already in place).
 
 ### Setup
 
-1. **Environment** — copy `.env.example` to `.env.local` and fill it in.
-   Generate the encryption key with `openssl rand -hex 32`.
+1. **Environment** — copy `.env.example` to `.env.local` and fill it in. The only
+   key the scan engine needs is `ANTHROPIC_API_KEY` (and Supabase); generate the
+   encryption key with `openssl rand -hex 32`.
 
-2. **Supabase** — create a project, then apply the schema:
+2. **Supabase** — create a project, apply the base schema (`supabase db push`),
+   then run **`supabase/migrations/0003_scans.sql`** in the Supabase SQL editor
+   to add the `scans`, `scan_findings`, `ownership_proofs`, and `badges` tables
+   (with RLS).
 
-   ```bash
-   supabase db push        # applies supabase/migrations/0001_init.sql
-   ```
-
-   This applies `0001_init.sql` (tables, RLS, `consume_usage`) and
-   `0002_embeddings.sql` (HNSW index + `match_embeddings`).
-
-3. **GitHub App** — register at <https://github.com/settings/apps>. Permissions:
-   Checks (write), Pull requests (write), Contents (read), Metadata (read).
-   Subscribe to **Pull request**, **Installation**, and **Installation
-   repositories** events. Set the webhook URL to
-   `https://<your-host>/api/webhooks/github` and the webhook secret to
-   `GITHUB_WEBHOOK_SECRET`. Put the App id, private key, client id/secret, and
-   `NEXT_PUBLIC_GITHUB_APP_SLUG` in the env.
-
-4. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with the
+3. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with an
    OAuth client id/secret, and add `<your-site>/auth/callback` as a redirect URL.
+   Set the Site URL + redirect wildcard to your deployed origin.
 
-5. **Inngest** — in dev, run the dev server (`npx inngest-cli@latest dev`) which
-   discovers `/api/inngest`. In prod, set `INNGEST_EVENT_KEY` and
-   `INNGEST_SIGNING_KEY`.
+4. **Inngest** — in dev, run `npx inngest-cli@latest dev` (it discovers
+   `/api/inngest`). In prod, set `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY`.
 
-6. **Anthropic** — set `ANTHROPIC_API_KEY`.
-
-7. **Optional** — `VOYAGE_API_KEY` (repo-aware review) and `E2B_API_KEY`
-   (sandboxed test runs). Both degrade gracefully when unset.
+5. **Anthropic** — set `ANTHROPIC_API_KEY` for the plain-language fixes.
 
 ### Go-live checklist (each needs your keys)
 
-- [ ] Supabase project created, `supabase db push` applied, GitHub provider on.
-- [ ] GitHub App registered + installed on a test repo; webhook reachable.
-- [ ] `ANTHROPIC_API_KEY` set. (Optional: `VOYAGE_API_KEY`, `E2B_API_KEY`.)
-- [ ] Deploy (Vercel) + Inngest keys set.
-- [ ] **Verify:** sign in with GitHub → dashboard shows your repo. Open a PR →
-      webhook `202` → Inngest runs `run-check` → security + AI review (+ tests if
-      E2B on) → the PR gets an **Assay** Check Run + comment (✓ Assayed / ⚠ Held).
-      `usage` increments; the dashboard usage meter moves.
+- [ ] Supabase project created; base schema + `0003_scans.sql` applied; GitHub
+      provider on.
+- [ ] `ANTHROPIC_API_KEY` set; Inngest keys set; deployed (Vercel).
+- [ ] **Verify:** open `/sample` → the seeded demo report renders. Sign in →
+      `/scan` → paste an app you own → add the meta tag → verify → the scan runs
+      (Inngest `run-scan`) → `/scan/[id]` shows findings with plain-language
+      fixes; a certified app can mint a `/badge/[token]` report. `usage`
+      increments.
 
 ### Roadmap
 
-**Done:** auth, the full check pipeline (security scan, repo-aware AI review,
-sandboxed tests), real dashboard, pricing catalog + enforcement. **Next:** Stripe
-checkout, the customer portal, and subscription webhooks that set
-`installations.plan` (the catalog, limits, and every pricing surface already
-exist).
+**Done:** the scan engine (secrets, Supabase RLS, headers), the plain-language +
+paste-back fix generator, scoring, the certified badge + public report, demo
+mode, auth, the scans dashboard, and the pricing catalog + enforcement. **Next:**
+continuous re-scans on every change and Stripe checkout/billing.
 
 ## What's built
 
-Frontend: the design system, the signature `HallmarkStamp`, the landing page,
-and stubbed login/dashboard. Backend: the Phase 0–3 verdict engine described
-above, fully typed and unit-tested; the live gates need your GitHub App +
-Supabase + deploy credentials.
+Frontend: the design system, the signature `HallmarkStamp`, the vibe-coder
+landing page, the scan flow, the report, and the public badge. Backend: the scan
+engine and plain-language fix generator described above, fully typed and
+unit-tested; the live gates need your Supabase + Anthropic + deploy credentials.

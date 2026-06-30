@@ -6,10 +6,11 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 
 /**
- * A clean-looking function that gets assayed on scroll-in: a scan line sweeps
- * the code, the leaking line lights up red, and a "Held" mark strikes — showing
- * "looks right, but breaks" concretely. Renders in its resolved (red-flagged)
- * state by default, so reduced-motion / no-JS still tells the story.
+ * Clean-looking app config that gets assayed on scroll-in: a scan line sweeps
+ * the code, the leaking line (a secret key shipped to the browser) lights up
+ * red, and a "Held" mark strikes — showing "looks done, but leaks" concretely.
+ * Renders in its resolved (red-flagged) state by default, so reduced-motion /
+ * no-JS still tells the story.
  */
 export function ScanCard() {
   const root = useRef<HTMLDivElement>(null);
@@ -51,7 +52,7 @@ export function ScanCard() {
   return (
     <div ref={root} className="panel relative overflow-hidden">
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-        <span className="font-mono text-xs text-ash">payments/charge.ts</span>
+        <span className="font-mono text-xs text-ash">src/lib/supabase.js</span>
         <span className="sc-held">
           <HallmarkStamp state="held" animate={false} size="sm" />
         </span>
@@ -60,17 +61,15 @@ export function ScanCard() {
       <div className="relative overflow-hidden">
         <pre className="overflow-x-auto px-5 py-5 font-mono text-[13px] leading-7 text-ivory-dim">
           <div>
-            <span className="text-iris-soft">export</span>{" "}
-            <span className="text-iris-soft">async function</span> charge(req){" "}
-            {"{"}
+            <span className="text-iris-soft">export const</span> supabase ={" "}
+            createClient(
           </div>
-          <div>{"  const order = await createOrder(req.body);"}</div>
+          <div>{'  "https://xyzcompany.supabase.co",'}</div>
           <div className="sc-leak -mx-2 rounded px-2 bg-[rgba(181,68,58,0.18)]">
-            {'  logger.info("charge", { body: req.body });'}{" "}
-            <span className="text-oxblood-soft">{"// leaks card.number"}</span>
+            {'  "eyJhbGciOi…service_role…",'}{" "}
+            <span className="text-oxblood-soft">{"// secret key in the browser"}</span>
           </div>
-          <div>{"  return order;"}</div>
-          <div>{"}"}</div>
+          <div>{");"}</div>
         </pre>
 
         <div
