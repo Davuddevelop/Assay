@@ -11,6 +11,7 @@ import {
   verifyOwnership,
 } from "@/lib/data/scans";
 import { inngest, EVENTS } from "@/inngest/client";
+import { consumeScanUsage } from "@/lib/usage";
 import { log } from "@/lib/log";
 
 function normalizeUrl(raw: string): string {
@@ -20,6 +21,11 @@ function normalizeUrl(raw: string): string {
 }
 
 async function launch(userId: string, appUrl: string): Promise<never> {
+  // Enforce the monthly scan allowance before doing any work (prevents abuse /
+  // SSRF amplification). Plan is "free" until per-user billing lands.
+  if (!(await consumeScanUsage(userId, "free"))) {
+    redirect("/scan?error=limit");
+  }
   const scanId = await createScan(userId, appUrl);
   try {
     await inngest.send({ name: EVENTS.scanRequested, data: { scanId } });

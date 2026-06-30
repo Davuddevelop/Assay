@@ -88,10 +88,16 @@ all.
 - **Detection only.** No exploit payloads. The Supabase check is a single
   bounded, read-only probe that uses only whether a table returns rows
   unauthenticated (row *count*, never the data) to decide if RLS is off.
-- **Rate-limited** via the usage meter (`lib/usage.ts → consume_usage`), enforced
-  before a scan runs.
+- **Rate-limited.** Each scan atomically consumes one unit of the user's monthly
+  allowance (`lib/usage.ts → consumeScanUsage` → the `consume_scan_usage`
+  Postgres function), enforced in `scan/actions.ts → launch()` before any fetch;
+  over the limit redirects to `/scan?error=limit`.
 - **Row-Level Security** on every user-facing table; jobs use the service role.
   Public badge reports are served by token via the service role (no public RLS).
+- **Security headers on Assay itself.** `next.config.ts` sets CSP (hardening
+  directives), HSTS, `X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy`, and `Permissions-Policy` on every route — the same headers
+  Assay grades others on, so it passes its own scan.
 
 ### Auth, dashboard & pricing
 
@@ -113,9 +119,10 @@ all.
    encryption key with `openssl rand -hex 32`.
 
 2. **Supabase** — create a project, apply the base schema (`supabase db push`),
-   then run **`supabase/migrations/0003_scans.sql`** in the Supabase SQL editor
-   to add the `scans`, `scan_findings`, `ownership_proofs`, and `badges` tables
-   (with RLS).
+   then run **`supabase/migrations/0003_scans.sql`** (the `scans`,
+   `scan_findings`, `ownership_proofs`, and `badges` tables) and
+   **`supabase/migrations/0004_scan_usage.sql`** (the per-user scan meter +
+   `consume_scan_usage`) in the Supabase SQL editor. Both add RLS.
 
 3. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with an
    OAuth client id/secret, and add `<your-site>/auth/callback` as a redirect URL.
@@ -128,14 +135,17 @@ all.
 
 ### Go-live checklist (each needs your keys)
 
-- [ ] Supabase project created; base schema + `0003_scans.sql` applied; GitHub
-      provider on.
+- [ ] Supabase project created; base schema + `0003_scans.sql` + `0004_scan_usage.sql`
+      applied; GitHub provider on.
 - [ ] `ANTHROPIC_API_KEY` set; Inngest keys set; deployed (Vercel).
 - [ ] **Verify:** open `/sample` → the seeded demo report renders. Sign in →
       `/scan` → paste an app you own → add the meta tag → verify → the scan runs
       (Inngest `run-scan`) → `/scan/[id]` shows findings with plain-language
-      fixes; a certified app can mint a `/badge/[token]` report. `usage`
-      increments.
+      fixes; a certified app can mint a `/badge/[token]` report. `scan_usage`
+      increments; the 101st scan in a month redirects to `/scan?error=limit`.
+- [ ] **Self-check:** `curl -I https://<your-host>/` shows the six security
+      headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
+      Referrer-Policy, Permissions-Policy).
 
 ### Roadmap
 

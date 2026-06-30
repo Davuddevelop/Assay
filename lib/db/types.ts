@@ -124,6 +124,14 @@ export type BadgeRow = {
   created_at: string;
 };
 
+export type ScanUsageRow = {
+  id: string;
+  user_id: string;
+  month: string;
+  count: number;
+  created_at: string;
+};
+
 /**
  * An Insert type: the columns in `Req` are required, everything else (defaults
  * and nullables) is optional. Update is always a partial. Relationships is an
@@ -161,11 +169,16 @@ export interface Database {
       scan_findings: Table<ScanFindingRow, "scan_id" | "kind" | "severity" | "title">;
       ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
       badges: Table<BadgeRow, "scan_id" | "public_token">;
+      scan_usage: Table<ScanUsageRow, "user_id" | "month">;
     };
     Views: Record<string, never>;
     Functions: {
       consume_usage: {
         Args: { p_install_id: string; p_month: string; p_limit: number };
+        Returns: boolean;
+      };
+      consume_scan_usage: {
+        Args: { p_user_id: string; p_month: string; p_limit: number };
         Returns: boolean;
       };
       match_embeddings: {
