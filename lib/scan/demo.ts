@@ -1,6 +1,3 @@
-import "server-only";
-
-import { createAdminClient } from "@/lib/supabase/admin";
 import { scoreFindings } from "@/lib/scan/score";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 
@@ -56,47 +53,35 @@ const DEMO_FINDINGS: SeedFinding[] = [
   },
 ];
 
-/** Ensure the demo scan + findings exist; return the report. Idempotent. */
-export async function getDemoReport(): Promise<{ scan: ScanRow; findings: ScanFindingRow[] }> {
-  const db = createAdminClient();
-
-  const { data: existing } = await db
-    .from("scans")
-    .select("*")
-    .eq("is_demo", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (existing) {
-    const { data: findings } = await db
-      .from("scan_findings")
-      .select("*")
-      .eq("scan_id", existing.id)
-      .order("severity");
-    return { scan: existing, findings: findings ?? [] };
-  }
-
+/**
+ * The sample report — built entirely from the seed data above, no database.
+ * The content is static, so there's nothing to store or fetch; this makes
+ * `/sample` work everywhere (even before Supabase is configured).
+ */
+export function getDemoReport(): { scan: ScanRow; findings: ScanFindingRow[] } {
+  const now = new Date().toISOString();
   const { score, verdict } = scoreFindings(DEMO_FINDINGS);
-  const { data: scan, error } = await db
-    .from("scans")
-    .insert({
-      app_url: DEMO_URL,
-      platform: "lovable",
-      status: "completed",
-      score,
-      verdict,
-      is_demo: true,
-      completed_at: new Date().toISOString(),
-    })
-    .select("*")
-    .single();
-  if (error || !scan) throw new Error(`seed demo: ${error?.message}`);
 
-  const { data: findings } = await db
-    .from("scan_findings")
-    .insert(DEMO_FINDINGS.map((f) => ({ ...f, scan_id: scan.id })))
-    .select("*");
+  const scan: ScanRow = {
+    id: "demo",
+    user_id: null,
+    app_url: DEMO_URL,
+    platform: "lovable",
+    status: "completed",
+    score,
+    verdict,
+    is_demo: true,
+    error: null,
+    created_at: now,
+    completed_at: now,
+  };
 
-  return { scan, findings: findings ?? [] };
+  const findings: ScanFindingRow[] = DEMO_FINDINGS.map((f, i) => ({
+    id: String(i),
+    scan_id: "demo",
+    created_at: now,
+    ...f,
+  }));
+
+  return { scan, findings };
 }
