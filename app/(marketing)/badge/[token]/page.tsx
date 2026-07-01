@@ -51,7 +51,7 @@ export default async function BadgePage({
         <p className="text-sm text-ivory-dim">
           Built an app with Lovable, Bolt, Replit, or v0?
         </p>
-        <Button href="/scan" variant="primary" size="lg">
+        <Button href="/try" variant="primary" size="lg">
           Check if yours is safe to publish
         </Button>
         <Link

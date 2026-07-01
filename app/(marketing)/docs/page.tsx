@@ -46,7 +46,7 @@ export default function DocsPage() {
 
       <p className="mt-12 text-sm text-ash">
         Ready?{" "}
-        <Link href="/scan" className="text-iris-soft hover:text-ivory">
+        <Link href="/try" className="text-iris-soft hover:text-ivory">
           Scan your app →
         </Link>
       </p>

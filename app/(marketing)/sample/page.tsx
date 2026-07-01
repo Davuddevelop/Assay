@@ -27,7 +27,7 @@ export default async function SamplePage() {
         <ScanReport scan={scan} findings={findings} />
       </div>
       <div className="mt-10 flex justify-center">
-        <Button href="/scan" variant="primary" size="lg">
+        <Button href="/try" variant="primary" size="lg">
           Scan your own app
         </Button>
       </div>
