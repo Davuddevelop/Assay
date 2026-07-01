@@ -15,7 +15,7 @@ export function Hero() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = url.trim();
-    router.push(trimmed ? `/scan?prefill=${encodeURIComponent(trimmed)}` : "/scan");
+    router.push(trimmed ? `/try?url=${encodeURIComponent(trimmed)}` : "/try");
   }
 
   useGSAP(

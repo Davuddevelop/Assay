@@ -25,7 +25,7 @@ export function PricingCta() {
                 minute.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button href="/scan" variant="primary" size="lg">
+                <Button href="/try" variant="primary" size="lg">
                   Scan my app
                 </Button>
                 <Button href="/sample" variant="ghost" size="lg">
