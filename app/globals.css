@@ -217,6 +217,32 @@
   animation: aurora-drift 18s ease-in-out infinite;
 }
 
+/* v2 — futuristic surface primitives. A fine technical grid that fades out, and
+   a scan beam that sweeps a console. Bold environment, delicate type. */
+.v2-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-line) 90%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-line) 90%, transparent) 1px, transparent 1px);
+  background-size: 58px 58px;
+  -webkit-mask-image: radial-gradient(62% 52% at 50% 38%, #000 0%, transparent 82%);
+  mask-image: radial-gradient(62% 52% at 50% 38%, #000 0%, transparent 82%);
+}
+
+@keyframes v2-scan {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translateY(220px); opacity: 0; }
+}
+
+.v2-beam {
+  animation: v2-scan 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-beam { animation: none; }
+}
+
 @keyframes float-soft {
   0%,
   100% {
