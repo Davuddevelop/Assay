@@ -108,6 +108,7 @@ describe("RLS exposure decision (the make-or-break logic)", () => {
     expect(isExposedResponse(200, [])).toBe(false); // empty → protected/empty
     expect(isExposedResponse(401, { message: "no" })).toBe(false); // blocked
     expect(isExposedResponse(200, { count: 1 })).toBe(false); // not an array
+    expect(isExposedResponse(0, null)).toBe(false); // unreachable/timeout → not exposed
   });
 });
 
