@@ -50,6 +50,21 @@ describe("scanText (secret detection)", () => {
     expect(scanText(`k="${sg}"`, "x")[0]?.title).toMatch(/SendGrid/i);
     expect(scanText(`k="xoxb-${"1".repeat(20)}"`, "x")[0]?.title).toMatch(/Slack/i);
   });
+
+  it("does NOT flag public keys (the trust-killer false positives)", () => {
+    // bare apiKey/token names are usually publishable — not flagged
+    expect(scanText(`apiKey: "pk_live_public_ok_1234567890"`, "x")).toEqual([]);
+    expect(scanText(`const token = "some-public-token-value"`, "x")).toEqual([]);
+    // Supabase publishable / anon under any name
+    expect(scanText(`supabaseKey: "sb_publishable_abcdef1234567"`, "x")).toEqual([]);
+    expect(scanText(`clientSecret: "publishable_abcdefghijkl"`, "x")).toEqual([]);
+  });
+
+  it("still flags a real private secret", () => {
+    const out = scanText(`client_secret: "a1b2c3d4e5f6g7h8i9j0"`, "x");
+    expect(out).toHaveLength(1);
+    expect(out[0].title).toMatch(/hardcoded secret/i);
+  });
 });
 
 describe("isPrivateIp (SSRF guard)", () => {

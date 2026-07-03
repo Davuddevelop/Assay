@@ -101,15 +101,27 @@ const RULES: Rule[] = [
     detail:
       "A Google API key is in client code. Firebase web keys are meant to be public, but confirm it is restricted to your domain and that your database rules are locked down.",
   },
-  {
-    id: "generic-secret-assignment",
-    pattern:
-      /(?:api[_-]?key|secret|token|password|passwd|service[_-]?key)\s*[:=]\s*['"][^'"\s]{12,}['"]/gi,
-    severity: "risky",
-    title: "Hardcoded secret in client code",
-    detail: "A value that looks like a secret is hardcoded in the client bundle.",
-  },
 ];
+
+// Conservative "assigned secret" catch. We ONLY trigger on variable names that
+// strongly imply a *private* secret (not a bare "apiKey"/"token", which are
+// usually public publishable keys), and we skip values that are obviously
+// public. This is deliberately narrow: a false "your app is unsafe" costs more
+// trust than a missed odd secret — the specific high-confidence rules above
+// still catch the dangerous keys regardless of variable name.
+const SECRET_ASSIGN_RE =
+  /(?:client[_-]?secret|api[_-]?secret|secret[_-]?key|private[_-]?key|service[_-]?(?:role[_-]?)?key|\bpassword|\bpasswd)\s*[:=]\s*['"]([^'"\s]{12,})['"]/gi;
+
+/** True when a value is a known PUBLIC key and must never be flagged as a leak. */
+function looksPublic(v: string): boolean {
+  return (
+    /^eyJ/.test(v) || // JWT (Supabase anon key etc.)
+    /^pk_/.test(v) || // Stripe publishable
+    /^AIza/.test(v) || // Google / Firebase web key
+    /^sb_publishable_/.test(v) || // Supabase publishable
+    /^(pk|pub|public|publishable|anon)[_-]/i.test(v)
+  );
+}
 
 // A JWT shipped to the browser is normal (the Supabase anon key is meant to be
 // public) — so we do NOT flag JWTs by shape. We decode each one and flag ONLY a
@@ -143,6 +155,24 @@ export function scanText(text: string, source: string): RawFinding[] {
         detail: rule.detail,
         redactedLocation: `${source} — ${redact(m[0])}`,
       });
+    }
+  }
+
+  // Conservative hardcoded-secret catch — skips known-public keys so we never
+  // cry wolf on a Supabase anon key or a public Lovable/Firebase key.
+  if (!seen.has("secret-assign")) {
+    for (const m of text.matchAll(SECRET_ASSIGN_RE)) {
+      const value = m[1];
+      if (looksPublic(value)) continue;
+      seen.add("secret-assign");
+      out.push({
+        kind: "exposed-secret",
+        severity: "risky",
+        title: "Hardcoded secret in client code",
+        detail: "A value under a secret-like name is hardcoded in the client bundle.",
+        redactedLocation: `${source} — ${redact(value)}`,
+      });
+      break;
     }
   }
 
