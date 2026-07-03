@@ -8,7 +8,8 @@ import {
   tablesFromOpenApi,
   isExposedResponse,
 } from "@/lib/scan/supabase-detect";
-import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
+import { discoverBundleUrls, discoverChunkRefs, hasSourceMapRef } from "@/lib/scan/bundles";
+import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heuristics";
 import { scoreFindings } from "@/lib/scan/score";
 import { checkHeaders } from "@/lib/scan/headers";
 
@@ -125,6 +126,22 @@ describe("bundle discovery (where the anon key actually hides)", () => {
     expect(refs).toContain("/_next/static/chunks/42.js");
     // bare / third-party paths without a build dir are ignored (low noise)
     expect(refs).not.toContain("notes.js");
+  });
+});
+
+describe("exposed-file guards (must not false-positive on SPA catch-all HTML)", () => {
+  it("flags a real .env, not an HTML page", () => {
+    expect(looksLikeEnvFile("STRIPE_SECRET_KEY=sk_live_x\nDATABASE_URL=postgres://y")).toBe(true);
+    expect(looksLikeEnvFile("<!doctype html><html><body>App</body></html>")).toBe(false);
+    expect(looksLikeEnvFile("just some text\nnothing here")).toBe(false);
+  });
+  it("flags a real git config, not HTML", () => {
+    expect(looksLikeGitConfig('[core]\n\trepositoryformatversion = 0\n[remote "origin"]\n\turl = x')).toBe(true);
+    expect(looksLikeGitConfig("<html><head></head></html>")).toBe(false);
+  });
+  it("detects a shipped source map", () => {
+    expect(hasSourceMapRef("code;\n//# sourceMappingURL=index-abc.js.map")).toBe(true);
+    expect(hasSourceMapRef("const x = 1;")).toBe(false);
   });
 });
 

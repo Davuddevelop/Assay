@@ -49,3 +49,8 @@ export function discoverChunkRefs(js: string): string[] {
   }
   return [...refs];
 }
+
+/** True when a bundle ships a source-map reference (original source recoverable). */
+export function hasSourceMapRef(js: string): boolean {
+  return /\/\/[#@]\s*sourceMappingURL=\S+\.map/.test(js);
+}
