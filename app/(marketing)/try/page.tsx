@@ -1,11 +1,24 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
+import Link from "next/link";
 
 import { ScanReport } from "@/components/scan/scan-report";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { runScan } from "@/lib/scan/run";
 import { explainFindings } from "@/lib/anthropic/explain";
+import { rateLimit } from "@/lib/rate-limit";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
+
+// Anonymous scans are open to anyone, so cap how often one visitor can run them.
+const ANON_LIMIT = 6;
+const ANON_WINDOW_MS = 60_000;
+
+async function clientKey(): Promise<string> {
+  const h = await headers();
+  const fwd = h.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return fwd || h.get("x-real-ip") || "unknown";
+}
 
 export const metadata = { title: "Try a scan — Assay" };
 
@@ -95,6 +108,11 @@ export default async function TryPage({
   const { url } = await searchParams;
   const target = url ? normalize(url) : null;
 
+  // Rate-limit the open scanner per visitor (abuse / cost guard).
+  const limited = target
+    ? !rateLimit(`try:${await clientKey()}`, ANON_LIMIT, ANON_WINDOW_MS).ok
+    : false;
+
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-16 sm:py-24">
       <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ivory">
@@ -117,7 +135,21 @@ export default async function TryPage({
         <Button type="submit" variant="primary" size="md">Scan my app</Button>
       </form>
 
-      {target && (
+      {target && limited && (
+        <div className="mt-12 rounded-card border border-gold/40 bg-gold/5 p-6">
+          <p className="font-display text-lg font-bold text-ivory">Slow down a sec.</p>
+          <p className="mt-1 text-sm text-ivory-dim">
+            You&rsquo;ve run a lot of scans in a short time. Wait a minute and try again —
+            or{" "}
+            <Link href="/login" className="text-iris-soft hover:text-ivory">
+              sign in
+            </Link>{" "}
+            for higher limits and saved reports.
+          </p>
+        </div>
+      )}
+
+      {target && !limited && (
         <Suspense key={target} fallback={<Scanning target={target} />}>
           <ScanResult target={target} />
         </Suspense>
