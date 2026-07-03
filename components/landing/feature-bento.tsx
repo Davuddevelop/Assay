@@ -155,9 +155,9 @@ export function FeatureBento() {
             <Cell
               className="md:col-span-4"
               icon={I.hallmark}
-              label="The hallmark"
-              title="Safe to publish, proven"
-              body="No critical or risky issues? Your app earns the hallmark — a public badge you can share. Anything unsafe is Held, with the exact fix."
+              label="The verdict"
+              title="A clear yes or no"
+              body="No critical or risky issues? You get a clean bill of health — safe to publish. Anything unsafe is Held, with the exact fix to paste back."
             >
               <div className="flex flex-wrap items-center gap-3">
                 <HallmarkStamp state="assayed" animate={false} />

@@ -21,7 +21,7 @@ const STEPS = [
   {
     n: "4",
     title: "Earn the hallmark",
-    body: "Once it's clean, get a 'Certified safe to publish' badge you can show off.",
+    body: "Once it's clean, you get the all-clear — the confidence to publish, knowing nothing's exposed.",
   },
 ];
 

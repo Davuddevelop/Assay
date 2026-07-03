@@ -35,7 +35,7 @@ export const PLANS: Record<PlanId, Plan> = {
       "1 app",
       "100 scans / month",
       "Plain-language report + paste-back fixes",
-      "Public “safe to publish” badge",
+      "Saved scan history",
     ],
   },
   pro: {
@@ -52,7 +52,7 @@ export const PLANS: Record<PlanId, Plan> = {
       "Unlimited apps",
       "2,000 scans / month",
       "Continuous re-scans on every change",
-      "Shareable hallmark badges",
+      "Alerts when a change breaks something",
       "Priority scan queue",
     ],
   },

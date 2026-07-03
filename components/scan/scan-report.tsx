@@ -13,11 +13,9 @@ function countBy(findings: ScanFindingRow[], sev: ScanFindingSeverity) {
 export function ScanReport({
   scan,
   findings,
-  badgeSlot,
 }: {
   scan: ScanRow;
   findings: ScanFindingRow[];
-  badgeSlot?: React.ReactNode;
 }) {
   const certified = scan.verdict === "certified";
   const sorted = [...findings].sort(
@@ -58,7 +56,6 @@ export function ScanReport({
             )}
           </div>
         </div>
-        {badgeSlot && <div className="relative mt-6">{badgeSlot}</div>}
       </div>
 
       {/* findings */}

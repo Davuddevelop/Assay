@@ -117,13 +117,6 @@ export type OwnershipProofRow = {
   created_at: string;
 };
 
-export type BadgeRow = {
-  id: string;
-  scan_id: string;
-  public_token: string;
-  created_at: string;
-};
-
 export type ScanUsageRow = {
   id: string;
   user_id: string;
@@ -168,7 +161,6 @@ export interface Database {
       scans: Table<ScanRow, "app_url">;
       scan_findings: Table<ScanFindingRow, "scan_id" | "kind" | "severity" | "title">;
       ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
-      badges: Table<BadgeRow, "scan_id" | "public_token">;
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
     };
     Views: Record<string, never>;
