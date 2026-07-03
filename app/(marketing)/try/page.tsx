@@ -9,6 +9,11 @@ import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
 export const metadata = { title: "Try a scan — Assay" };
 
+// A real scan (fetch app + crawl bundles + probe RLS + Claude explain) can take
+// longer than the platform's default function timeout; ask for headroom.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 function normalize(raw: string): string {
   const t = raw.trim();
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;

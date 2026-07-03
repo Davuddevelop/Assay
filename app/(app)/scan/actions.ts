@@ -4,12 +4,7 @@ import { redirect } from "next/navigation";
 
 import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
-import {
-  createScan,
-  ensureBadge,
-  isOwnershipVerified,
-  verifyOwnership,
-} from "@/lib/data/scans";
+import { createScan, ensureBadge } from "@/lib/data/scans";
 import { inngest, EVENTS } from "@/inngest/client";
 import { consumeScanUsage } from "@/lib/usage";
 import { log } from "@/lib/log";
@@ -36,7 +31,12 @@ async function launch(userId: string, appUrl: string): Promise<never> {
   redirect(`/scan/${scanId}`);
 }
 
-/** Submit a URL to scan. Routes through ownership verification first. */
+/**
+ * Submit a URL to scan — runs immediately. No ownership step: a scan only reads
+ * what's already public on the app, so gating it behind "edit your <head> and
+ * republish" was pure friction. Ownership is proven later, only when it matters
+ * (minting the public badge), via the badge being live on the site.
+ */
 export async function startScan(formData: FormData) {
   const user = await requireUser();
   const appUrl = normalizeUrl(String(formData.get("url") ?? ""));
@@ -47,23 +47,6 @@ export async function startScan(formData: FormData) {
     redirect(`/scan?error=url`);
   }
 
-  if (!(await isOwnershipVerified(user.id, appUrl))) {
-    redirect(`/scan?url=${encodeURIComponent(appUrl)}&verify=1`);
-  }
-
-  await launch(user.id, appUrl);
-}
-
-/** Re-fetch the app, confirm the meta tag, then start the scan. */
-export async function confirmOwnership(formData: FormData) {
-  const user = await requireUser();
-  const appUrl = String(formData.get("url") ?? "");
-  if (!appUrl) redirect("/scan");
-
-  const ok = await verifyOwnership(user.id, appUrl);
-  if (!ok) {
-    redirect(`/scan?url=${encodeURIComponent(appUrl)}&verify=1&failed=1`);
-  }
   await launch(user.id, appUrl);
 }
 

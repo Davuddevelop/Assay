@@ -15,6 +15,7 @@ const FETCH_TIMEOUT_MS = 10_000;
 const MAX_HTML_BYTES = 3_000_000;
 const MAX_BUNDLE_BYTES = 1_500_000;
 const MAX_BUNDLES = 12;
+const BUNDLE_CRAWL_BUDGET_MS = 20_000;
 
 /** Validate a URL is a public http(s) target, resolving DNS. Throws if not. */
 export async function assertScannableUrl(rawUrl: string): Promise<URL> {
@@ -114,7 +115,9 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
 
   for (const src of discoverBundleUrls(main.text)) enqueue(src, url.toString());
 
-  while (queue.length > 0 && bundles.length < MAX_BUNDLES) {
+  // Hard ceiling on the whole crawl — a slow CDN can't stall the scan.
+  const crawlDeadline = Date.now() + BUNDLE_CRAWL_BUDGET_MS;
+  while (queue.length > 0 && bundles.length < MAX_BUNDLES && Date.now() < crawlDeadline) {
     const abs = queue.shift()!;
     if (seen.has(abs)) continue;
     seen.add(abs);

@@ -29,6 +29,27 @@ describe("scanText (secret detection)", () => {
     const text = "AKIAABCDEFGHIJKLMNOP AKIAZZZZZZZZZZZZZZZZ";
     expect(scanText(text, "x").length).toBe(1);
   });
+
+  it("does NOT flag the normal Supabase anon key (it is meant to be public)", () => {
+    const anonPayload = Buffer.from(JSON.stringify({ role: "anon" })).toString("base64url");
+    const anonJwt = `eyJhbGciOiJIUzI1NiJ9.${anonPayload}.abcdefghij`;
+    expect(scanText(`supabaseKey="${anonJwt}"`, "bundle.js")).toEqual([]);
+  });
+
+  it("flags an exposed service_role key as critical", () => {
+    const payload = Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url");
+    const jwt = `eyJhbGciOiJIUzI1NiJ9.${payload}.abcdefghij`;
+    const out = scanText(`const k="${jwt}"`, "bundle.js");
+    expect(out).toHaveLength(1);
+    expect(out[0].severity).toBe("critical");
+    expect(out[0].title).toMatch(/service key/i);
+  });
+
+  it("flags newer key formats (SendGrid, Slack)", () => {
+    const sg = "SG." + "A".repeat(22) + "." + "B".repeat(22);
+    expect(scanText(`k="${sg}"`, "x")[0]?.title).toMatch(/SendGrid/i);
+    expect(scanText(`k="xoxb-${"1".repeat(20)}"`, "x")[0]?.title).toMatch(/Slack/i);
+  });
 });
 
 describe("isPrivateIp (SSRF guard)", () => {
@@ -108,6 +129,7 @@ describe("RLS exposure decision (the make-or-break logic)", () => {
     expect(isExposedResponse(200, [])).toBe(false); // empty → protected/empty
     expect(isExposedResponse(401, { message: "no" })).toBe(false); // blocked
     expect(isExposedResponse(200, { count: 1 })).toBe(false); // not an array
+    expect(isExposedResponse(0, null)).toBe(false); // unreachable/timeout → not exposed
   });
 });
 

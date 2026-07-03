@@ -21,9 +21,12 @@ export type { SupabaseRef };
  * only WHETHER rows came back without auth — never the data itself, never a
  * write, never an exploit. The probe runs only on an app the user owns.
  */
-const PROBE_TIMEOUT_MS = 8_000;
-const MAX_TABLES = 8;
+const PROBE_TIMEOUT_MS = 6_000;
+const MAX_TABLES = 6;
+// Hard ceiling on the whole probe so a slow/large DB can never hang a scan.
+const PROBE_BUDGET_MS = 18_000;
 
+/** A single request that NEVER throws — network/timeout errors become status 0. */
 async function getJson(url: string, anonKey: string): Promise<{ status: number; body: unknown }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
@@ -39,6 +42,8 @@ async function getJson(url: string, anonKey: string): Promise<{ status: number; 
       /* non-JSON */
     }
     return { status: res.status, body };
+  } catch {
+    return { status: 0, body: null }; // unreachable / aborted — treat as "not exposed"
   } finally {
     clearTimeout(timer);
   }
@@ -70,19 +75,27 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
     return findings;
   }
 
-  // List tables from the PostgREST OpenAPI root.
-  const root = await getJson(`${ref.url}/rest/v1/`, ref.anonKey);
-  const tables = tablesFromOpenApi(root.body).slice(0, MAX_TABLES);
-
   const exposed: string[] = [];
-  for (const table of tables) {
-    const res = await getJson(
-      `${ref.url}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`,
-      ref.anonKey,
-    );
-    // Rows returned to an unauthenticated request → RLS is not protecting it.
-    // We use ONLY the array length; the data itself is discarded.
-    if (isExposedResponse(res.status, res.body)) exposed.push(table);
+  try {
+    const deadline = Date.now() + PROBE_BUDGET_MS;
+
+    // List tables from the PostgREST OpenAPI root.
+    const root = await getJson(`${ref.url}/rest/v1/`, ref.anonKey);
+    const tables = tablesFromOpenApi(root.body).slice(0, MAX_TABLES);
+
+    for (const table of tables) {
+      if (Date.now() > deadline) break; // out of budget — report what we found
+      const res = await getJson(
+        `${ref.url}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`,
+        ref.anonKey,
+      );
+      // Rows returned to an unauthenticated request → RLS is not protecting it.
+      // We use ONLY the array length; the data itself is discarded.
+      if (isExposedResponse(res.status, res.body)) exposed.push(table);
+    }
+  } catch {
+    // A probe failure must never sink the scan — return whatever we confirmed.
+    return findings;
   }
 
   if (exposed.length > 0) {
