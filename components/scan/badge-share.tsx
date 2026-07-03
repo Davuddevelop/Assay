@@ -20,20 +20,41 @@ export function BadgeShare({ scanId, token }: { scanId: string; token?: string }
   }, []);
 
   if (token) {
-    const url = `${origin}/badge/${token}`;
+    const reportUrl = `${origin}/badge/${token}`;
+    const sealUrl = `${origin}/badge/${token}/seal`;
+    const embed = `<a href="${reportUrl}" target="_blank" rel="noopener">\n  <img src="${sealUrl}" alt="Assay — Safe to publish" width="232" height="56">\n</a>`;
     return (
       <div className="rounded-[var(--radius-card)] border border-iris/30 bg-iris/5 p-5">
         <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-iris-soft">
           Your hallmark is live
         </p>
         <p className="mt-2 text-sm text-ivory-dim">
-          Share this public, read-only report to prove your app is safe to publish.
+          Add this badge to your site. It links to your public report — and showing it is
+          how you prove the app is yours.
         </p>
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+
+        {origin && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={sealUrl} alt="Assay — Safe to publish" width={232} height={56} className="mt-4" />
+        )}
+
+        <div className="mt-4">
+          <div className="flex items-center justify-between">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ash">
+              Paste into your site
+            </p>
+            <CopyButton text={embed} label="Copy badge" />
+          </div>
+          <pre className="mt-2 overflow-x-auto rounded-[var(--radius-control)] border border-line bg-onyx/60 p-3 font-mono text-[11px] leading-relaxed text-ivory">
+            {embed}
+          </pre>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
           <code className="min-w-0 flex-1 truncate rounded-[var(--radius-control)] border border-line bg-onyx/60 px-3 py-2 font-mono text-xs text-ivory">
-            {url || `…/badge/${token}`}
+            {reportUrl || `…/badge/${token}`}
           </code>
-          <CopyButton text={url} label="Copy link" />
+          <CopyButton text={reportUrl} label="Copy link" />
         </div>
       </div>
     );
