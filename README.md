@@ -37,7 +37,13 @@ npm run lint        # eslint
 npm run typecheck   # tsc --noEmit
 npm run test        # vitest (scan patterns, SSRF guard, scoring, detection)
 npm run build       # production build
+npm run knip        # unused files, exports, and dependencies
 ```
+
+`/ponytail` (Claude Code custom command, `.claude/commands/ponytail.md`) reviews
+a target — or the current diff by default — and cuts anything that isn't earning
+its weight: needless abstraction, dead defensive code, comments explaining WHAT
+instead of WHY. Behavior stays identical; only the shape gets smaller.
 
 ## Backend — the scan engine
 
