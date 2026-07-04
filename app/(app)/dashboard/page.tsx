@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Onboarding } from "@/components/onboarding";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
+import { WatchedApps } from "@/components/dashboard/watched-apps";
 import { requireUser, toSessionUser } from "@/lib/auth";
 import { listScans } from "@/lib/data/scans";
+import { listWatchedApps } from "@/lib/data/monitors";
 import { relativeTime } from "@/lib/data/derive";
 
 export const metadata: Metadata = {
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
   const session = toSessionUser(await requireUser());
-  const scans = await listScans();
+  const [scans, watched] = await Promise.all([listScans(), listWatchedApps()]);
   const hasScans = scans.length > 0;
 
   return (
@@ -36,6 +38,12 @@ export default async function DashboardPage() {
           </Button>
         )}
       </header>
+
+      {watched.length > 0 && (
+        <div className="mt-12">
+          <WatchedApps apps={watched} />
+        </div>
+      )}
 
       <section className="mt-12">
         {hasScans ? (

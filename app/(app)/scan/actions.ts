@@ -1,10 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { createScan } from "@/lib/data/scans";
+import { setWatch } from "@/lib/data/monitors";
 import { inngest, EVENTS } from "@/inngest/client";
 import { consumeScanUsage } from "@/lib/usage";
 import { log } from "@/lib/log";
@@ -48,5 +50,22 @@ export async function startScan(formData: FormData) {
   }
 
   await launch(user.id, appUrl);
+}
+
+/**
+ * Toggle continuous re-checking for an app. Watched apps are re-scanned daily
+ * (metered against the plan) and the dashboard flags any regression — the
+ * "keep it safe after you keep editing it" half of the product.
+ */
+export async function toggleWatch(formData: FormData) {
+  const user = await requireUser();
+  const appUrl = String(formData.get("app_url") ?? "").trim();
+  const active = formData.get("active") === "true";
+  const scanId = String(formData.get("scan_id") ?? "");
+  if (!appUrl) return;
+
+  await setWatch(user.id, appUrl, active);
+  if (scanId) revalidatePath(`/scan/${scanId}`);
+  revalidatePath("/dashboard");
 }
 

@@ -120,9 +120,11 @@ all.
 
 2. **Supabase** — create a project, apply the base schema (`supabase db push`),
    then run **`supabase/migrations/0003_scans.sql`** (the `scans`,
-   `scan_findings`, `ownership_proofs`, and `badges` tables) and
+   `scan_findings`, and `ownership_proofs` tables),
    **`supabase/migrations/0004_scan_usage.sql`** (the per-user scan meter +
-   `consume_scan_usage`) in the Supabase SQL editor. Both add RLS.
+   `consume_scan_usage`), and **`supabase/migrations/0005_monitored_apps.sql`**
+   (the watched-apps list behind daily re-checks) in the Supabase SQL editor.
+   All add RLS.
 
 3. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with an
    OAuth client id/secret, and add `<your-site>/auth/callback` as a redirect URL.
@@ -135,24 +137,27 @@ all.
 
 ### Go-live checklist (each needs your keys)
 
-- [ ] Supabase project created; base schema + `0003_scans.sql` + `0004_scan_usage.sql`
-      applied; GitHub provider on.
+- [ ] Supabase project created; base schema + `0003_scans.sql` +
+      `0004_scan_usage.sql` + `0005_monitored_apps.sql` applied; GitHub provider on.
 - [ ] `ANTHROPIC_API_KEY` set; Inngest keys set; deployed (Vercel).
 - [ ] **Verify:** open `/sample` → the seeded demo report renders. Sign in →
-      `/scan` → paste an app you own → add the meta tag → verify → the scan runs
-      (Inngest `run-scan`) → `/scan/[id]` shows findings with plain-language
-      fixes; a certified app can mint a `/badge/[token]` report. `scan_usage`
-      increments; the 101st scan in a month redirects to `/scan?error=limit`.
+      `/scan` → paste an app you own → the scan runs (Inngest `run-scan`) →
+      `/scan/[id]` shows findings with plain-language fixes. Flip **Watch this
+      app** → a `monitored_apps` row appears and the daily `recheck-apps` cron
+      (06:00 UTC) queues a re-scan; the dashboard shows the watched app with its
+      delta. `scan_usage` increments; the 101st scan in a month redirects to
+      `/scan?error=limit`.
 - [ ] **Self-check:** `curl -I https://<your-host>/` shows the six security
       headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
       Referrer-Policy, Permissions-Policy).
 
 ### Roadmap
 
-**Done:** the scan engine (secrets, Supabase RLS, headers), the plain-language +
-paste-back fix generator, scoring, the certified badge + public report, demo
-mode, auth, the scans dashboard, and the pricing catalog + enforcement. **Next:**
-continuous re-scans on every change and Stripe checkout/billing.
+**Done:** the scan engine (secrets, Supabase RLS, headers, exposed files), the
+plain-language + paste-back fix generator, scoring, demo mode, auth, the scans
+dashboard, the pricing catalog + enforcement, and continuous re-checking
+(watch an app → daily re-scan → regression flag on the dashboard). **Next:**
+email alerts on regression and Stripe checkout/billing.
 
 ## What's built
 

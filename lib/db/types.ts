@@ -125,6 +125,14 @@ export type ScanUsageRow = {
   created_at: string;
 };
 
+export type MonitoredAppRow = {
+  id: string;
+  user_id: string;
+  app_url: string;
+  active: boolean;
+  created_at: string;
+};
+
 /**
  * An Insert type: the columns in `Req` are required, everything else (defaults
  * and nullables) is optional. Update is always a partial. Relationships is an
@@ -162,6 +170,7 @@ export interface Database {
       scan_findings: Table<ScanFindingRow, "scan_id" | "kind" | "severity" | "title">;
       ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
+      monitored_apps: Table<MonitoredAppRow, "user_id" | "app_url">;
     };
     Views: Record<string, never>;
     Functions: {
