@@ -55,17 +55,13 @@ export async function startScan(formData: FormData) {
 /**
  * Toggle continuous re-checking for an app. Watched apps are re-scanned daily
  * (metered against the plan) and the dashboard flags any regression — the
- * "keep it safe after you keep editing it" half of the product.
+ * "keep it safe after you keep editing it" half of the product. Bound directly
+ * to the button (no hidden form fields to parse back out).
  */
-export async function toggleWatch(formData: FormData) {
+export async function toggleWatch(appUrl: string, active: boolean, scanId: string) {
   const user = await requireUser();
-  const appUrl = String(formData.get("app_url") ?? "").trim();
-  const active = formData.get("active") === "true";
-  const scanId = String(formData.get("scan_id") ?? "");
-  if (!appUrl) return;
-
   await setWatch(user.id, appUrl, active);
-  if (scanId) revalidatePath(`/scan/${scanId}`);
+  revalidatePath(`/scan/${scanId}`);
   revalidatePath("/dashboard");
 }
 

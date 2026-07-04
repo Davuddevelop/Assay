@@ -28,12 +28,14 @@ export function compareScans(
       ? current.score - prev.score
       : null;
 
-  const flippedDown = prev.verdict === "certified" && current.verdict === "at_risk";
   const flippedUp = prev.verdict === "at_risk" && current.verdict === "certified";
+  const regression =
+    (prev.verdict === "certified" && current.verdict === "at_risk") ||
+    (scoreDelta !== null && scoreDelta < 0);
 
   return {
     scoreDelta,
-    regression: flippedDown || (scoreDelta !== null && scoreDelta < 0),
-    improved: !flippedDown && (flippedUp || (scoreDelta !== null && scoreDelta > 0)),
+    regression,
+    improved: !regression && (flippedUp || (scoreDelta !== null && scoreDelta > 0)),
   };
 }

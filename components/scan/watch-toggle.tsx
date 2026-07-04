@@ -20,10 +20,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
             : "You'll keep editing this app. Watch it and we'll re-check it every day, and flag it on your dashboard the moment a change breaks something."}
         </p>
       </div>
-      <form action={toggleWatch} className="shrink-0">
-        <input type="hidden" name="app_url" value={scan.app_url} />
-        <input type="hidden" name="scan_id" value={scan.id} />
-        <input type="hidden" name="active" value={watched ? "false" : "true"} />
+      <form action={toggleWatch.bind(null, scan.app_url, !watched, scan.id)} className="shrink-0">
         <SubmitButton
           variant={watched ? "ghost" : "primary"}
           size="md"
