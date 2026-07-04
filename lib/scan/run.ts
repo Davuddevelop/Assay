@@ -4,6 +4,7 @@ import { fetchApp } from "@/lib/scan/fetch";
 import { scanText } from "@/lib/scan/patterns";
 import { checkHeaders } from "@/lib/scan/headers";
 import { detectSupabase, probeSupabaseRls } from "@/lib/scan/supabase-rls";
+import { probeSupabaseStorage } from "@/lib/scan/storage";
 import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
 import { scoreFindings } from "@/lib/scan/score";
@@ -58,13 +59,18 @@ export async function runScan(appUrl: string): Promise<ScanResult> {
     findings.push(...scanText(b.content, shortBundleName(b.url)));
   }
 
-  // 2. Supabase RLS exposure (detection + read-only probe). Never let a probe
-  //    failure sink the whole scan — the secret + header findings still stand.
+  // 2. Supabase RLS + Storage exposure (detection + read-only probes). Never
+  //    let a probe failure sink the whole scan — the other findings still stand.
   const allText = [app.html, ...app.bundles.map((b) => b.content)].join("\n");
   const ref = detectSupabase(allText);
   if (ref) {
     try {
       findings.push(...(await probeSupabaseRls(ref)));
+    } catch {
+      /* probe unavailable — report what the other checks found */
+    }
+    try {
+      findings.push(...(await probeSupabaseStorage(ref)));
     } catch {
       /* probe unavailable — report what the other checks found */
     }

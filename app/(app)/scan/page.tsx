@@ -59,6 +59,11 @@ export default async function ScanPage({
             </Link>
           </p>
         )}
+        {error === "burst" && (
+          <p className="mt-3 text-sm text-oxblood-soft">
+            Slow down a sec — wait a minute and try again.
+          </p>
+        )}
       </form>
 
       <p className="mt-5 font-mono text-xs leading-relaxed text-ash">

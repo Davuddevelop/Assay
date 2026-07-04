@@ -9,6 +9,7 @@ import { createScan } from "@/lib/data/scans";
 import { setWatch } from "@/lib/data/monitors";
 import { inngest, EVENTS } from "@/inngest/client";
 import { consumeScanUsage } from "@/lib/usage";
+import { rateLimit } from "@/lib/rate-limit";
 import { log } from "@/lib/log";
 
 function normalizeUrl(raw: string): string {
@@ -18,6 +19,12 @@ function normalizeUrl(raw: string): string {
 }
 
 async function launch(userId: string, appUrl: string): Promise<never> {
+  // A monthly cap alone still lets a signed-in user fire dozens of live
+  // outbound fetches in seconds (up to their whole allowance at once) — cap
+  // the burst rate too, same guard as the anonymous /try endpoint.
+  if (!rateLimit(`scan:${userId}`).ok) {
+    redirect("/scan?error=burst");
+  }
   // Enforce the monthly scan allowance before doing any work (prevents abuse /
   // SSRF amplification). Plan is "free" until per-user billing lands.
   if (!(await consumeScanUsage(userId, "free"))) {

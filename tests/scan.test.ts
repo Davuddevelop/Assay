@@ -7,6 +7,7 @@ import {
   decodeJwtRole,
   tablesFromOpenApi,
   isExposedResponse,
+  isExposedBucketListing,
 } from "@/lib/scan/supabase-detect";
 import { discoverBundleUrls, discoverChunkRefs, hasSourceMapRef } from "@/lib/scan/bundles";
 import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heuristics";
@@ -162,6 +163,15 @@ describe("RLS exposure decision (the make-or-break logic)", () => {
     expect(isExposedResponse(401, { message: "no" })).toBe(false); // blocked
     expect(isExposedResponse(200, { count: 1 })).toBe(false); // not an array
     expect(isExposedResponse(0, null)).toBe(false); // unreachable/timeout → not exposed
+  });
+});
+
+describe("storage exposure decision (bucket listing)", () => {
+  it("flags a bucket only when an unauth list returns objects", () => {
+    expect(isExposedBucketListing(200, 3)).toBe(true); // listable → exposed
+    expect(isExposedBucketListing(200, 0)).toBe(false); // empty → protected/empty
+    expect(isExposedBucketListing(400, 0)).toBe(false); // blocked
+    expect(isExposedBucketListing(0, 0)).toBe(false); // unreachable/timeout → not exposed
   });
 });
 

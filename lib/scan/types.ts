@@ -8,6 +8,7 @@ export type ScanSeverity = "critical" | "risky" | "minor";
 type FindingKind =
   | "exposed-secret"
   | "supabase-rls"
+  | "supabase-storage"
   | "open-endpoint"
   | "missing-header"
   | "vulnerable-dependency";

@@ -36,6 +36,15 @@ export function isExposedResponse(status: number, body: unknown): boolean {
   return status === 200 && Array.isArray(body) && body.length > 0;
 }
 
+/**
+ * Whether an unauthenticated storage bucket list came back with objects — the
+ * signal that the bucket's RLS policy (or its `public` flag) lets anyone
+ * browse it. Pure.
+ */
+export function isExposedBucketListing(status: number, count: number): boolean {
+  return status === 200 && count > 0;
+}
+
 /** Decode a JWT's `role` claim without verifying (we only read it). Pure. */
 export function decodeJwtRole(jwt: string): string | null {
   const parts = jwt.split(".");
