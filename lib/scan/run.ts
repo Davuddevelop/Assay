@@ -11,7 +11,7 @@ import type { RawFinding } from "@/lib/scan/types";
 import type { ScanVerdict } from "@/lib/db/types";
 
 /** Best-effort detection of the builder a vibe-coded app came from. Pure. */
-export function detectPlatform(html: string): string {
+function detectPlatform(html: string): string {
   const h = html.toLowerCase();
   if (h.includes("gptengineer") || h.includes("lovable")) return "lovable";
   if (h.includes("bolt.new") || h.includes("stackblitz")) return "bolt";

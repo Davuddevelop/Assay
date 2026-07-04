@@ -7,12 +7,12 @@
  *   Database['public']['Tables'][T]['Row' | 'Insert' | 'Update']
  */
 
-export type CheckStatus = "queued" | "running" | "completed" | "error";
-export type Verdict = "assayed" | "held";
-export type FindingType = "rule" | "security" | "test" | "quality";
-export type FindingSeverity = "low" | "medium" | "high" | "critical";
+type CheckStatus = "queued" | "running" | "completed" | "error";
+type Verdict = "assayed" | "held";
+type FindingType = "rule" | "security" | "test" | "quality";
+type FindingSeverity = "low" | "medium" | "high" | "critical";
 
-export type InstallationRow = {
+type InstallationRow = {
   id: string;
   account_login: string;
   account_id: number;
@@ -24,7 +24,7 @@ export type InstallationRow = {
   created_at: string;
 }
 
-export type RepoRow = {
+type RepoRow = {
   id: string;
   install_id: string;
   github_repo_id: number;
@@ -47,7 +47,7 @@ export type CheckRow = {
   completed_at: string | null;
 }
 
-export type FindingRow = {
+type FindingRow = {
   id: string;
   check_id: string;
   type: FindingType;
@@ -59,7 +59,7 @@ export type FindingRow = {
   created_at: string;
 }
 
-export type EmbeddingRow = {
+type EmbeddingRow = {
   id: string;
   repo_id: string;
   path: string;
@@ -68,7 +68,7 @@ export type EmbeddingRow = {
   created_at: string;
 }
 
-export type UsageRow = {
+type UsageRow = {
   id: string;
   install_id: string;
   month: string;
@@ -76,7 +76,7 @@ export type UsageRow = {
 }
 
 // ── Pivot: app security scans ────────────────────────────────────────────────
-export type ScanStatus = "queued" | "running" | "completed" | "error";
+type ScanStatus = "queued" | "running" | "completed" | "error";
 export type ScanVerdict = "certified" | "at_risk";
 export type ScanFindingSeverity = "critical" | "risky" | "minor";
 
@@ -107,7 +107,7 @@ export type ScanFindingRow = {
   created_at: string;
 };
 
-export type OwnershipProofRow = {
+type OwnershipProofRow = {
   id: string;
   user_id: string;
   app_url: string;
@@ -117,7 +117,7 @@ export type OwnershipProofRow = {
   created_at: string;
 };
 
-export type ScanUsageRow = {
+type ScanUsageRow = {
   id: string;
   user_id: string;
   month: string;

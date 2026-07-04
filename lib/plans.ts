@@ -77,7 +77,7 @@ export const PLANS: Record<PlanId, Plan> = {
 
 export const PLAN_ORDER: PlanId[] = ["free", "pro", "team"];
 
-export function isPlanId(value: string): value is PlanId {
+function isPlanId(value: string): value is PlanId {
   return value === "free" || value === "pro" || value === "team";
 }
 

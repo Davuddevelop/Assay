@@ -10,7 +10,7 @@ import {
   type SupabaseRef,
 } from "@/lib/scan/supabase-detect";
 
-export { detectSupabase, decodeJwtRole };
+export { detectSupabase };
 export type { SupabaseRef };
 
 /**
