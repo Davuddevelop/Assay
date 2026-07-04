@@ -3,20 +3,18 @@ import { notFound } from "next/navigation";
 
 import { ScanReport } from "@/components/scan/scan-report";
 import { ScanPoller } from "@/components/scan/scan-poller";
-import { BadgeShare } from "@/components/scan/badge-share";
+import { WatchToggle } from "@/components/scan/watch-toggle";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { getScan, getScanFindings } from "@/lib/data/scans";
+import { isWatched } from "@/lib/data/monitors";
 
 export default async function ScanReportPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ badge?: string }>;
 }) {
   const { id } = await params;
-  const { badge } = await searchParams;
   const scan = await getScan(id);
   if (!scan) notFound();
 
@@ -55,7 +53,10 @@ export default async function ScanReportPage({
     );
   }
 
-  const findings = await getScanFindings(id);
+  const [findings, watched] = await Promise.all([
+    getScanFindings(id),
+    isWatched(scan.app_url),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
@@ -66,15 +67,10 @@ export default async function ScanReportPage({
         ← Dashboard
       </Link>
       <div className="mt-6">
-        <ScanReport
-          scan={scan}
-          findings={findings}
-          badgeSlot={
-            scan.verdict === "certified" ? (
-              <BadgeShare scanId={scan.id} token={badge} />
-            ) : undefined
-          }
-        />
+        <ScanReport scan={scan} findings={findings} />
+      </div>
+      <div className="mt-8">
+        <WatchToggle scan={scan} watched={watched} />
       </div>
       <div className="mt-8 flex justify-center">
         <Button href="/scan" variant="ghost" size="md">

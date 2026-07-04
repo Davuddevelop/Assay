@@ -22,4 +22,4 @@ if (typeof window !== "undefined") {
   }
 }
 
-export { gsap, ScrollTrigger, useGSAP };
+export { gsap, useGSAP };

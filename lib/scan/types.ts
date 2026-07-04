@@ -5,7 +5,7 @@
  */
 export type ScanSeverity = "critical" | "risky" | "minor";
 
-export type FindingKind =
+type FindingKind =
   | "exposed-secret"
   | "supabase-rls"
   | "open-endpoint"

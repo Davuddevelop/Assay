@@ -4,12 +4,14 @@ import { fetchApp } from "@/lib/scan/fetch";
 import { scanText } from "@/lib/scan/patterns";
 import { checkHeaders } from "@/lib/scan/headers";
 import { detectSupabase, probeSupabaseRls } from "@/lib/scan/supabase-rls";
+import { probeExposedFiles } from "@/lib/scan/exposed-files";
+import { hasSourceMapRef } from "@/lib/scan/bundles";
 import { scoreFindings } from "@/lib/scan/score";
 import type { RawFinding } from "@/lib/scan/types";
 import type { ScanVerdict } from "@/lib/db/types";
 
 /** Best-effort detection of the builder a vibe-coded app came from. Pure. */
-export function detectPlatform(html: string): string {
+function detectPlatform(html: string): string {
   const h = html.toLowerCase();
   if (h.includes("gptengineer") || h.includes("lovable")) return "lovable";
   if (h.includes("bolt.new") || h.includes("stackblitz")) return "bolt";
@@ -70,6 +72,26 @@ export async function runScan(appUrl: string): Promise<ScanResult> {
 
   // 3. Missing security headers.
   findings.push(...checkHeaders(app.headers));
+
+  // 4. Sensitive files served at the origin (.env, .git). Never sinks the scan.
+  try {
+    const origin = new URL(app.finalUrl).origin;
+    findings.push(...(await probeExposedFiles(origin)));
+  } catch {
+    /* file probe unavailable */
+  }
+
+  // 5. Source maps — original source code is downloadable (advisory).
+  if (app.bundles.some((b) => hasSourceMapRef(b.content))) {
+    findings.push({
+      kind: "open-endpoint",
+      severity: "minor",
+      title: "Your source code is downloadable",
+      detail:
+        "Your app ships source maps, so anyone can reconstruct your original code from the browser. Fine for many apps, but strip them if your logic is sensitive.",
+      redactedLocation: "client bundles (sourceMappingURL)",
+    });
+  }
 
   const deduped = dedupe(findings);
   const { score, verdict } = scoreFindings(deduped);

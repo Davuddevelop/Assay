@@ -8,7 +8,8 @@ import {
   tablesFromOpenApi,
   isExposedResponse,
 } from "@/lib/scan/supabase-detect";
-import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
+import { discoverBundleUrls, discoverChunkRefs, hasSourceMapRef } from "@/lib/scan/bundles";
+import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heuristics";
 import { scoreFindings } from "@/lib/scan/score";
 import { checkHeaders } from "@/lib/scan/headers";
 
@@ -49,6 +50,21 @@ describe("scanText (secret detection)", () => {
     const sg = "SG." + "A".repeat(22) + "." + "B".repeat(22);
     expect(scanText(`k="${sg}"`, "x")[0]?.title).toMatch(/SendGrid/i);
     expect(scanText(`k="xoxb-${"1".repeat(20)}"`, "x")[0]?.title).toMatch(/Slack/i);
+  });
+
+  it("does NOT flag public keys (the trust-killer false positives)", () => {
+    // bare apiKey/token names are usually publishable — not flagged
+    expect(scanText(`apiKey: "pk_live_public_ok_1234567890"`, "x")).toEqual([]);
+    expect(scanText(`const token = "some-public-token-value"`, "x")).toEqual([]);
+    // Supabase publishable / anon under any name
+    expect(scanText(`supabaseKey: "sb_publishable_abcdef1234567"`, "x")).toEqual([]);
+    expect(scanText(`clientSecret: "publishable_abcdefghijkl"`, "x")).toEqual([]);
+  });
+
+  it("still flags a real private secret", () => {
+    const out = scanText(`client_secret: "a1b2c3d4e5f6g7h8i9j0"`, "x");
+    expect(out).toHaveLength(1);
+    expect(out[0].title).toMatch(/hardcoded secret/i);
   });
 });
 
@@ -110,6 +126,22 @@ describe("bundle discovery (where the anon key actually hides)", () => {
     expect(refs).toContain("/_next/static/chunks/42.js");
     // bare / third-party paths without a build dir are ignored (low noise)
     expect(refs).not.toContain("notes.js");
+  });
+});
+
+describe("exposed-file guards (must not false-positive on SPA catch-all HTML)", () => {
+  it("flags a real .env, not an HTML page", () => {
+    expect(looksLikeEnvFile("STRIPE_SECRET_KEY=sk_live_x\nDATABASE_URL=postgres://y")).toBe(true);
+    expect(looksLikeEnvFile("<!doctype html><html><body>App</body></html>")).toBe(false);
+    expect(looksLikeEnvFile("just some text\nnothing here")).toBe(false);
+  });
+  it("flags a real git config, not HTML", () => {
+    expect(looksLikeGitConfig('[core]\n\trepositoryformatversion = 0\n[remote "origin"]\n\turl = x')).toBe(true);
+    expect(looksLikeGitConfig("<html><head></head></html>")).toBe(false);
+  });
+  it("detects a shipped source map", () => {
+    expect(hasSourceMapRef("code;\n//# sourceMappingURL=index-abc.js.map")).toBe(true);
+    expect(hasSourceMapRef("const x = 1;")).toBe(false);
   });
 });
 

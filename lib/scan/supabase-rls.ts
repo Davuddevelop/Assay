@@ -10,7 +10,7 @@ import {
   type SupabaseRef,
 } from "@/lib/scan/supabase-detect";
 
-export { detectSupabase, decodeJwtRole };
+export { detectSupabase };
 export type { SupabaseRef };
 
 /**
@@ -25,6 +25,8 @@ const PROBE_TIMEOUT_MS = 6_000;
 const MAX_TABLES = 6;
 // Hard ceiling on the whole probe so a slow/large DB can never hang a scan.
 const PROBE_BUDGET_MS = 18_000;
+// Tried only when the DB won't list its tables — common vibe-coded table names.
+const COMMON_TABLES = ["users", "profiles", "customers", "orders", "posts", "messages"];
 
 /** A single request that NEVER throws — network/timeout errors become status 0. */
 async function getJson(url: string, anonKey: string): Promise<{ status: number; body: unknown }> {
@@ -79,9 +81,12 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
   try {
     const deadline = Date.now() + PROBE_BUDGET_MS;
 
-    // List tables from the PostgREST OpenAPI root.
+    // List tables from the PostgREST OpenAPI root. If introspection is disabled
+    // (empty spec), fall back to a few common names — still zero false positives,
+    // since we only flag a table that ACTUALLY returns rows without auth.
     const root = await getJson(`${ref.url}/rest/v1/`, ref.anonKey);
-    const tables = tablesFromOpenApi(root.body).slice(0, MAX_TABLES);
+    let tables = tablesFromOpenApi(root.body).slice(0, MAX_TABLES);
+    if (tables.length === 0) tables = COMMON_TABLES;
 
     for (const table of tables) {
       if (Date.now() > deadline) break; // out of budget — report what we found
