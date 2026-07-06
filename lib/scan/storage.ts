@@ -34,6 +34,7 @@ async function listBucket(url: string, anonKey: string, bucket: string): Promise
     const res = await fetch(`${url}/storage/v1/object/list/${encodeURIComponent(bucket)}`, {
       method: "POST",
       signal: controller.signal,
+      redirect: "manual", // a REST read has no reason to redirect; don't follow one
       headers: {
         apikey: anonKey,
         authorization: `Bearer ${anonKey}`,

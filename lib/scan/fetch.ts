@@ -16,6 +16,7 @@ const MAX_HTML_BYTES = 3_000_000;
 const MAX_BUNDLE_BYTES = 1_500_000;
 const MAX_BUNDLES = 12;
 const BUNDLE_CRAWL_BUDGET_MS = 20_000;
+const MAX_REDIRECTS = 5;
 
 /** Validate a URL is a public http(s) target, resolving DNS. Throws if not. */
 export async function assertScannableUrl(rawUrl: string): Promise<URL> {
@@ -44,15 +45,21 @@ export async function assertScannableUrl(rawUrl: string): Promise<URL> {
   return url;
 }
 
-async function fetchBounded(url: string, maxBytes: number): Promise<{ text: string; headers: Headers; status: number }> {
+async function fetchOnce(
+  url: string,
+  maxBytes: number,
+): Promise<{ text: string; headers: Headers; status: number; location: string | null }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(url, {
       signal: controller.signal,
-      redirect: "follow",
+      redirect: "manual", // never let the runtime auto-follow — see fetchBounded
       headers: { "user-agent": "AssayScanner/1.0 (+https://assay.dev)" },
     });
+    if (res.status >= 300 && res.status < 400) {
+      return { text: "", headers: res.headers, status: res.status, location: res.headers.get("location") };
+    }
     const reader = res.body?.getReader();
     let received = 0;
     const chunks: Uint8Array[] = [];
@@ -69,10 +76,37 @@ async function fetchBounded(url: string, maxBytes: number): Promise<{ text: stri
       }
     }
     const text = Buffer.concat(chunks.map((c) => Buffer.from(c))).toString("utf8");
-    return { text, headers: res.headers, status: res.status };
+    return { text, headers: res.headers, status: res.status, location: null };
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Fetch a URL, following redirects ourselves so every hop is re-validated by
+ * the SSRF guard. `fetch(url, { redirect: "follow" })` would let a malicious
+ * server 302 straight to an internal address (cloud metadata, localhost) that
+ * the pre-redirect check on the original URL never sees.
+ */
+async function fetchBounded(
+  startUrl: URL,
+  maxBytes: number,
+): Promise<{ text: string; headers: Headers; status: number; finalUrl: URL }> {
+  let current = startUrl;
+  for (let hop = 0; hop < MAX_REDIRECTS; hop++) {
+    const res = await fetchOnce(current.toString(), maxBytes);
+    if (res.location === null) {
+      return { text: res.text, headers: res.headers, status: res.status, finalUrl: current };
+    }
+    let next: URL;
+    try {
+      next = new URL(res.location, current);
+    } catch {
+      throw new Error("That app redirected somewhere invalid.");
+    }
+    current = await assertScannableUrl(next.toString()); // re-guard every hop
+  }
+  throw new Error("That app redirected too many times.");
 }
 
 export interface FetchedApp {
@@ -86,7 +120,7 @@ export interface FetchedApp {
 /** Fetch the app's HTML + its referenced JS bundles, SSRF-guarded throughout. */
 export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
   const url = await assertScannableUrl(rawUrl);
-  const main = await fetchBounded(url.toString(), MAX_HTML_BYTES);
+  const main = await fetchBounded(url, MAX_HTML_BYTES);
 
   // Never certify an error/placeholder page: if the app didn't return a real
   // 200, we couldn't actually reach it — surface that instead of a false pass.
@@ -113,7 +147,7 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
     }
   };
 
-  for (const src of discoverBundleUrls(main.text)) enqueue(src, url.toString());
+  for (const src of discoverBundleUrls(main.text)) enqueue(src, main.finalUrl.toString());
 
   // Hard ceiling on the whole crawl — a slow CDN can't stall the scan.
   const crawlDeadline = Date.now() + BUNDLE_CRAWL_BUDGET_MS;
@@ -122,8 +156,8 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
     if (seen.has(abs)) continue;
     seen.add(abs);
     try {
-      await assertScannableUrl(abs); // re-guard every fetched URL (SSRF)
-      const b = await fetchBounded(abs, MAX_BUNDLE_BYTES);
+      const bundleUrl = await assertScannableUrl(abs); // re-guard every fetched URL (SSRF)
+      const b = await fetchBounded(bundleUrl, MAX_BUNDLE_BYTES);
       bundles.push({ url: abs, content: b.text });
       // Follow deeper chunk imports, but only same-origin (the app's own code).
       for (const ref of discoverChunkRefs(b.text)) {
@@ -141,5 +175,5 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
     }
   }
 
-  return { finalUrl: url.toString(), status: main.status, html: main.text, headers, bundles };
+  return { finalUrl: main.finalUrl.toString(), status: main.status, html: main.text, headers, bundles };
 }

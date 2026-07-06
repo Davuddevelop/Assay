@@ -35,6 +35,7 @@ async function getJson(url: string, anonKey: string): Promise<{ status: number; 
   try {
     const res = await fetch(url, {
       signal: controller.signal,
+      redirect: "manual", // a REST read has no reason to redirect; don't follow one
       headers: { apikey: anonKey, authorization: `Bearer ${anonKey}` },
     });
     let body: unknown = null;
