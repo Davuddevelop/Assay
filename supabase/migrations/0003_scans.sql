@@ -66,11 +66,13 @@ alter table public.ownership_proofs enable row level security;
 alter table public.badges           enable row level security;
 
 -- scans: the owner reads their own.
+drop policy if exists "scans: owner can read" on public.scans;
 create policy "scans: owner can read"
   on public.scans for select
   using (user_id = auth.uid());
 
 -- scan_findings: readable when the parent scan is owned by the user.
+drop policy if exists "scan_findings: owner can read" on public.scan_findings;
 create policy "scan_findings: owner can read"
   on public.scan_findings for select
   using (
@@ -82,6 +84,7 @@ create policy "scan_findings: owner can read"
   );
 
 -- ownership_proofs: owner only.
+drop policy if exists "ownership_proofs: owner can read" on public.ownership_proofs;
 create policy "ownership_proofs: owner can read"
   on public.ownership_proofs for select
   using (user_id = auth.uid());

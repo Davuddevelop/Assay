@@ -23,6 +23,7 @@ create index if not exists scan_usage_user_idx on public.scan_usage (user_id);
 alter table public.scan_usage enable row level security;
 
 -- The owner can read their own meter; writes go through the service role.
+drop policy if exists "scan_usage: owner can read" on public.scan_usage;
 create policy "scan_usage: owner can read"
   on public.scan_usage for select
   using (user_id = auth.uid());

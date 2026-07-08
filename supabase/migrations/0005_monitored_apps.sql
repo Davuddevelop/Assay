@@ -21,6 +21,7 @@ create index if not exists monitored_apps_active_idx
 
 alter table public.monitored_apps enable row level security;
 
+drop policy if exists "monitored_apps: owner can read" on public.monitored_apps;
 create policy "monitored_apps: owner can read"
   on public.monitored_apps for select
   using (user_id = auth.uid());
