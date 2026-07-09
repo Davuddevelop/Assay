@@ -93,16 +93,21 @@ export function Hero() {
   );
 
   return (
-    <section ref={root} className="relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
-        <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
+    <section ref={root} className="relative overflow-hidden border-b border-line">
+      {/* faint structural glow, anchored top-left — not a centered bloom */}
+      <div aria-hidden className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[720px]">
+        <div className="hero-aurora aurora absolute inset-0 opacity-60" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 sm:pt-24">
+        <p className="hero-eyebrow inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
             Independent
           </span>
           One check across Lovable, Bolt, Replit &amp; v0
         </p>
 
-        <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl">
+        <h1 className="mt-8 max-w-4xl font-display text-[2.9rem] font-bold leading-[1.02] tracking-[-0.035em] text-ivory sm:text-[5.4rem]">
           <span className="hero-word inline-block">The</span>{" "}
           <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
             independent
@@ -113,18 +118,16 @@ export function Hero() {
           <span className="hero-word inline-block">apps.</span>
         </h1>
 
-        <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
+        <p className="hero-sub mt-7 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
           Real users. Real payments. Real data. The tool that wrote your code
           can&rsquo;t be the one that vouches for it — Assay is the outside check
-          that proves your app is safe, in plain English, with the exact fix for
-          anything it finds.
+          that proves your app is safe, with the exact fix for anything it finds.
         </p>
 
         <div className="hero-cta mt-9">
-          {/* glassy URL scan field */}
           <form
             onSubmit={onSubmit}
-            className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5"
+            className="flex max-w-md items-center gap-2 rounded-[var(--radius-control)] border border-border bg-surface/60 py-1.5 pl-4 pr-1.5"
           >
             <input
               value={url}
@@ -133,42 +136,28 @@ export function Hero() {
               autoComplete="off"
               aria-label="Your app URL"
               placeholder="yourapp.lovable.app"
-              className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
+              className="min-w-0 flex-1 bg-transparent font-mono text-sm text-ivory outline-none placeholder:text-ash"
             />
             <Button type="submit" variant="primary" size="sm">
               Scan my app
             </Button>
           </form>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-ash">
             {["Exposed keys", "Open database", "Missing protections", "Plain-language fixes"].map(
               (chip) => (
-                <span
-                  key={chip}
-                  className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim"
-                >
+                <span key={chip} className="inline-flex items-center gap-2">
                   <span className="h-1 w-1 rounded-full bg-iris-soft" />
                   {chip}
                 </span>
               ),
             )}
           </div>
-          <a
-            href="/sample"
-            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft transition-colors hover:text-ivory"
-          >
-            See a sample report →
-          </a>
         </div>
 
-        {/* the product, framed, centered, on its aurora */}
-        <div className="hero-product relative mt-20">
+        {/* the product, framed, left-anchored */}
+        <div className="hero-product relative mt-16">
           <div className="hero-parallax relative">
-            <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
-              <div aria-hidden className="hero-aurora aurora absolute inset-0" />
-            </div>
-            <div className="float-soft relative">
-              <ProductMock className="mx-auto max-w-3xl text-left" />
-            </div>
+            <ProductMock className="max-w-3xl text-left" />
           </div>
         </div>
       </div>
