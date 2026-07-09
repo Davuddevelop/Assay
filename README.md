@@ -1,12 +1,14 @@
 # Assay
 
-A security checkpoint for apps built with **Lovable, Bolt, Replit, and v0**. You
-paste the link to an app **you own**; Assay scans it for the security holes
-vibe-coded apps ship with — an exposed key in the browser, a Supabase database
-left open to the public, missing protections — explains each one in plain
-language, and hands you the **exact prompt to paste back into your builder** to
-fix it. Clean apps earn a **hallmark**: ✓ Safe to publish or ⚠ Held — a private
-verdict for you, not a public credential to show off.
+The **independent** security check for apps built with **Lovable, Bolt, Replit,
+and v0**. The tool that wrote your code can't be the one that vouches for it —
+Assay is the outside check. You paste the link to an app **you own**; Assay
+scans it for the security holes AI-built apps ship with — an exposed key in the
+browser, a Supabase database or storage bucket left open to the public, missing
+protections — names the exact data anyone can read right now, explains each
+issue in plain language, and hands you the **exact prompt to paste back into
+your builder** to fix it. Clean apps earn a **hallmark**: ✓ Safe to publish or
+⚠ Held.
 
 This repository holds the Assay web frontend **and** the scan-engine backend.
 
