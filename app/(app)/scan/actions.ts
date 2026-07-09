@@ -7,10 +7,9 @@ import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { createScan } from "@/lib/data/scans";
 import { setWatch } from "@/lib/data/monitors";
-import { inngest, EVENTS } from "@/inngest/client";
+import { executeAndSaveScan } from "@/lib/scan/execute";
 import { consumeScanUsage } from "@/lib/usage";
 import { rateLimit } from "@/lib/rate-limit";
-import { log } from "@/lib/log";
 
 function normalizeUrl(raw: string): string {
   const trimmed = raw.trim();
@@ -31,12 +30,10 @@ async function launch(userId: string, appUrl: string): Promise<never> {
     redirect("/scan?error=limit");
   }
   const scanId = await createScan(userId, appUrl);
-  try {
-    await inngest.send({ name: EVENTS.scanRequested, data: { scanId } });
-  } catch {
-    // Inngest not configured yet — the scan stays queued; documented live gate.
-    log.warn("inngest send failed (scan queued)", { scanId });
-  }
+  // Run inline, same as the anonymous /try flow — no durable-job dependency
+  // (Inngest) on the critical path. The daily watch-list re-check still uses
+  // Inngest, since a scheduler is the one thing this can't replace.
+  await executeAndSaveScan(scanId, appUrl);
   redirect(`/scan/${scanId}`);
 }
 

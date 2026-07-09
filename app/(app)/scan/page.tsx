@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description: "Check your app for security issues before you publish.",
 };
 
+// A real scan (fetch app + crawl bundles + probe RLS/storage + Claude explain)
+// can take longer than the platform's default function timeout; ask for headroom.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 export default async function ScanPage({
   searchParams,
 }: {
