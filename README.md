@@ -5,8 +5,8 @@ paste the link to an app **you own**; Assay scans it for the security holes
 vibe-coded apps ship with — an exposed key in the browser, a Supabase database
 left open to the public, missing protections — explains each one in plain
 language, and hands you the **exact prompt to paste back into your builder** to
-fix it. Clean apps earn a **hallmark**: ✓ Safe to publish or ⚠ Held, with a
-public, shareable badge.
+fix it. Clean apps earn a **hallmark**: ✓ Safe to publish or ⚠ Held — a private
+verdict for you, not a public credential to show off.
 
 This repository holds the Assay web frontend **and** the scan-engine backend.
 
@@ -79,11 +79,10 @@ all.
 
 ### Ethics & safety (non-negotiable, built in)
 
-- **Scan only apps you own.** Every non-demo scan requires **ownership
-  verification**: the user adds a one-time `<meta name="assay-verify"
-  content="…">` tag to their app and we re-fetch to confirm it
-  (`lib/data/scans.ts → verifyOwnership`). The UI states "Assay only scans apps
-  you own."
+- **Scan only apps you own.** No ownership-proof gate — a scan only reads what
+  the app already serves publicly (its HTML, JS bundles, and response
+  headers), so there's nothing private to prove. The UI states this plainly
+  ("Read-only. We never store secrets and never change your app.").
 - **SSRF-guarded fetching** (`lib/scan/fetch.ts`, `lib/scan/ssrf.ts`): only
   public http(s) targets; localhost and private/loopback/link-local IP ranges
   are rejected, every resolved address is checked (anti-DNS-rebinding), and
@@ -91,15 +90,20 @@ all.
 - **Never store secrets.** Secret detection reports the *type* and a **redacted**
   location only — the raw value is never persisted or logged
   (`lib/scan/patterns.ts → redact`).
-- **Detection only.** No exploit payloads. The Supabase check is a single
-  bounded, read-only probe that uses only whether a table returns rows
-  unauthenticated (row *count*, never the data) to decide if RLS is off.
-- **Rate-limited.** Each scan atomically consumes one unit of the user's monthly
-  allowance (`lib/usage.ts → consumeScanUsage` → the `consume_scan_usage`
-  Postgres function), enforced in `scan/actions.ts → launch()` before any fetch;
-  over the limit redirects to `/scan?error=limit`.
-- **Row-Level Security** on every user-facing table; jobs use the service role.
-  Public badge reports are served by token via the service role (no public RLS).
+- **Detection only.** No exploit payloads. The Supabase RLS check
+  (`lib/scan/supabase-rls.ts`) and the Storage-bucket check
+  (`lib/scan/storage.ts`) are each a single bounded, read-only probe that uses
+  only whether a table/bucket returns rows unauthenticated (a row/object
+  *count*, never the data) to decide if access control is off.
+- **Rate-limited twice.** A per-user burst guard (`lib/rate-limit.ts`, 6/min)
+  on top of the monthly allowance (`lib/usage.ts → consumeScanUsage` → the
+  `consume_scan_usage` Postgres function) — both enforced in
+  `scan/actions.ts → launch()` before any fetch; over either limit redirects
+  to `/scan?error=burst` or `/scan?error=limit`. The anonymous `/try` endpoint
+  has its own IP-keyed limit.
+- **Row-Level Security** on every user-facing table; only the owner can read
+  their own scans, findings, and watched apps. Background jobs use the
+  service role.
 - **Security headers on Assay itself.** `next.config.ts` sets CSP (hardening
   directives), HSTS, `X-Frame-Options`, `X-Content-Type-Options`,
   `Referrer-Policy`, and `Permissions-Policy` on every route — the same headers
@@ -109,10 +113,13 @@ all.
 
 - **Auth** is Supabase Auth → GitHub OAuth, used **only to sign you in** — Assay
   requests no repository access (`lib/auth.ts`, `middleware.ts`, `app/auth/*`).
-- **Dashboard** (`/dashboard`) lists your scans; `/scan/[id]` is the report
-  (findings as plain-language cards, the paste-back fix with a copy button, the
-  score, and the badge box when certified); `/badge/[token]` is the public,
-  shareable "safe to publish" report.
+  The OAuth callback's post-login redirect is validated
+  (`lib/safe-redirect.ts → safeNext`) against open-redirect / host-confusion
+  payloads before it's used.
+- **Dashboard** (`/dashboard`) lists your scans and any watched apps; `/scan/[id]`
+  is the report (findings as plain-language cards, the paste-back fix with a
+  copy button, the score, and the "Watch this app" toggle for continuous
+  re-checking).
 - **Pricing** is a single catalog (`lib/plans.ts` — Free / Pro $19 / Team $99)
   surfaced on `/pricing`, the landing page, and the dashboard. Limits are
   enforced by the usage meter today; **Stripe billing and continuous re-scans are
@@ -121,8 +128,7 @@ all.
 ### Setup
 
 1. **Environment** — copy `.env.example` to `.env.local` and fill it in. The only
-   key the scan engine needs is `ANTHROPIC_API_KEY` (and Supabase); generate the
-   encryption key with `openssl rand -hex 32`.
+   key the scan engine needs is `ANTHROPIC_API_KEY` (and Supabase).
 
 2. **Supabase** — create a project, apply the base schema (`supabase db push`),
    then run **`supabase/migrations/0003_scans.sql`** (the `scans`,
@@ -159,15 +165,17 @@ all.
 
 ### Roadmap
 
-**Done:** the scan engine (secrets, Supabase RLS, headers, exposed files), the
-plain-language + paste-back fix generator, scoring, demo mode, auth, the scans
-dashboard, the pricing catalog + enforcement, and continuous re-checking
-(watch an app → daily re-scan → regression flag on the dashboard). **Next:**
-email alerts on regression and Stripe checkout/billing.
+**Done:** the scan engine (secrets, Supabase RLS, public Storage buckets,
+headers, exposed files), the plain-language + paste-back fix generator,
+scoring, demo mode, auth (with a hardened OAuth redirect and a per-user burst
+limit on top of the monthly meter), the scans dashboard, the pricing catalog +
+enforcement, and continuous re-checking (watch an app → daily re-scan →
+regression flag on the dashboard). **Next:** email alerts on regression and
+Stripe checkout/billing.
 
 ## What's built
 
 Frontend: the design system, the signature `HallmarkStamp`, the vibe-coder
-landing page, the scan flow, the report, and the public badge. Backend: the scan
-engine and plain-language fix generator described above, fully typed and
-unit-tested; the live gates need your Supabase + Anthropic + deploy credentials.
+landing page, the scan flow, and the report. Backend: the scan engine and
+plain-language fix generator described above, fully typed and unit-tested; the
+live gates need your Supabase + Anthropic + deploy credentials.

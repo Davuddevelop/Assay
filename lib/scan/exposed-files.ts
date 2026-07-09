@@ -10,8 +10,8 @@ import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heurist
  * The content guards (content-heuristics) stop SPA catch-all 200s from ever
  * producing a false positive.
  */
-const TIMEOUT_MS = 6_000;
-const BUDGET_MS = 12_000;
+const TIMEOUT_MS = 5_000;
+const BUDGET_MS = 8_000;
 const MAX_BYTES = 200_000;
 
 interface Target {

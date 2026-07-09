@@ -117,11 +117,13 @@ alter table public.embeddings    enable row level security;
 alter table public.usage         enable row level security;
 
 -- installations: the owner can read their own rows.
+drop policy if exists "installations: owner can read" on public.installations;
 create policy "installations: owner can read"
   on public.installations for select
   using (owner_user_id = auth.uid());
 
 -- repos: readable if the parent installation is owned by the user.
+drop policy if exists "repos: owner can read" on public.repos;
 create policy "repos: owner can read"
   on public.repos for select
   using (
@@ -133,6 +135,7 @@ create policy "repos: owner can read"
   );
 
 -- checks: readable if the repo's installation is owned by the user.
+drop policy if exists "checks: owner can read" on public.checks;
 create policy "checks: owner can read"
   on public.checks for select
   using (
@@ -146,6 +149,7 @@ create policy "checks: owner can read"
   );
 
 -- findings: readable if the parent check is visible to the user.
+drop policy if exists "findings: owner can read" on public.findings;
 create policy "findings: owner can read"
   on public.findings for select
   using (
@@ -160,6 +164,7 @@ create policy "findings: owner can read"
   );
 
 -- embeddings: owner-scoped read (no client need yet, but locked down by default).
+drop policy if exists "embeddings: owner can read" on public.embeddings;
 create policy "embeddings: owner can read"
   on public.embeddings for select
   using (
@@ -173,6 +178,7 @@ create policy "embeddings: owner can read"
   );
 
 -- usage: the owner can read their own meter.
+drop policy if exists "usage: owner can read" on public.usage;
 create policy "usage: owner can read"
   on public.usage for select
   using (

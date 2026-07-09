@@ -7,9 +7,9 @@ import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { createScan } from "@/lib/data/scans";
 import { setWatch } from "@/lib/data/monitors";
-import { inngest, EVENTS } from "@/inngest/client";
+import { executeAndSaveScan } from "@/lib/scan/execute";
 import { consumeScanUsage } from "@/lib/usage";
-import { log } from "@/lib/log";
+import { rateLimit } from "@/lib/rate-limit";
 
 function normalizeUrl(raw: string): string {
   const trimmed = raw.trim();
@@ -18,18 +18,22 @@ function normalizeUrl(raw: string): string {
 }
 
 async function launch(userId: string, appUrl: string): Promise<never> {
+  // A monthly cap alone still lets a signed-in user fire dozens of live
+  // outbound fetches in seconds (up to their whole allowance at once) — cap
+  // the burst rate too, same guard as the anonymous /try endpoint.
+  if (!rateLimit(`scan:${userId}`).ok) {
+    redirect("/scan?error=burst");
+  }
   // Enforce the monthly scan allowance before doing any work (prevents abuse /
   // SSRF amplification). Plan is "free" until per-user billing lands.
   if (!(await consumeScanUsage(userId, "free"))) {
     redirect("/scan?error=limit");
   }
   const scanId = await createScan(userId, appUrl);
-  try {
-    await inngest.send({ name: EVENTS.scanRequested, data: { scanId } });
-  } catch {
-    // Inngest not configured yet — the scan stays queued; documented live gate.
-    log.warn("inngest send failed (scan queued)", { scanId });
-  }
+  // Run inline, same as the anonymous /try flow — no durable-job dependency
+  // (Inngest) on the critical path. The daily watch-list re-check still uses
+  // Inngest, since a scheduler is the one thing this can't replace.
+  await executeAndSaveScan(scanId, appUrl);
   redirect(`/scan/${scanId}`);
 }
 
