@@ -7,6 +7,8 @@ import {
   decodeJwtRole,
   tablesFromOpenApi,
   isExposedResponse,
+  columnsFromRow,
+  sensitiveColumns,
   type SupabaseRef,
 } from "@/lib/scan/supabase-detect";
 
@@ -79,6 +81,10 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
   }
 
   const exposed: string[] = [];
+  // The column names of the first table we catch exposed — the schema of what
+  // leaked, never the values. This is the visceral proof the report shows.
+  let evidenceTable = "";
+  let evidenceColumns: string[] = [];
   try {
     const deadline = Date.now() + PROBE_BUDGET_MS;
 
@@ -96,8 +102,14 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
         ref.anonKey,
       );
       // Rows returned to an unauthenticated request → RLS is not protecting it.
-      // We use ONLY the array length; the data itself is discarded.
-      if (isExposedResponse(res.status, res.body)) exposed.push(table);
+      // We read ONLY the column names; the values are never touched or stored.
+      if (isExposedResponse(res.status, res.body)) {
+        exposed.push(table);
+        if (evidenceColumns.length === 0) {
+          evidenceTable = table;
+          evidenceColumns = columnsFromRow(res.body);
+        }
+      }
     }
   } catch {
     // A probe failure must never sink the scan — return whatever we confirmed.
@@ -105,12 +117,19 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
   }
 
   if (exposed.length > 0) {
+    const sensitive = sensitiveColumns(evidenceColumns);
+    const shown = (sensitive.length ? sensitive : evidenceColumns).slice(0, 6);
+    const columnLine = shown.length
+      ? ` The exposed columns include ${shown.join(", ")}.`
+      : "";
     findings.push({
       kind: "supabase-rls",
       severity: "critical",
-      title: "Your database is readable by anyone",
-      detail: `Row-Level Security is off or misconfigured: ${exposed.length} table(s) returned data to an unauthenticated request (${exposed.join(", ")}). Anyone on the internet can read this data.`,
-      redactedLocation: `${ref.url} — tables: ${exposed.join(", ")}`,
+      title: "Anyone can read your users' private data",
+      detail: `Your database has no lock on it. ${exposed.length} table(s) (${exposed.join(", ")}) hand real records to anyone on the internet — no login, no password, no account needed.${columnLine} This is the single most common way vibe-coded apps leak their users' data.`,
+      // Passed through verbatim to the report (never sent to the AI), so the
+      // "here's what's exposed right now" proof always survives. Schema only.
+      redactedLocation: shown.length ? `${evidenceTable}: ${shown.join(", ")}` : exposed.join(", "),
     });
   }
 

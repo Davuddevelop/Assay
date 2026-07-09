@@ -8,6 +8,8 @@ import {
   tablesFromOpenApi,
   isExposedResponse,
   isExposedBucketListing,
+  columnsFromRow,
+  sensitiveColumns,
 } from "@/lib/scan/supabase-detect";
 import { discoverBundleUrls, discoverChunkRefs, hasSourceMapRef } from "@/lib/scan/bundles";
 import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heuristics";
@@ -163,6 +165,24 @@ describe("RLS exposure decision (the make-or-break logic)", () => {
     expect(isExposedResponse(401, { message: "no" })).toBe(false); // blocked
     expect(isExposedResponse(200, { count: 1 })).toBe(false); // not an array
     expect(isExposedResponse(0, null)).toBe(false); // unreachable/timeout → not exposed
+  });
+});
+
+describe("exposed-data evidence (schema only, never values)", () => {
+  it("reads column names from the first row and nothing else", () => {
+    expect(columnsFromRow([{ id: 1, email: "a@b.com", phone: "555" }])).toEqual([
+      "id",
+      "email",
+      "phone",
+    ]);
+    expect(columnsFromRow([])).toEqual([]);
+    expect(columnsFromRow(null)).toEqual([]);
+    expect(columnsFromRow({ id: 1 })).toEqual([]); // not an array → nothing
+  });
+
+  it("surfaces the columns a non-coder would find alarming", () => {
+    const cols = ["id", "created_at", "email", "stripe_customer_id", "slug"];
+    expect(sensitiveColumns(cols)).toEqual(["email", "stripe_customer_id"]);
   });
 });
 

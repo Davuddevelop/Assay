@@ -18,14 +18,26 @@ const DEMO_FINDINGS: SeedFinding[] = [
   {
     kind: "supabase-rls",
     severity: "critical",
-    title: "Anyone on the internet can read your users' data",
+    title: "Anyone can read your users' private data",
     plain_explanation:
-      "Your app's database isn't protected. Right now, anyone — not just your logged-in users — can read every row in your `users` and `orders` tables, including names, email addresses, and order history. This is the single most common and most serious mistake in vibe-coded apps.",
+      "Your database has no lock on it. Right now, anyone — not just your logged-in users — can read every row in your `users` and `orders` tables, with no login and no password. This is the single most common and most serious mistake in vibe-coded apps.",
     fix_prompt:
       "Turn on Row Level Security for all my tables in Supabase. For each table (users, orders), enable RLS and add a policy so that a user can only read and edit their own rows (where the row's user_id equals auth.uid()). Do not allow public/anonymous read access to any table containing personal data.",
     manual_steps:
       "Open your Supabase dashboard → Authentication is fine, go to Table Editor.\nFor each table, click the table → … menu → Edit table → toggle on 'Enable Row Level Security'.\nThen Policies → New policy → 'Enable read for users based on user_id'.",
-    redacted_location: "https://abcd1234.supabase.co — tables: users, orders",
+    redacted_location: "users: email, full_name, phone, stripe_customer_id",
+  },
+  {
+    kind: "supabase-storage",
+    severity: "risky",
+    title: "Anyone can open your users' uploaded files",
+    plain_explanation:
+      "Your file storage is open. Anyone on the internet can list and download everything users have uploaded — profile photos, and anything else stored in these buckets — without logging in.",
+    fix_prompt:
+      "In Supabase Storage, make my 'avatars' and 'documents' buckets private (turn off the public flag) and add access policies so that a file can only be read by the user who owns it. Keep only genuinely public assets in a separate public bucket.",
+    manual_steps:
+      "Open Supabase → Storage → each bucket → Settings → turn off 'Public bucket'.\nAdd a storage policy so users can only read their own files.",
+    redacted_location: "avatars (48+ files), documents (12+ files)",
   },
   {
     kind: "exposed-secret",

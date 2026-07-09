@@ -80,12 +80,13 @@ export async function probeSupabaseStorage(ref: SupabaseRef): Promise<RawFinding
 
   if (exposed.length > 0) {
     const names = exposed.map((e) => e.bucket).join(", ");
+    const evidence = exposed.map((e) => `${e.bucket} (${e.count}+ files)`).join(", ");
     findings.push({
       kind: "supabase-storage",
       severity: "risky",
-      title: "Anyone can browse your file storage",
-      detail: `${exposed.length} storage bucket(s) let anyone list their files with no login (${names}). If any of these hold user uploads — avatars, documents, invoices — that's exposed. If everything in them is meant to be public (product photos, site assets), you're fine — just double-check nothing private ended up in there.`,
-      redactedLocation: `${ref.url} — buckets: ${names}`,
+      title: "Anyone can open your users' uploaded files",
+      detail: `${exposed.length} storage bucket(s) let anyone on the internet list and open their files with no login (${names}). If these hold user uploads — profile photos, ID scans, invoices, documents — they're exposed to the whole internet. If everything inside is genuinely meant to be public (product images, site assets), you're fine — just confirm nothing private slipped in.`,
+      redactedLocation: evidence,
     });
   }
 

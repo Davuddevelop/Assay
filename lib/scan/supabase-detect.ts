@@ -45,6 +45,33 @@ export function isExposedBucketListing(status: number, count: number): boolean {
   return status === 200 && count > 0;
 }
 
+/**
+ * The column NAMES on the first returned row — the schema of what's exposed,
+ * never the values. Turns "RLS misconfigured" into "your email, phone, and
+ * stripe_customer_id columns are public", which is what a founder actually
+ * needs to feel. Pure.
+ */
+export function columnsFromRow(body: unknown): string[] {
+  if (
+    Array.isArray(body) &&
+    body.length > 0 &&
+    body[0] &&
+    typeof body[0] === "object"
+  ) {
+    return Object.keys(body[0] as Record<string, unknown>);
+  }
+  return [];
+}
+
+/** Columns that read as sensitive to a non-technical owner, for emphasis. Pure. */
+export function sensitiveColumns(cols: string[]): string[] {
+  return cols.filter((c) =>
+    /email|phone|name|address|pass|token|secret|stripe|card|ssn|dob|birth|api|key|customer|billing|payment|account/i.test(
+      c,
+    ),
+  );
+}
+
 /** Decode a JWT's `role` claim without verifying (we only read it). Pure. */
 export function decodeJwtRole(jwt: string): string | null {
   const parts = jwt.split(".");
