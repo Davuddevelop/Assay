@@ -170,21 +170,29 @@
   Aurora — a soft cool glow blooming from below, the modern AI-startup signature.
   Layered violet / indigo / blue radials, heavily blurred.
 */
-/* A restrained cool wash — a hint of light, not a saturated purple bloom
-   (the #1 "AI-startup template" tell). Kept faint and structural. */
 .aurora {
   background:
     radial-gradient(
-      50% 50% at 50% 40%,
-      color-mix(in srgb, var(--color-iris) 34%, transparent),
+      42% 46% at 50% 50%,
+      color-mix(in srgb, var(--color-iris) 88%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      32% 40% at 30% 56%,
+      color-mix(in srgb, #6d5cf0 76%, transparent),
       transparent 72%
     ),
     radial-gradient(
-      40% 44% at 32% 58%,
-      color-mix(in srgb, #4f86f0 24%, transparent),
-      transparent 74%
+      32% 40% at 70% 56%,
+      color-mix(in srgb, #4f86f0 68%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      16% 24% at 50% 60%,
+      color-mix(in srgb, #c4b5fd 60%, transparent),
+      transparent 70%
     );
-  filter: blur(72px);
+  filter: blur(60px);
 }
 
 /* Glass — for the floating pill nav and glassy surfaces. */
