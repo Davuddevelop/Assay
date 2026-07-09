@@ -11,11 +11,11 @@ import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
  * validate the protocol and resolve the host, rejecting any private IP (also
  * guards against DNS-rebinding). Responses are bounded by time and size.
  */
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 8_000;
 const MAX_HTML_BYTES = 3_000_000;
 const MAX_BUNDLE_BYTES = 1_500_000;
 const MAX_BUNDLES = 12;
-const BUNDLE_CRAWL_BUDGET_MS = 20_000;
+const BUNDLE_CRAWL_BUDGET_MS = 12_000;
 const MAX_REDIRECTS = 5;
 
 /** Validate a URL is a public http(s) target, resolving DNS. Throws if not. */

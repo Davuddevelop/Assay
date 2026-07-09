@@ -21,10 +21,10 @@ export type { SupabaseRef };
  * only WHETHER rows came back without auth — never the data itself, never a
  * write, never an exploit. The probe runs only on an app the user owns.
  */
-const PROBE_TIMEOUT_MS = 6_000;
+const PROBE_TIMEOUT_MS = 5_000;
 const MAX_TABLES = 6;
 // Hard ceiling on the whole probe so a slow/large DB can never hang a scan.
-const PROBE_BUDGET_MS = 18_000;
+const PROBE_BUDGET_MS = 10_000;
 // Tried only when the DB won't list its tables — common vibe-coded table names.
 const COMMON_TABLES = ["users", "profiles", "customers", "orders", "posts", "messages"];
 

@@ -62,7 +62,9 @@ export async function explainFindings(
   if (!key) return fallback(raw);
 
   try {
-    const client = new Anthropic({ apiKey: key });
+    // Bounded so a slow/degraded API response can't blow the scan's own
+    // overall time budget — falls back to the raw finding text on timeout.
+    const client = new Anthropic({ apiKey: key, timeout: 15_000 });
     const input = raw.map((f, i) => ({
       index: i,
       title: f.title,

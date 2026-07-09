@@ -15,9 +15,9 @@ import { isExposedBucketListing, type SupabaseRef } from "@/lib/scan/supabase-de
  * the bucket name and how many objects came back — never a filename, never
  * file contents, never a write.
  */
-const PROBE_TIMEOUT_MS = 6_000;
+const PROBE_TIMEOUT_MS = 5_000;
 const MAX_BUCKETS = 6;
-const PROBE_BUDGET_MS = 15_000;
+const PROBE_BUDGET_MS = 10_000;
 // Tried when we can't enumerate buckets — common vibe-coded bucket names.
 const COMMON_BUCKETS = ["avatars", "uploads", "public", "images", "documents", "files"];
 

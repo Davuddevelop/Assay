@@ -59,35 +59,27 @@ export async function runScan(appUrl: string): Promise<ScanResult> {
     findings.push(...scanText(b.content, shortBundleName(b.url)));
   }
 
-  // 2. Supabase RLS + Storage exposure (detection + read-only probes). Never
-  //    let a probe failure sink the whole scan — the other findings still stand.
+  // 2–4. Supabase RLS, Supabase Storage, and exposed-files are three
+  //      independent network probes — run them concurrently instead of one
+  //      after another, or their individual time budgets simply add up and
+  //      the whole scan can blow past the platform's function timeout. Each
+  //      is already self-bounded and never throws; `.catch` is a second
+  //      safety net so one failing can't take the others down with it.
   const allText = [app.html, ...app.bundles.map((b) => b.content)].join("\n");
   const ref = detectSupabase(allText);
-  if (ref) {
-    try {
-      findings.push(...(await probeSupabaseRls(ref)));
-    } catch {
-      /* probe unavailable — report what the other checks found */
-    }
-    try {
-      findings.push(...(await probeSupabaseStorage(ref)));
-    } catch {
-      /* probe unavailable — report what the other checks found */
-    }
-  }
+  const origin = new URL(app.finalUrl).origin;
 
-  // 3. Missing security headers.
+  const [rlsFindings, storageFindings, exposedFileFindings] = await Promise.all([
+    ref ? probeSupabaseRls(ref).catch(() => []) : Promise.resolve([]),
+    ref ? probeSupabaseStorage(ref).catch(() => []) : Promise.resolve([]),
+    probeExposedFiles(origin).catch(() => []),
+  ]);
+  findings.push(...rlsFindings, ...storageFindings, ...exposedFileFindings);
+
+  // 5. Missing security headers.
   findings.push(...checkHeaders(app.headers));
 
-  // 4. Sensitive files served at the origin (.env, .git). Never sinks the scan.
-  try {
-    const origin = new URL(app.finalUrl).origin;
-    findings.push(...(await probeExposedFiles(origin)));
-  } catch {
-    /* file probe unavailable */
-  }
-
-  // 5. Source maps — original source code is downloadable (advisory).
+  // 6. Source maps — original source code is downloadable (advisory).
   if (app.bundles.some((b) => hasSourceMapRef(b.content))) {
     findings.push({
       kind: "open-endpoint",
