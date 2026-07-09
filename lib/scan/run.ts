@@ -47,17 +47,39 @@ export interface ScanResult {
   verdict: ScanVerdict;
 }
 
+/** Progress line emitted as the scan works — powers the live feed. */
+export type OnProgress = (line: string) => void;
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+
 /** Run every check against a fetched app and score the result. */
-export async function runScan(appUrl: string): Promise<ScanResult> {
+export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<ScanResult> {
+  const say = (l: string) => onProgress?.(l);
+
+  say(`Fetching ${hostOf(appUrl)}…`);
   const app = await fetchApp(appUrl);
+  say(`Read the page and ${app.bundles.length} code bundle${app.bundles.length === 1 ? "" : "s"}.`);
 
   const findings: RawFinding[] = [];
 
   // 1. Exposed secrets in client code (HTML + each bundle).
+  say("Scanning the code for exposed keys and secrets…");
   findings.push(...scanText(app.html, "page HTML"));
   for (const b of app.bundles) {
     findings.push(...scanText(b.content, shortBundleName(b.url)));
   }
+  const secretCount = findings.length;
+  say(
+    secretCount > 0
+      ? `⚠ Found ${secretCount} exposed secret${secretCount === 1 ? "" : "s"} in the code.`
+      : "No exposed secrets in the code.",
+  );
 
   // 2–4. Supabase RLS, Supabase Storage, and exposed-files are three
   //      independent network probes — run them concurrently instead of one
@@ -69,14 +91,21 @@ export async function runScan(appUrl: string): Promise<ScanResult> {
   const ref = detectSupabase(allText);
   const origin = new URL(app.finalUrl).origin;
 
+  say(ref ? "Detected Supabase — probing your database and file storage…" : "Checking for exposed files and endpoints…");
+
   const [rlsFindings, storageFindings, exposedFileFindings] = await Promise.all([
     ref ? probeSupabaseRls(ref).catch(() => []) : Promise.resolve([]),
     ref ? probeSupabaseStorage(ref).catch(() => []) : Promise.resolve([]),
     probeExposedFiles(origin).catch(() => []),
   ]);
+  if (rlsFindings.length > 0) say("⚠ Your database is readable without a login.");
+  if (storageFindings.length > 0) say("⚠ Your file storage is open to anyone.");
+  if (exposedFileFindings.length > 0) say("⚠ Sensitive files are served publicly.");
+  if (ref && rlsFindings.length === 0 && storageFindings.length === 0) say("Database and storage look locked down.");
   findings.push(...rlsFindings, ...storageFindings, ...exposedFileFindings);
 
   // 5. Missing security headers.
+  say("Checking security headers…");
   findings.push(...checkHeaders(app.headers));
 
   // 6. Source maps — original source code is downloadable (advisory).
@@ -93,6 +122,7 @@ export async function runScan(appUrl: string): Promise<ScanResult> {
 
   const deduped = dedupe(findings);
   const { score, verdict } = scoreFindings(deduped);
+  say("Scoring the results…");
 
   return { platform: detectPlatform(app.html), findings: deduped, score, verdict };
 }

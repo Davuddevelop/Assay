@@ -97,26 +97,27 @@ export function Hero() {
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
-            New
+            Independent
           </span>
-          For apps built with Lovable, Bolt, Replit &amp; v0
+          One check across Lovable, Bolt, Replit &amp; v0
         </p>
 
         <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl">
-          <span className="hero-word inline-block">Is</span>{" "}
-          <span className="hero-word inline-block">your</span>{" "}
-          <span className="hero-word inline-block">app</span>{" "}
+          <span className="hero-word inline-block">The</span>{" "}
           <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
-            safe
+            independent
           </span>{" "}
-          <span className="hero-word inline-block">to</span>{" "}
-          <span className="hero-word inline-block">publish?</span>
+          <span className="hero-word inline-block">check</span>{" "}
+          <span className="hero-word inline-block">for</span>{" "}
+          <span className="hero-word inline-block">AI-built</span>{" "}
+          <span className="hero-word inline-block">apps.</span>
         </h1>
 
         <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
-          You built it with AI and wired it to real users and payments. Before you
-          ship, Assay finds the security holes vibe-coded apps leak with — and hands
-          you the exact fix to paste back into your builder.
+          Real users. Real payments. Real data. The tool that wrote your code
+          can&rsquo;t be the one that vouches for it — Assay is the outside check
+          that proves your app is safe, in plain English, with the exact fix for
+          anything it finds.
         </p>
 
         <div className="hero-cta mt-9">
