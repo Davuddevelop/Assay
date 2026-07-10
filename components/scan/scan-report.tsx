@@ -22,44 +22,81 @@ export function ScanReport({
     (a, b) => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity),
   );
 
+  const counts: { label: string; n: number; cls: string }[] = [
+    { label: "Critical", n: countBy(findings, "critical"), cls: "text-oxblood-soft" },
+    { label: "Risky", n: countBy(findings, "risky"), cls: "text-oxblood-soft/90" },
+    { label: "Minor", n: countBy(findings, "minor"), cls: "text-ash" },
+  ];
+
   return (
     <div>
-      {/* header */}
-      <div className="panel relative overflow-hidden p-8 sm:p-10">
-        <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 -top-32 h-64 opacity-30" />
-        <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+      {/* audit header — a report readout, not a marketing hero */}
+      <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface/40">
+        <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-2.5">
+          <p className="truncate font-mono text-xs text-ash">{scan.app_url}</p>
+          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-ash">
+            Security audit
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
           <div className="min-w-0">
-            <p className="truncate font-mono text-xs text-ash">{scan.app_url}</p>
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
+            <div className="flex items-center gap-2.5">
+              <span
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  certified ? "bg-iris" : "bg-oxblood",
+                )}
+              />
+              <span
+                className={cn(
+                  "font-mono text-[11px] uppercase tracking-[0.18em]",
+                  certified ? "text-iris-soft" : "text-oxblood-soft",
+                )}
+              >
+                {certified ? "Passed" : "Action required"}
+              </span>
+            </div>
+            <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-[2.6rem]">
               {certified ? "Safe to publish." : "Not safe to publish — yet."}
             </h1>
-            <p className="mt-2 text-sm text-ivory-dim">
-              {certified
-                ? "No critical or risky issues found. You earned the hallmark."
-                : `${countBy(findings, "critical")} critical · ${countBy(findings, "risky")} risky · ${countBy(findings, "minor")} minor`}
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <div
-              className={cn(
-                "flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 font-display",
-                certified ? "border-iris text-iris-soft" : "border-oxblood text-oxblood-soft",
-              )}
-            >
-              <span className="text-2xl font-bold leading-none">{scan.score ?? "—"}</span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.16em]">score</span>
+
+            {/* severity readout */}
+            <div className="mt-5 flex flex-wrap gap-x-7 gap-y-2">
+              {counts.map((c) => (
+                <div key={c.label} className="flex items-baseline gap-2">
+                  <span className={cn("font-display text-2xl font-bold tabular-nums", c.cls)}>
+                    {c.n}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ash">
+                    {c.label}
+                  </span>
+                </div>
+              ))}
             </div>
-            {certified ? (
-              <HallmarkStamp state="assayed" animate={false} />
-            ) : (
-              <HallmarkStamp state="held" animate={false} />
-            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-5 border-t border-line pt-5 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0">
+            <div className="flex items-baseline gap-2">
+              <span
+                className={cn(
+                  "font-display text-5xl font-bold tabular-nums",
+                  certified ? "text-iris-soft" : "text-oxblood-soft",
+                )}
+              >
+                {scan.score ?? "—"}
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ash">
+                / 100
+              </span>
+            </div>
+            <HallmarkStamp state={certified ? "assayed" : "held"} animate={false} />
           </div>
         </div>
       </div>
 
       {/* findings */}
-      <div className="mt-8 space-y-4">
+      <div className="mt-6 space-y-4">
         {sorted.length > 0 ? (
           sorted.map((f) => <FindingCard key={f.id} finding={f} />)
         ) : (
