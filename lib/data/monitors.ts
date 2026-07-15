@@ -18,6 +18,13 @@ export async function isWatched(appUrl: string): Promise<boolean> {
   return Boolean(data?.active);
 }
 
+/** One monitored app by id — RLS scopes it to the signed-in owner. */
+export async function getMonitor(id: string): Promise<MonitoredAppRow | null> {
+  const db = await createClient();
+  const { data } = await db.from("monitored_apps").select("*").eq("id", id).maybeSingle();
+  return data ?? null;
+}
+
 export interface WatchedAppStatus {
   monitor: MonitoredAppRow;
   /** Most recent completed scan of the app, if any. */

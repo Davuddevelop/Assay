@@ -3,7 +3,6 @@ import Link from "next/link";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { relativeTime } from "@/lib/data/derive";
 import type { WatchedAppStatus } from "@/lib/data/monitors";
-import { cn } from "@/lib/utils";
 
 function Delta({ status }: { status: WatchedAppStatus }) {
   const { delta } = status;
@@ -45,12 +44,7 @@ export function WatchedApps({ apps }: { apps: WatchedAppStatus[] }) {
         {apps.map((status) => {
           const { monitor, latest } = status;
           const row = (
-            <div
-              className={cn(
-                "flex flex-wrap items-center justify-between gap-3 px-5 py-4",
-                latest && "transition-colors hover:bg-surface-hover/40",
-              )}
-            >
+            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-surface-hover/40">
               <div className="min-w-0">
                 <p className="truncate font-mono text-sm text-ivory">{monitor.app_url}</p>
                 <p className="mt-1 font-mono text-xs text-ash">
@@ -76,7 +70,7 @@ export function WatchedApps({ apps }: { apps: WatchedAppStatus[] }) {
           );
           return (
             <li key={monitor.id}>
-              {latest ? <Link href={`/scan/${latest.id}`}>{row}</Link> : row}
+              <Link href={`/apps/${monitor.id}`}>{row}</Link>
             </li>
           );
         })}

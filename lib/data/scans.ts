@@ -17,6 +17,19 @@ export async function getScan(id: string): Promise<ScanRow | null> {
   return data ?? null;
 }
 
+/** Completed scans of one app, oldest → newest — the monitor's history. */
+export async function listCompletedScansForUrl(appUrl: string): Promise<ScanRow[]> {
+  const db = await createClient();
+  const { data } = await db
+    .from("scans")
+    .select("*")
+    .eq("app_url", appUrl)
+    .eq("status", "completed")
+    .order("completed_at", { ascending: true })
+    .limit(30);
+  return data ?? [];
+}
+
 export async function getScanFindings(scanId: string): Promise<ScanFindingRow[]> {
   const db = await createClient();
   const { data } = await db
