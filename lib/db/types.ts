@@ -130,6 +130,8 @@ export type MonitoredAppRow = {
   user_id: string;
   app_url: string;
   active: boolean;
+  last_fingerprint: string | null;
+  last_checked_at: string | null;
   created_at: string;
 };
 
