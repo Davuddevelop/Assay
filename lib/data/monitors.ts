@@ -71,9 +71,18 @@ export async function setWatch(
   if (error) throw new Error(`set watch: ${error.message}`);
 }
 
-/** All active monitors across users — used by the daily re-check job. */
+/** All active monitors across users — used by the change-detection job. */
 export async function listActiveMonitors(): Promise<MonitoredAppRow[]> {
   const db = createAdminClient();
   const { data } = await db.from("monitored_apps").select("*").eq("active", true);
   return data ?? [];
+}
+
+/** Record the latest fingerprint + check time for a monitored app. */
+export async function updateMonitorFingerprint(id: string, fingerprint: string): Promise<void> {
+  const db = createAdminClient();
+  await db
+    .from("monitored_apps")
+    .update({ last_fingerprint: fingerprint, last_checked_at: new Date().toISOString() })
+    .eq("id", id);
 }

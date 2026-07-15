@@ -117,6 +117,20 @@ export interface FetchedApp {
   bundles: { url: string; content: string }[];
 }
 
+/**
+ * Cheap change-detection source: the app's HTML + the bundle URLs it references,
+ * WITHOUT crawling/downloading the bundles. SSRF-guarded. Used by monitoring to
+ * fingerprint an app often and only run a full re-scan when it actually changed.
+ */
+export async function fetchFingerprintSource(
+  rawUrl: string,
+): Promise<{ html: string; bundleUrls: string[] }> {
+  const url = await assertScannableUrl(rawUrl);
+  const main = await fetchBounded(url, MAX_HTML_BYTES);
+  if (main.status >= 400) throw new Error(`unreachable (HTTP ${main.status})`);
+  return { html: main.text, bundleUrls: discoverBundleUrls(main.text) };
+}
+
 /** Fetch the app's HTML + its referenced JS bundles, SSRF-guarded throughout. */
 export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
   const url = await assertScannableUrl(rawUrl);
