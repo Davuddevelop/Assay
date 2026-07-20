@@ -1,4 +1,5 @@
 import { CopyButton } from "@/components/scan/copy-button";
+import { RecheckButton } from "@/components/scan/recheck-button";
 import type { ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +22,13 @@ function parseEvidence(location: string): { label: string | null; items: string[
 }
 
 /** One finding: plain explanation + the paste-back fix prompt + manual steps. */
-export function FindingCard({ finding }: { finding: ScanFindingRow }) {
+export function FindingCard({
+  finding,
+  recheckable = false,
+}: {
+  finding: ScanFindingRow;
+  recheckable?: boolean;
+}) {
   const sev = SEVERITY[finding.severity] ?? SEVERITY.minor;
   const steps = finding.manual_steps.split("\n").map((s) => s.trim()).filter(Boolean);
 
@@ -103,6 +110,8 @@ export function FindingCard({ finding }: { finding: ScanFindingRow }) {
           </ol>
         </details>
       )}
+
+      {recheckable && <RecheckButton scanId={finding.scan_id} findingId={finding.id} />}
     </div>
   );
 }

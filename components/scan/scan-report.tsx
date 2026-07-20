@@ -20,6 +20,9 @@ export function ScanReport({
   findings: ScanFindingRow[];
 }) {
   const certified = scan.verdict === "certified";
+  // Per-finding re-check needs a real, owned scan to look up server-side; the
+  // anonymous /try and seeded /sample reports use synthetic ids, so gate it off.
+  const recheckable = !scan.is_demo && scan.user_id !== null && scan.id.length > 12;
   const sorted = [...findings].sort(
     (a, b) => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity),
   );
@@ -130,7 +133,9 @@ export function ScanReport({
       {/* findings */}
       <div className="mt-6 space-y-4">
         {sorted.length > 0 ? (
-          sorted.map((f) => <FindingCard key={f.id} finding={f} />)
+          sorted.map((f) => (
+            <FindingCard key={f.id} finding={f} recheckable={recheckable} />
+          ))
         ) : (
           <div className="rounded-[var(--radius-card)] border border-line bg-surface/40 px-6 py-12 text-center text-sm text-ivory-dim">
             No issues found. Your app passed every check.
