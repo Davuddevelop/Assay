@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { ProductMock } from "@/components/landing/product-mock";
+import { Silk } from "@/components/landing/silk";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -94,6 +95,14 @@ export function Hero() {
 
   return (
     <section ref={root} className="relative overflow-hidden">
+      {/* Silk — ambient flowing-fabric background behind the hero, fading to onyx. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="aurora absolute inset-0 opacity-40" />
+        <Silk className="absolute inset-0 h-full w-full opacity-70" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
+        <div className="absolute inset-0 bg-onyx/30" />
+      </div>
+
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
