@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { runScan } from "@/lib/scan/run";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { explainFindings } from "@/lib/anthropic/explain";
-import { rateLimit } from "@/lib/rate-limit";
+import { consumeRateLimit } from "@/lib/rate-limit-global";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
 export const runtime = "nodejs";
@@ -11,7 +11,11 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const ANON_LIMIT = 6;
-const ANON_WINDOW_MS = 60_000;
+const ANON_WINDOW_SEC = 60;
+// A hard daily ceiling per IP on top of the per-minute burst limit — bounds the
+// total outbound-fetch cost a single visitor can drive.
+const ANON_DAILY_LIMIT = 40;
+const DAY_SEC = 86_400;
 
 function clientKey(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
@@ -37,8 +41,17 @@ export async function GET(req: NextRequest) {
       const send = (obj: unknown) => controller.enqueue(enc.encode(JSON.stringify(obj) + "\n"));
 
       try {
-        if (!rateLimit(`try:${clientKey(req)}`, ANON_LIMIT, ANON_WINDOW_MS).ok) {
-          send({ type: "error", message: "You've run a lot of scans in a short time. Wait a minute and try again." });
+        const ip = clientKey(req);
+        const withinBurst = await consumeRateLimit(`try:${ip}`, ANON_LIMIT, ANON_WINDOW_SEC);
+        const withinDaily =
+          withinBurst && (await consumeRateLimit(`try-day:${ip}`, ANON_DAILY_LIMIT, DAY_SEC));
+        if (!withinBurst || !withinDaily) {
+          send({
+            type: "error",
+            message: withinBurst
+              ? "You've hit today's free-scan limit. Sign in to keep scanning."
+              : "You've run a lot of scans in a short time. Wait a minute and try again.",
+          });
           controller.close();
           return;
         }
