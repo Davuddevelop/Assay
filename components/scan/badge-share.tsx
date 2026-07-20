@@ -29,6 +29,8 @@ export function BadgeShare({ scanId }: { scanId: string }) {
   }
 
   if (url) {
+    const svgUrl = `${url}/badge.svg`;
+    const embed = `<a href="${url}"><img src="${svgUrl}" alt="Certified safe to publish by Assay" height="28"></a>`;
     return (
       <div className="panel p-6 sm:p-7">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
@@ -52,6 +54,24 @@ export function BadgeShare({ scanId }: { scanId: string }) {
             >
               View
             </a>
+          </div>
+        </div>
+
+        {/* embeddable badge — the growth loop: it links back to Assay from
+            every site that shows it, and greys out as the pass ages */}
+        <div className="mt-6 border-t border-line pt-5">
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ash">
+              Add the badge to your site
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={svgUrl} alt="Assay badge preview" height={28} className="h-7" />
+          </div>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <code className="min-w-0 flex-1 truncate rounded-[var(--radius-control)] border border-border bg-onyx/50 px-4 py-2 font-mono text-xs text-ivory-dim">
+              {embed}
+            </code>
+            <CopyButton text={embed} label="Copy embed" />
           </div>
         </div>
       </div>
