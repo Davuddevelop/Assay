@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ScanReport } from "@/components/scan/scan-report";
 import { ScanPoller } from "@/components/scan/scan-poller";
 import { WatchToggle } from "@/components/scan/watch-toggle";
+import { BadgeShare } from "@/components/scan/badge-share";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { getScan, getScanFindings } from "@/lib/data/scans";
@@ -72,6 +73,11 @@ export default async function ScanReportPage({
       <div className="mt-8">
         <WatchToggle scan={scan} watched={watched} />
       </div>
+      {scan.verdict === "certified" && (
+        <div className="mt-4">
+          <BadgeShare scanId={scan.id} />
+        </div>
+      )}
       <div className="mt-8 flex justify-center">
         <Button href="/scan" variant="ghost" size="md">
           Scan another app

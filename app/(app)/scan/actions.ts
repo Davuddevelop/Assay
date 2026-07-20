@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
-import { createScan } from "@/lib/data/scans";
+import { createScan, ensureBadge } from "@/lib/data/scans";
 import { setWatch } from "@/lib/data/monitors";
 import { executeAndSaveScan } from "@/lib/scan/execute";
 import { consumeScanUsage } from "@/lib/usage";
@@ -67,5 +67,17 @@ export async function toggleWatch(appUrl: string, active: boolean, scanId: strin
   await setWatch(user.id, appUrl, active);
   revalidatePath(`/scan/${scanId}`);
   revalidatePath("/dashboard");
+}
+
+/**
+ * Mint (or fetch) the public badge for a certified scan and return its shareable
+ * URL — the "share proof" action. requireUser gates it; ensureBadge verifies the
+ * scan is owned + certified before writing. Returns null when the scan can't be
+ * badged (not owned, not a pass).
+ */
+export async function shareBadge(scanId: string): Promise<string | null> {
+  await requireUser();
+  const token = await ensureBadge(scanId);
+  return token ? `/badge/${token}` : null;
 }
 

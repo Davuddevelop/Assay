@@ -1,5 +1,6 @@
 import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
+import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
@@ -60,6 +61,36 @@ export function ScanReport({
             <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-[2.6rem]">
               {certified ? "Safe to publish." : "Not safe to publish — yet."}
             </h1>
+
+            {/* freshness — a pass is a snapshot, and it visibly ages */}
+            {certified &&
+              (() => {
+                const f = verificationFreshness(scan.completed_at);
+                const tone =
+                  f.state === "expired"
+                    ? { text: "text-oxblood-soft", dot: "bg-oxblood" }
+                    : f.state === "aging"
+                      ? { text: "text-ivory", dot: "bg-ivory-dim" }
+                      : { text: "text-iris-soft", dot: "bg-iris" };
+                return (
+                  <div className="mt-4">
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em]",
+                        tone.text,
+                      )}
+                    >
+                      <span className={cn("h-1.5 w-1.5 rounded-full", tone.dot)} />
+                      {f.label}
+                    </span>
+                    <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-ash">
+                      A pass is valid for {VALID_DAYS} days — apps drift as you keep
+                      editing. Put it on watch below and it re-verifies on every
+                      change.
+                    </p>
+                  </div>
+                );
+              })()}
 
             {/* severity readout */}
             <div className="mt-5 flex flex-wrap gap-x-7 gap-y-2">
