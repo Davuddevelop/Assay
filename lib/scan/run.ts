@@ -62,14 +62,16 @@ function hostOf(url: string): string {
 export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<ScanResult> {
   const say = (l: string) => onProgress?.(l);
 
-  say(`Fetching ${hostOf(appUrl)}…`);
+  say(`Fetching ${hostOf(appUrl)} — read-only, exactly like a browser…`);
   const app = await fetchApp(appUrl);
-  say(`Read the page and ${app.bundles.length} code bundle${app.bundles.length === 1 ? "" : "s"}.`);
+  say(
+    `Read the page and ${app.bundles.length} code bundle${app.bundles.length === 1 ? "" : "s"} into memory. Nothing saved.`,
+  );
 
   const findings: RawFinding[] = [];
 
   // 1. Exposed secrets in client code (HTML + each bundle).
-  say("Scanning the code for exposed keys and secrets…");
+  say("Scanning the code your app already ships to browsers…");
   findings.push(...scanText(app.html, "page HTML"));
   for (const b of app.bundles) {
     findings.push(...scanText(b.content, shortBundleName(b.url)));
@@ -77,7 +79,7 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   const secretCount = findings.length;
   say(
     secretCount > 0
-      ? `⚠ Found ${secretCount} exposed secret${secretCount === 1 ? "" : "s"} in the code.`
+      ? `⚠ Found ${secretCount} exposed secret${secretCount === 1 ? "" : "s"} — recording where, never the value itself.`
       : "No exposed secrets in the code.",
   );
 
@@ -91,7 +93,11 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   const ref = detectSupabase(allText);
   const origin = new URL(app.finalUrl).origin;
 
-  say(ref ? "Detected Supabase — probing your database and file storage…" : "Checking for exposed files and endpoints…");
+  say(
+    ref
+      ? "Detected Supabase — one bounded read to check your database is closed, not to read your data…"
+      : "Checking for publicly exposed files and endpoints…",
+  );
 
   const [rlsFindings, storageFindings, exposedFileFindings] = await Promise.all([
     ref ? probeSupabaseRls(ref).catch(() => []) : Promise.resolve([]),

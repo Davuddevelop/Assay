@@ -1,5 +1,6 @@
 import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
+import { ScanReceipt } from "@/components/scan/scan-receipt";
 import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
@@ -136,6 +137,9 @@ export function ScanReport({
           </div>
         )}
       </div>
+
+      {/* data receipt — the trust artifact: what we did and what we kept */}
+      <ScanReceipt findings={findings} />
     </div>
   );
 }
