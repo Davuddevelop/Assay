@@ -59,14 +59,20 @@ export function BlurText({
     el.textContent = "";
     el.appendChild(frag);
 
+    const timers: number[] = [];
     const reveal = () =>
       units.forEach((u, i) =>
-        window.setTimeout(() => u.classList.add("in"), startDelay + i * stagger),
+        timers.push(
+          window.setTimeout(
+            () => u.classList.add("in"),
+            startDelay + i * stagger,
+          ),
+        ),
       );
 
     if (immediate) {
       reveal();
-      return;
+      return () => timers.forEach(clearTimeout);
     }
     const io = new IntersectionObserver(
       (entries) => {
@@ -79,7 +85,10 @@ export function BlurText({
       { threshold: 0.35 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      timers.forEach(clearTimeout);
+    };
   }, [stagger, startDelay, immediate]);
 
   return (

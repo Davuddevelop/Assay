@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { scanText } from "@/lib/scan/patterns";
-import { isPrivateIp } from "@/lib/scan/ssrf";
+import { isPrivateIp, isObfuscatedIpHost } from "@/lib/scan/ssrf";
 import {
   detectSupabase,
   decodeJwtRole,
@@ -80,6 +80,25 @@ describe("isPrivateIp (SSRF guard)", () => {
   it("allows public addresses", () => {
     for (const ip of ["8.8.8.8", "1.1.1.1", "203.0.113.5"]) {
       expect(isPrivateIp(ip)).toBe(false);
+    }
+  });
+});
+
+describe("isObfuscatedIpHost (SSRF numeric-encoding guard)", () => {
+  it("blocks decimal / hex / octal / short-form encodings", () => {
+    for (const host of [
+      "2130706433", // decimal 127.0.0.1
+      "0x7f000001", // hex 127.0.0.1
+      "0177.0.0.1", // octal-prefixed octet
+      "127.1", // short form
+      "10.0xff.0.1", // hex octet
+    ]) {
+      expect(isObfuscatedIpHost(host)).toBe(true);
+    }
+  });
+  it("leaves real hostnames and standard dotted-quad alone", () => {
+    for (const host of ["myapp.lovable.app", "example.com", "8.8.8.8", "203.0.113.5"]) {
+      expect(isObfuscatedIpHost(host)).toBe(false);
     }
   });
 });
