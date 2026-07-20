@@ -5,7 +5,7 @@ import { SpotlightCard } from "@/components/spotlight-card";
 
 export function HallmarkApplied() {
   return (
-    <section className="border-b border-line">
+    <section className="edge-b">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
@@ -25,7 +25,7 @@ export function HallmarkApplied() {
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
-            <SpotlightCard className="panel lift h-full p-8 hover:border-iris/40">
+            <SpotlightCard className="panel lift-glow h-full p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="assayed" />
                 <span className="font-mono text-xs text-ash">my-saas.lovable.app</span>

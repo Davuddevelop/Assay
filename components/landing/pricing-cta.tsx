@@ -3,7 +3,7 @@ import { Reveal } from "@/components/reveal";
 
 export function PricingCta() {
   return (
-    <section className="border-b border-line">
+    <section className="edge-b">
       <div className="mx-auto w-full max-w-4xl px-4 py-28 sm:px-6">
         <Reveal>
           <div className="panel relative overflow-hidden px-6 py-20 text-center sm:px-16">

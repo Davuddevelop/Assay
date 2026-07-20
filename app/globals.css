@@ -321,6 +321,172 @@
   transform: translateY(-3px);
 }
 
+/* ── the "sleek" material, extended past the hero ─────────────────────────── */
+
+/* A section divider that fades to nothing at both ends — a lit hairline
+   rather than a hard rule. The premium-feel replacement for a flat border. */
+.edge-b {
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-ivory) 14%, transparent) 22%,
+      color-mix(in srgb, var(--color-ivory) 14%, transparent) 78%,
+      transparent
+    )
+    1;
+}
+
+/* A faint, cool bloom that gives the flat dark ground depth behind a section
+   anchor. Cheaper and quieter than the hero aurora — pure light, no motion. */
+.aura-soft {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-iris) 22%, transparent),
+    transparent 72%
+  );
+  filter: blur(64px);
+  opacity: 0.55;
+}
+
+/* Interactive panels catch a soft iris glow + a brighter edge on hover —
+   the same light language as the hero, made tactile. */
+.lift-glow {
+  transition:
+    transform 320ms var(--ease-settle),
+    border-color 320ms var(--ease-settle),
+    box-shadow 320ms var(--ease-settle);
+}
+
+.lift-glow:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-iris) 42%, var(--color-line));
+  box-shadow: 0 24px 64px -34px color-mix(in srgb, var(--color-iris) 45%, transparent);
+}
+
+/* GradualBlur — progressive edge frost (React Bits, ported). */
+.gradual-blur {
+  isolation: isolate;
+  pointer-events: none;
+}
+.gradual-blur-parent {
+  overflow: hidden;
+}
+.gradual-blur-inner {
+  pointer-events: none;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .gradual-blur-inner > div {
+    background: color-mix(in srgb, var(--color-onyx) 55%, transparent);
+  }
+}
+
+/* LogoLoop — infinite compatibility marquee (React Bits, ported). */
+.logoloop {
+  position: relative;
+  overflow: hidden;
+  --ll-h: 26px;
+  --ll-gap: 60px;
+}
+.logoloop__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  user-select: none;
+}
+.logoloop__list {
+  display: flex;
+  align-items: center;
+}
+.logoloop__item {
+  flex: 0 0 auto;
+  margin-right: var(--ll-gap);
+  display: flex;
+  align-items: center;
+}
+.logoloop .ll-wm {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: calc(var(--ll-h) * 0.82);
+  letter-spacing: -0.02em;
+  color: var(--color-ivory-dim);
+  white-space: nowrap;
+  transition:
+    color 0.3s ease,
+    transform 0.3s var(--ease-settle);
+}
+.logoloop .ll-ico {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-ivory-dim);
+  transition:
+    color 0.3s ease,
+    transform 0.3s var(--ease-settle);
+}
+.logoloop .ll-ico svg {
+  height: var(--ll-h);
+  width: auto;
+  display: block;
+}
+.logoloop__item:hover .ll-wm,
+.logoloop__item:hover .ll-ico {
+  color: var(--color-ivory);
+  transform: scale(1.18);
+}
+.logoloop::before,
+.logoloop::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(40px, 10%, 140px);
+  pointer-events: none;
+  z-index: 5;
+}
+.logoloop::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-onyx), transparent);
+}
+.logoloop::after {
+  right: 0;
+  background: linear-gradient(to left, var(--color-onyx), transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .logoloop__track {
+    transform: translate3d(0, 0, 0) !important;
+  }
+  .logoloop .ll-wm,
+  .logoloop .ll-ico {
+    transition: none !important;
+  }
+}
+
+/* Blur Text — word-by-word blur-in reveal (the React Bits type animation). */
+.bw-word {
+  display: inline-block;
+  filter: blur(12px);
+  opacity: 0;
+  transform: translateY(-0.4em);
+  transition:
+    filter 0.6s var(--ease-settle),
+    opacity 0.6s ease,
+    transform 0.6s var(--ease-settle);
+  will-change: filter, opacity, transform;
+}
+.bw-word.in {
+  filter: blur(0);
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bw-word {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* No scale — just a quiet fade. Respected everywhere. */
   .hallmark-animate {

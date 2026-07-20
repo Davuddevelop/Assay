@@ -4,7 +4,7 @@ import { ScanCard } from "@/components/landing/scan-card";
 
 export function Problem() {
   return (
-    <section className="border-b border-line">
+    <section className="edge-b">
       <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-28 sm:px-6 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <Eyebrow label="The problem" />

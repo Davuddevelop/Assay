@@ -7,8 +7,14 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { ProductMock } from "@/components/landing/product-mock";
 import { Silk } from "@/components/landing/silk";
+import { BlurText } from "@/components/landing/blur-text";
 
-export function Hero() {
+/**
+ * Hero (v2) — the silk-backed, editorial hero. Same structure as the classic
+ * hero, but the headline uses the Blur Text reveal (React Bits type animation)
+ * instead of a slide, landing the page squarely in the v2 look.
+ */
+export function HeroV2() {
   const root = useRef<HTMLElement>(null);
   const router = useRouter();
   const [url, setUrl] = useState("");
@@ -23,81 +29,54 @@ export function Hero() {
     () => {
       const el = root.current;
       if (!el) return;
-
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Orchestrated load: eyebrow → headline words → subhead → CTA → product.
+        // The headline blur-reveal runs itself; orchestrate the rest around it.
         const tl = gsap.timeline({
           defaults: { ease: "power3.out", duration: 0.6 },
         });
         tl.from(".hero-eyebrow", { autoAlpha: 0, y: 16 })
-          .from(
-            ".hero-word",
-            { autoAlpha: 0, yPercent: 60, duration: 0.55, stagger: 0.12 },
-            "-=0.2",
-          )
-          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "-=0.25")
+          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "+=0.5")
           .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.3")
-          .from(
-            ".hero-product",
-            { autoAlpha: 0, y: 28, duration: 0.8 },
-            "-=0.2",
-          );
+          .from(".hero-product", { autoAlpha: 0, y: 28, duration: 0.8 }, "-=0.2");
 
-        // Subtle scroll parallax on the aurora behind the product.
         gsap.to(".hero-aurora", {
           yPercent: 16,
           ease: "none",
-          scrollTrigger: {
-            trigger: el,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
+          scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
         });
       });
 
-      // Cursor parallax on the product — pointer-fine devices only.
-      mm.add(
-        "(prefers-reduced-motion: no-preference) and (pointer: fine)",
-        () => {
-          const xTo = gsap.quickTo(".hero-parallax", "x", {
-            duration: 0.5,
-            ease: "power3.out",
-          });
-          const yTo = gsap.quickTo(".hero-parallax", "y", {
-            duration: 0.5,
-            ease: "power3.out",
-          });
-
-          const onMove = (e: PointerEvent) => {
-            const r = el.getBoundingClientRect();
-            xTo(((e.clientX - r.left) / r.width - 0.5) * 28);
-            yTo(((e.clientY - r.top) / r.height - 0.5) * 20);
-          };
-          const onLeave = () => {
-            xTo(0);
-            yTo(0);
-          };
-
-          el.addEventListener("pointermove", onMove);
-          el.addEventListener("pointerleave", onLeave);
-          return () => {
-            el.removeEventListener("pointermove", onMove);
-            el.removeEventListener("pointerleave", onLeave);
-          };
-        },
-      );
+      mm.add("(prefers-reduced-motion: no-preference) and (pointer: fine)", () => {
+        const xTo = gsap.quickTo(".hero-parallax", "x", { duration: 0.5, ease: "power3.out" });
+        const yTo = gsap.quickTo(".hero-parallax", "y", { duration: 0.5, ease: "power3.out" });
+        const onMove = (e: PointerEvent) => {
+          const r = el.getBoundingClientRect();
+          xTo(((e.clientX - r.left) / r.width - 0.5) * 28);
+          yTo(((e.clientY - r.top) / r.height - 0.5) * 20);
+        };
+        const onLeave = () => {
+          xTo(0);
+          yTo(0);
+        };
+        el.addEventListener("pointermove", onMove);
+        el.addEventListener("pointerleave", onLeave);
+        return () => {
+          el.removeEventListener("pointermove", onMove);
+          el.removeEventListener("pointerleave", onLeave);
+        };
+      });
     },
     { scope: root },
   );
 
   return (
     <section ref={root} className="relative overflow-x-clip">
-      {/* Silk — flowing-fabric background, extended up behind the floating nav
-          so the whole first screen is one continuous backdrop (absolute, not
-          fixed — iOS Safari hides fixed + negative-z layers). */}
+      {/* Silk — flowing-fabric background. Kept position:absolute (NOT fixed —
+          iOS Safari hides fixed + negative-z layers behind the page), and
+          extended up behind the floating nav so the whole first screen is one
+          continuous backdrop with no dark strip at the top. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -top-32 bottom-0 -z-10 overflow-hidden"
@@ -108,7 +87,7 @@ export function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-24 text-center sm:px-6 sm:pt-32">
+      <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
             Independent
@@ -116,16 +95,19 @@ export function Hero() {
           One check across Lovable, Bolt, Replit &amp; v0
         </p>
 
-        <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl">
-          <span className="hero-word inline-block">The</span>{" "}
-          <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
+        <BlurText
+          as="h1"
+          immediate
+          startDelay={120}
+          stagger={95}
+          className="mx-auto mt-7 block max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl"
+        >
+          The{" "}
+          <span className="font-accent text-[1.06em] font-normal tracking-normal text-iris-soft">
             independent
           </span>{" "}
-          <span className="hero-word inline-block">check</span>{" "}
-          <span className="hero-word inline-block">for</span>{" "}
-          <span className="hero-word inline-block">AI-built</span>{" "}
-          <span className="hero-word inline-block">apps.</span>
-        </h1>
+          check for AI-built apps.
+        </BlurText>
 
         <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
           Real users. Real payments. Real data. The tool that wrote your code
@@ -135,7 +117,6 @@ export function Hero() {
         </p>
 
         <div className="hero-cta mt-9">
-          {/* glassy URL scan field */}
           <form
             onSubmit={onSubmit}
             className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5"
@@ -174,7 +155,6 @@ export function Hero() {
           </a>
         </div>
 
-        {/* the product, framed, centered, on its aurora */}
         <div className="hero-product relative mt-20">
           <div className="hero-parallax relative">
             <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
