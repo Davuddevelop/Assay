@@ -72,16 +72,23 @@ export function HeroV2() {
   );
 
   return (
-    <section ref={root} className="relative overflow-hidden">
-      {/* Silk — ambient flowing-fabric background behind the hero, fading to onyx. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+    <>
+      {/* Silk — a FIXED flowing-fabric background that fills the whole first
+          screen, including the strip behind the floating nav, then fades into
+          the solid content below (which paints onyx over it). */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <div className="aurora absolute inset-0 opacity-40" />
         <Silk className="absolute inset-0 h-full w-full opacity-70" />
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
-        <div className="absolute inset-0 bg-onyx/30" />
+        <div className="absolute inset-0 bg-onyx/25" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-20 text-center sm:px-6 sm:pt-28">
+      <section ref={root} className="relative overflow-hidden">
+        {/* fade the silk into the solid sections at the hero's bottom edge */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-[1] h-72 bg-gradient-to-b from-transparent to-onyx"
+        />
+        <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
             Independent
@@ -160,6 +167,7 @@ export function HeroV2() {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

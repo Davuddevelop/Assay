@@ -17,21 +17,24 @@ export default function LandingPage() {
   return (
     <>
       <HeroV2 />
-      <section className="edge-b py-12">
-        <p className="mb-7 text-center font-mono text-xs uppercase tracking-[0.2em] text-ash">
-          Scans apps built with
-        </p>
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <LogoLoop />
-        </div>
-      </section>
-      <Problem />
-      <FeatureBento />
-      <HowItWorks />
-      <HallmarkApplied />
-      <Pricing />
-      <PricingCta />
-      <SiteFooter />
+      {/* Solid ground: paints onyx over the hero's fixed silk as it scrolls up. */}
+      <div className="relative z-0 bg-onyx">
+        <section className="edge-b py-12">
+          <p className="mb-7 text-center font-mono text-xs uppercase tracking-[0.2em] text-ash">
+            Scans apps built with
+          </p>
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <LogoLoop />
+          </div>
+        </section>
+        <Problem />
+        <FeatureBento />
+        <HowItWorks />
+        <HallmarkApplied />
+        <Pricing />
+        <PricingCta />
+        <SiteFooter />
+      </div>
     </>
   );
 }
