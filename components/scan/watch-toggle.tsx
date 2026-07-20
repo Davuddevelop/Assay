@@ -24,6 +24,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
   const [activating, setActivating] = useState(false);
   const [visibleSteps, setVisibleSteps] = useState(0);
   const [settled, setSettled] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const timers = useRef<number[]>([]);
 
   useEffect(() => () => timers.current.forEach((t) => clearTimeout(t)), []);
@@ -34,8 +35,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
     return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  function startWatching() {
-    startAction(() => toggleWatch(scan.app_url, true, scan.id));
+  function runActivation() {
     if (reduced()) {
       setSettled(true);
       return;
@@ -53,8 +53,22 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
     );
   }
 
+  function startWatching() {
+    setBlocked(false);
+    startAction(async () => {
+      const res = await toggleWatch(scan.app_url, true, scan.id);
+      if (res.reason === "limit") {
+        setBlocked(true);
+        return;
+      }
+      runActivation();
+    });
+  }
+
   function stopWatching() {
-    startAction(() => toggleWatch(scan.app_url, false, scan.id));
+    startAction(() => {
+      void toggleWatch(scan.app_url, false, scan.id);
+    });
     setSettled(false);
     setActivating(false);
   }
@@ -103,6 +117,26 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
         </div>
         <Button variant="ghost" size="md" onClick={stopWatching} className="shrink-0">
           Stop watching
+        </Button>
+      </div>
+    );
+  }
+
+  // ── blocked: hit the free watch cap → upsell ────────────────────────────────
+  if (blocked) {
+    return (
+      <div className="panel flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-7">
+        <div className="min-w-0">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+            Watch more apps
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
+            Free watches one app. Upgrade to Pro to watch every app you ship —
+            with email alerts the moment a change breaks something.
+          </p>
+        </div>
+        <Button href="/billing" variant="primary" size="md" className="shrink-0">
+          Upgrade to Pro
         </Button>
       </div>
     );

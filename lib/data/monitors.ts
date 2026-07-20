@@ -85,6 +85,17 @@ export async function listActiveMonitors(): Promise<MonitoredAppRow[]> {
   return data ?? [];
 }
 
+/** The app URLs a user is actively watching — for enforcing the plan's cap. */
+export async function activeWatchUrls(userId: string): Promise<string[]> {
+  const db = createAdminClient();
+  const { data } = await db
+    .from("monitored_apps")
+    .select("app_url")
+    .eq("user_id", userId)
+    .eq("active", true);
+  return (data ?? []).map((r) => r.app_url);
+}
+
 /** Record the latest fingerprint + check time for a monitored app. */
 export async function updateMonitorFingerprint(id: string, fingerprint: string): Promise<void> {
   const db = createAdminClient();

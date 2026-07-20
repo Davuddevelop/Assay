@@ -52,3 +52,26 @@ export function siteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://assay-jet.vercel.app";
   return raw.replace(/\/+$/, "");
 }
+
+/**
+ * Stripe config, or null when unset. Billing is optional: the app runs fully
+ * without it (everyone is Free), the pricing page still renders, and checkout
+ * simply reports it's unavailable. `priceIds` maps a paid plan id to its Stripe
+ * Price. `webhookSecret` verifies incoming webhook signatures.
+ */
+export function stripeConfig(): {
+  secretKey: string;
+  webhookSecret: string;
+  priceIds: { pro: string; team: string };
+} | null {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) return null;
+  return {
+    secretKey,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+    priceIds: {
+      pro: process.env.STRIPE_PRICE_PRO ?? "",
+      team: process.env.STRIPE_PRICE_TEAM ?? "",
+    },
+  };
+}

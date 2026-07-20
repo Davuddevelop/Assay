@@ -136,9 +136,11 @@ all.
    then run **`supabase/migrations/0003_scans.sql`** (the `scans`,
    `scan_findings`, and `ownership_proofs` tables),
    **`supabase/migrations/0004_scan_usage.sql`** (the per-user scan meter +
-   `consume_scan_usage`), and **`supabase/migrations/0005_monitored_apps.sql`**
-   (the watched-apps list behind daily re-checks) in the Supabase SQL editor.
-   All add RLS.
+   `consume_scan_usage`), **`supabase/migrations/0005_monitored_apps.sql`**
+   (the watched-apps list behind daily re-checks),
+   **`supabase/migrations/0007_email_log.sql`** (the alert send-log + dedupe),
+   and **`supabase/migrations/0008_subscriptions.sql`** (the per-user plan the
+   Stripe webhook writes) in the Supabase SQL editor. All add RLS.
 
 3. **Supabase GitHub auth** — Authentication → Providers → enable GitHub with an
    OAuth client id/secret, and add `<your-site>/auth/callback` as a redirect URL.
@@ -148,6 +150,17 @@ all.
    `/api/inngest`). In prod, set `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY`.
 
 5. **Anthropic** — set `ANTHROPIC_API_KEY` for the plain-language fixes.
+
+6. **Resend** (optional) — set `RESEND_API_KEY` + a verified `EMAIL_FROM` for
+   regression alerts + the weekly watch digest. Without it, monitoring still
+   works; it just doesn't email.
+
+7. **Stripe** (optional) — create Pro/Team products, set `STRIPE_SECRET_KEY`,
+   `STRIPE_PRICE_PRO`, `STRIPE_PRICE_TEAM`, and add the webhook endpoint
+   `<site>/api/webhooks/stripe` (→ `STRIPE_WEBHOOK_SECRET`). Without it everyone
+   is Free and upgrades are disabled. Free watches 1 app (dashboard-only);
+   Pro/Team watch unlimited apps + get email alerts. Plan is enforced in scan
+   metering, watch caps, and alert gating.
 
 ### Go-live checklist (each needs your keys)
 

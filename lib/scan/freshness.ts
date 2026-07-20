@@ -8,7 +8,7 @@
  *
  * Pure and deterministic so it's unit-testable and safe on the server or client.
  */
-export type FreshnessState = "fresh" | "aging" | "expired" | "unknown";
+type FreshnessState = "fresh" | "aging" | "expired" | "unknown";
 
 /** A certification is considered current for this many days after the scan. */
 export const VALID_DAYS = 30;

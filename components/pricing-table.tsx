@@ -65,7 +65,7 @@ export function PricingTable({ currentPlan }: { currentPlan?: string }) {
                   </div>
                 ) : (
                   <Button
-                    href={plan.id === "free" ? "/login" : `/login?plan=${plan.id}`}
+                    href={plan.id === "free" ? "/login" : "/billing"}
                     variant={featured ? "primary" : "ghost"}
                     size="lg"
                     className="w-full"

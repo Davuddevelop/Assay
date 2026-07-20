@@ -6,7 +6,9 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { createScan, ensureBadge } from "@/lib/data/scans";
-import { setWatch } from "@/lib/data/monitors";
+import { setWatch, activeWatchUrls } from "@/lib/data/monitors";
+import { getUserPlan } from "@/lib/data/subscriptions";
+import { watchLimit } from "@/lib/plans";
 import { executeAndSaveScan } from "@/lib/scan/execute";
 import { consumeScanUsage } from "@/lib/usage";
 import { rateLimit } from "@/lib/rate-limit";
@@ -25,8 +27,9 @@ async function launch(userId: string, appUrl: string): Promise<never> {
     redirect("/scan?error=burst");
   }
   // Enforce the monthly scan allowance before doing any work (prevents abuse /
-  // SSRF amplification). Plan is "free" until per-user billing lands.
-  if (!(await consumeScanUsage(userId, "free"))) {
+  // SSRF amplification), metered against the user's real plan.
+  const plan = await getUserPlan(userId);
+  if (!(await consumeScanUsage(userId, plan))) {
     redirect("/scan?error=limit");
   }
   const scanId = await createScan(userId, appUrl);
@@ -62,11 +65,31 @@ export async function startScan(formData: FormData) {
  * "keep it safe after you keep editing it" half of the product. Bound directly
  * to the button (no hidden form fields to parse back out).
  */
-export async function toggleWatch(appUrl: string, active: boolean, scanId: string) {
+export type WatchResult = { ok: boolean; reason?: "limit" };
+
+export async function toggleWatch(
+  appUrl: string,
+  active: boolean,
+  scanId: string,
+): Promise<WatchResult> {
   const user = await requireUser();
+
+  // Enforce the plan's watch cap when turning watching ON for a new app.
+  if (active) {
+    const limit = watchLimit(await getUserPlan(user.id));
+    if (limit !== null) {
+      const watched = await activeWatchUrls(user.id);
+      const alreadyWatching = watched.includes(appUrl);
+      if (!alreadyWatching && watched.length >= limit) {
+        return { ok: false, reason: "limit" };
+      }
+    }
+  }
+
   await setWatch(user.id, appUrl, active);
   revalidatePath(`/scan/${scanId}`);
   revalidatePath("/dashboard");
+  return { ok: true };
 }
 
 /**

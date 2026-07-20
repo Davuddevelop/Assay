@@ -4,6 +4,7 @@ import { createScan } from "@/lib/data/scans";
 import { fetchFingerprintSource } from "@/lib/scan/fetch";
 import { computeFingerprint } from "@/lib/scan/fingerprint";
 import { consumeScanUsage } from "@/lib/usage";
+import { getUserPlan } from "@/lib/data/subscriptions";
 import { log } from "@/lib/log";
 
 /**
@@ -45,7 +46,8 @@ export const recheckApps = inngest.createFunction(
         if (!changed) return null; // nothing shipped since last check → nothing to do
 
         // The app changed — this is the moment worth a full re-scan.
-        if (!(await consumeScanUsage(m.user_id, "free"))) {
+        const plan = await getUserPlan(m.user_id);
+        if (!(await consumeScanUsage(m.user_id, plan))) {
           log.warn("recheck skipped: monthly limit", { monitorId: m.id });
           return null;
         }

@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { compareScans } from "@/lib/scan/diff";
 import { sendEmail } from "@/lib/email/resend";
 import { regressionEmail, weeklyDigestEmail, type DigestApp } from "@/lib/email/templates";
+import { getUserPlan } from "@/lib/data/subscriptions";
+import { hasEmailAlerts } from "@/lib/plans";
 import { siteUrl } from "@/lib/env";
 import { log } from "@/lib/log";
 
@@ -35,6 +37,10 @@ export async function notifyOnScanResult(scanId: string): Promise<{ alerted: boo
       .eq("app_url", scan.app_url)
       .maybeSingle();
     if (!monitor?.active) return { alerted: false };
+
+    // Email alerts are a paid feature — Free watchers still see regressions on
+    // their dashboard, but the email nudge is Pro/Team only.
+    if (!hasEmailAlerts(await getUserPlan(scan.user_id))) return { alerted: false };
 
     // Compare against the previous completed scan of the same app.
     const { data: scans } = await db
@@ -142,6 +148,9 @@ export async function sendWeeklyDigests(): Promise<{ sent: number }> {
           };
         }),
       );
+
+      // Weekly digest is a paid feature.
+      if (!hasEmailAlerts(await getUserPlan(userId))) continue;
 
       const { data: userRes } = await db.auth.admin.getUserById(userId);
       const to = userRes?.user?.email;

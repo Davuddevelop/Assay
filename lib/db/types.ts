@@ -142,13 +142,23 @@ export type MonitoredAppRow = {
   created_at: string;
 };
 
-export type EmailLogRow = {
+type EmailLogRow = {
   id: string;
   user_id: string;
   scan_id: string | null;
   kind: string;
   app_url: string | null;
   sent_at: string;
+};
+
+export type SubscriptionRow = {
+  user_id: string;
+  plan: string;
+  status: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  current_period_end: string | null;
+  updated_at: string;
 };
 
 /**
@@ -191,6 +201,7 @@ export interface Database {
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
       monitored_apps: Table<MonitoredAppRow, "user_id" | "app_url">;
       email_log: Table<EmailLogRow, "user_id" | "kind">;
+      subscriptions: Table<SubscriptionRow, "user_id">;
     };
     Views: Record<string, never>;
     Functions: {

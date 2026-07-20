@@ -10,7 +10,7 @@ import { signOut } from "@/app/auth/actions";
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/scan", label: "New scan" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/billing", label: "Billing" },
 ];
 
 /**
