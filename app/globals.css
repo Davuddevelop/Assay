@@ -364,6 +364,23 @@
   box-shadow: 0 24px 64px -34px color-mix(in srgb, var(--color-iris) 45%, transparent);
 }
 
+/* GradualBlur — progressive edge frost (React Bits, ported). */
+.gradual-blur {
+  isolation: isolate;
+  pointer-events: none;
+}
+.gradual-blur-parent {
+  overflow: hidden;
+}
+.gradual-blur-inner {
+  pointer-events: none;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .gradual-blur-inner > div {
+    background: color-mix(in srgb, var(--color-onyx) 55%, transparent);
+  }
+}
+
 /* LogoLoop — infinite compatibility marquee (React Bits, ported). */
 .logoloop {
   position: relative;
