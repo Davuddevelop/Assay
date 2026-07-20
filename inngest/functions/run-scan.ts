@@ -5,6 +5,7 @@ import {
 } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { executeAndSaveScan } from "@/lib/scan/execute";
+import { notifyOnScanResult } from "@/lib/email/notify";
 
 /**
  * Durable scan job — the async path for whoever/whatever has Inngest wired up
@@ -29,6 +30,11 @@ export const runScan = inngest.createFunction(
     });
 
     await step.run("execute", () => executeAndSaveScan(scanId, scan.app_url));
+
+    // If this was a watched app and the scan regressed, email the owner. Its
+    // own step so a delivery hiccup retries without re-running the scan.
+    await step.run("notify", () => notifyOnScanResult(scanId));
+
     return { scanId };
   },
 );

@@ -135,6 +135,15 @@ export type MonitoredAppRow = {
   created_at: string;
 };
 
+export type EmailLogRow = {
+  id: string;
+  user_id: string;
+  scan_id: string | null;
+  kind: string;
+  app_url: string | null;
+  sent_at: string;
+};
+
 /**
  * An Insert type: the columns in `Req` are required, everything else (defaults
  * and nullables) is optional. Update is always a partial. Relationships is an
@@ -173,6 +182,7 @@ export interface Database {
       ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
       monitored_apps: Table<MonitoredAppRow, "user_id" | "app_url">;
+      email_log: Table<EmailLogRow, "user_id" | "kind">;
     };
     Views: Record<string, never>;
     Functions: {
