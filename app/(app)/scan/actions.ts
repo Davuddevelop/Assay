@@ -11,7 +11,7 @@ import { getUserPlan } from "@/lib/data/subscriptions";
 import { watchLimit } from "@/lib/plans";
 import { executeAndSaveScan } from "@/lib/scan/execute";
 import { consumeScanUsage } from "@/lib/usage";
-import { rateLimit } from "@/lib/rate-limit";
+import { consumeRateLimit } from "@/lib/rate-limit-global";
 
 function normalizeUrl(raw: string): string {
   const trimmed = raw.trim();
@@ -22,8 +22,8 @@ function normalizeUrl(raw: string): string {
 async function launch(userId: string, appUrl: string): Promise<never> {
   // A monthly cap alone still lets a signed-in user fire dozens of live
   // outbound fetches in seconds (up to their whole allowance at once) — cap
-  // the burst rate too, same guard as the anonymous /try endpoint.
-  if (!rateLimit(`scan:${userId}`).ok) {
+  // the burst rate too (globally, across instances), same guard as /try.
+  if (!(await consumeRateLimit(`scan:${userId}`, 6, 60))) {
     redirect("/scan?error=burst");
   }
   // Enforce the monthly scan allowance before doing any work (prevents abuse /

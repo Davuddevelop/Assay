@@ -213,6 +213,10 @@ export interface Database {
         Args: { p_user_id: string; p_month: string; p_limit: number };
         Returns: boolean;
       };
+      consume_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number };
+        Returns: boolean;
+      };
       match_embeddings: {
         Args: {
           p_repo_id: string;
