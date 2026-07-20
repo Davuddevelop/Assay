@@ -321,6 +321,49 @@
   transform: translateY(-3px);
 }
 
+/* ── the "sleek" material, extended past the hero ─────────────────────────── */
+
+/* A section divider that fades to nothing at both ends — a lit hairline
+   rather than a hard rule. The premium-feel replacement for a flat border. */
+.edge-b {
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-ivory) 14%, transparent) 22%,
+      color-mix(in srgb, var(--color-ivory) 14%, transparent) 78%,
+      transparent
+    )
+    1;
+}
+
+/* A faint, cool bloom that gives the flat dark ground depth behind a section
+   anchor. Cheaper and quieter than the hero aurora — pure light, no motion. */
+.aura-soft {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-iris) 22%, transparent),
+    transparent 72%
+  );
+  filter: blur(64px);
+  opacity: 0.55;
+}
+
+/* Interactive panels catch a soft iris glow + a brighter edge on hover —
+   the same light language as the hero, made tactile. */
+.lift-glow {
+  transition:
+    transform 320ms var(--ease-settle),
+    border-color 320ms var(--ease-settle),
+    box-shadow 320ms var(--ease-settle);
+}
+
+.lift-glow:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-iris) 42%, var(--color-line));
+  box-shadow: 0 24px 64px -34px color-mix(in srgb, var(--color-iris) 45%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* No scale — just a quiet fade. Respected everywhere. */
   .hallmark-animate {

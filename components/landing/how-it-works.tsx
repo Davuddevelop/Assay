@@ -107,7 +107,7 @@ export function HowItWorks() {
   );
 
   return (
-    <section id="how-it-works" ref={root} className="scroll-mt-16 border-b border-line">
+    <section id="how-it-works" ref={root} className="scroll-mt-16 edge-b">
       <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow label="How it works" />

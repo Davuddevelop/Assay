@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 /** Pricing on the landing page itself — the ladder, in context. */
 export function Pricing() {
   return (
-    <section id="pricing" className="scroll-mt-16 border-b border-line">
+    <section id="pricing" className="scroll-mt-16 edge-b">
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow label="Pricing" />

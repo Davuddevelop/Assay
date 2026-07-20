@@ -23,7 +23,7 @@ function Cell({
   return (
     <SpotlightCard
       className={cn(
-        "panel lift flex flex-col p-6 hover:border-iris/40 sm:p-7",
+        "panel lift-glow flex flex-col p-6 sm:p-7",
         className,
       )}
     >
@@ -74,8 +74,12 @@ const TABLES = [
 
 export function FeatureBento() {
   return (
-    <section className="border-b border-line">
-      <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
+    <section className="edge-b relative overflow-hidden">
+      <div
+        aria-hidden
+        className="aura-soft pointer-events-none absolute left-1/2 top-24 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2"
+      />
+      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <Reveal>
           <Eyebrow label="What it checks" />
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">

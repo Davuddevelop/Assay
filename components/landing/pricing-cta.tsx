@@ -1,27 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
-import { Silk } from "@/components/landing/silk";
 
 export function PricingCta() {
   return (
-    <section className="border-b border-line">
+    <section className="edge-b">
       <div className="mx-auto w-full max-w-4xl px-4 py-28 sm:px-6">
         <Reveal>
-          <div className="panel relative overflow-hidden px-6 py-24 text-center sm:px-16">
-            {/* Silk reprise — the page bookends on flowing fabric. Masked to a
-                soft center and veiled so the closing headline stays crisp. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(120%_120%_at_50%_40%,#000_35%,transparent_82%)]"
-            >
-              <Silk className="absolute inset-0 h-full w-full opacity-50" />
-              <div className="absolute inset-0 bg-onyx/55" />
-            </div>
+          <div className="panel relative overflow-hidden px-6 py-20 text-center sm:px-16">
             <div
               aria-hidden
               className="glow absolute inset-x-0 -top-24 mx-auto h-64 max-w-md"
             />
-            <div className="relative z-10 flex flex-col items-center">
+            <div className="relative flex flex-col items-center">
               <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl">
                 Don&rsquo;t ship it on a{" "}
                 <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
