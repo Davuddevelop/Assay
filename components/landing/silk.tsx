@@ -58,9 +58,11 @@ export function Silk({ className }: { className?: string }) {
       gl.compileShader(s);
       return s;
     };
+    const vs = compile(gl.VERTEX_SHADER, vert);
+    const fs = compile(gl.FRAGMENT_SHADER, frag);
     const prog = gl.createProgram()!;
-    gl.attachShader(prog, compile(gl.VERTEX_SHADER, vert));
-    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, frag));
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
     gl.linkProgram(prog);
     gl.useProgram(prog);
 
@@ -114,6 +116,10 @@ export function Silk({ className }: { className?: string }) {
     return () => {
       window.removeEventListener("resize", resize);
       if (raf) cancelAnimationFrame(raf);
+      gl.deleteBuffer(buf);
+      gl.deleteProgram(prog);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
     };
   }, []);
 

@@ -1,5 +1,7 @@
 import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
+import { ScanReceipt } from "@/components/scan/scan-receipt";
+import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +20,9 @@ export function ScanReport({
   findings: ScanFindingRow[];
 }) {
   const certified = scan.verdict === "certified";
+  // Per-finding re-check needs a real, owned scan to look up server-side; the
+  // anonymous /try and seeded /sample reports use synthetic ids, so gate it off.
+  const recheckable = !scan.is_demo && scan.user_id !== null && scan.id.length > 12;
   const sorted = [...findings].sort(
     (a, b) => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity),
   );
@@ -61,6 +66,36 @@ export function ScanReport({
               {certified ? "Safe to publish." : "Not safe to publish — yet."}
             </h1>
 
+            {/* freshness — a pass is a snapshot, and it visibly ages */}
+            {certified &&
+              (() => {
+                const f = verificationFreshness(scan.completed_at);
+                const tone =
+                  f.state === "expired"
+                    ? { text: "text-oxblood-soft", dot: "bg-oxblood" }
+                    : f.state === "aging"
+                      ? { text: "text-ivory", dot: "bg-ivory-dim" }
+                      : { text: "text-iris-soft", dot: "bg-iris" };
+                return (
+                  <div className="mt-4">
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em]",
+                        tone.text,
+                      )}
+                    >
+                      <span className={cn("h-1.5 w-1.5 rounded-full", tone.dot)} />
+                      {f.label}
+                    </span>
+                    <p className="mt-1.5 max-w-sm text-xs leading-relaxed text-ash">
+                      A pass is valid for {VALID_DAYS} days — apps drift as you keep
+                      editing. Put it on watch below and it re-verifies on every
+                      change.
+                    </p>
+                  </div>
+                );
+              })()}
+
             {/* severity readout */}
             <div className="mt-5 flex flex-wrap gap-x-7 gap-y-2">
               {counts.map((c) => (
@@ -98,13 +133,18 @@ export function ScanReport({
       {/* findings */}
       <div className="mt-6 space-y-4">
         {sorted.length > 0 ? (
-          sorted.map((f) => <FindingCard key={f.id} finding={f} />)
+          sorted.map((f) => (
+            <FindingCard key={f.id} finding={f} recheckable={recheckable} />
+          ))
         ) : (
           <div className="rounded-[var(--radius-card)] border border-line bg-surface/40 px-6 py-12 text-center text-sm text-ivory-dim">
             No issues found. Your app passed every check.
           </div>
         )}
       </div>
+
+      {/* data receipt — the trust artifact: what we did and what we kept */}
+      <ScanReceipt findings={findings} />
     </div>
   );
 }

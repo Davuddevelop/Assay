@@ -15,6 +15,10 @@ export interface Plan {
   checksPerMonth: number;
   /** Connected-repo cap; null = unlimited. */
   repoLimit: number | null;
+  /** How many apps can be watched (continuous re-checking); null = unlimited. */
+  watchLimit: number | null;
+  /** Whether this plan gets email alerts (regression + weekly digest). */
+  emailAlerts: boolean;
   seats: number;
   features: string[];
   cta: string;
@@ -29,12 +33,15 @@ export const PLANS: Record<PlanId, Plan> = {
     tagline: "For checking your first app.",
     checksPerMonth: 100,
     repoLimit: 1,
+    watchLimit: 1,
+    emailAlerts: false,
     seats: 1,
     cta: "Start free",
     features: [
       "1 app",
       "100 scans / month",
       "Plain-language report + paste-back fixes",
+      "Watch 1 app — regressions on your dashboard",
       "Saved scan history",
     ],
   },
@@ -45,6 +52,8 @@ export const PLANS: Record<PlanId, Plan> = {
     tagline: "For builders shipping every week.",
     checksPerMonth: 2000,
     repoLimit: null,
+    watchLimit: null,
+    emailAlerts: true,
     seats: 1,
     cta: "Upgrade to Pro",
     highlighted: true,
@@ -52,7 +61,8 @@ export const PLANS: Record<PlanId, Plan> = {
       "Unlimited apps",
       "2,000 scans / month",
       "Continuous re-scans on every change",
-      "Alerts when a change breaks something",
+      "Email alerts when a change breaks something",
+      "Weekly watch digest",
       "Priority scan queue",
     ],
   },
@@ -63,6 +73,8 @@ export const PLANS: Record<PlanId, Plan> = {
     tagline: "For teams that ship together.",
     checksPerMonth: 10000,
     repoLimit: null,
+    watchLimit: null,
+    emailAlerts: true,
     seats: 10,
     cta: "Start Team",
     features: [
@@ -89,6 +101,16 @@ export function getPlan(planId: string): Plan {
 /** Monthly check allowance for a plan id. */
 export function checksLimit(planId: string): number {
   return getPlan(planId).checksPerMonth;
+}
+
+/** How many apps this plan may watch; null = unlimited. */
+export function watchLimit(planId: string): number | null {
+  return getPlan(planId).watchLimit;
+}
+
+/** Whether this plan receives email alerts (regression + weekly digest). */
+export function hasEmailAlerts(planId: string): boolean {
+  return getPlan(planId).emailAlerts;
 }
 
 /** The next paid plan to upsell from the current one, or null if top tier. */

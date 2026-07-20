@@ -117,6 +117,13 @@ type OwnershipProofRow = {
   created_at: string;
 };
 
+type BadgeRow = {
+  id: string;
+  scan_id: string;
+  public_token: string;
+  created_at: string;
+};
+
 type ScanUsageRow = {
   id: string;
   user_id: string;
@@ -133,6 +140,25 @@ export type MonitoredAppRow = {
   last_fingerprint: string | null;
   last_checked_at: string | null;
   created_at: string;
+};
+
+type EmailLogRow = {
+  id: string;
+  user_id: string;
+  scan_id: string | null;
+  kind: string;
+  app_url: string | null;
+  sent_at: string;
+};
+
+export type SubscriptionRow = {
+  user_id: string;
+  plan: string;
+  status: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  current_period_end: string | null;
+  updated_at: string;
 };
 
 /**
@@ -171,8 +197,11 @@ export interface Database {
       scans: Table<ScanRow, "app_url">;
       scan_findings: Table<ScanFindingRow, "scan_id" | "kind" | "severity" | "title">;
       ownership_proofs: Table<OwnershipProofRow, "user_id" | "app_url" | "token">;
+      badges: Table<BadgeRow, "scan_id" | "public_token">;
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
       monitored_apps: Table<MonitoredAppRow, "user_id" | "app_url">;
+      email_log: Table<EmailLogRow, "user_id" | "kind">;
+      subscriptions: Table<SubscriptionRow, "user_id">;
     };
     Views: Record<string, never>;
     Functions: {

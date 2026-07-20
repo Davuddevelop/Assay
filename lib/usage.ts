@@ -27,3 +27,15 @@ export async function consumeScanUsage(
   if (error) throw new Error(`consume_scan_usage: ${error.message}`);
   return data === true;
 }
+
+/** How many scans the user has used this month (for the billing meter). */
+export async function scanUsageThisMonth(userId: string): Promise<number> {
+  const db = createAdminClient();
+  const { data } = await db
+    .from("scan_usage")
+    .select("count")
+    .eq("user_id", userId)
+    .eq("month", monthKey())
+    .maybeSingle();
+  return data?.count ?? 0;
+}

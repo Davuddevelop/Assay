@@ -2,7 +2,7 @@ import "server-only";
 
 import { lookup } from "node:dns/promises";
 
-import { isPrivateIp } from "@/lib/scan/ssrf";
+import { isPrivateIp, isObfuscatedIpHost } from "@/lib/scan/ssrf";
 import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
 
 /**
@@ -31,6 +31,10 @@ export async function assertScannableUrl(rawUrl: string): Promise<URL> {
   }
   const host = url.hostname;
   if (!host || host === "localhost") throw new Error("That address can't be scanned.");
+
+  // Reject non-standard numeric IP encodings (decimal/hex/octal/short-form)
+  // before resolving — these exist only to slip a private target past the guard.
+  if (isObfuscatedIpHost(host)) throw new Error("That address can't be scanned.");
 
   // Resolve every address and reject if any is private (anti-rebinding).
   let addrs: { address: string }[];
