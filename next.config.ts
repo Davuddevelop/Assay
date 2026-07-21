@@ -4,9 +4,11 @@ import type { NextConfig } from "next";
 
 // Security headers applied to every route. Assay scans other apps for exactly
 // these — so it sets them on itself. The CSP carries only hardening directives
-// that don't constrain scripts/styles/connections (so Next's inline bootstrap,
-// GSAP, and Supabase calls keep working); a fuller nonce-based CSP is a later
-// hardening. `frame-ancestors` + `X-Frame-Options` both block clickjacking.
+// that don't constrain scripts/styles/connections. A nonce'd `script-src` was
+// tried in middleware.ts and reverted: verified with a real browser that
+// Next 16 + Turbopack doesn't propagate the nonce to its own chunk or inline
+// hydration scripts here, so the app never rendered — a real gap, not yet
+// resolved. `frame-ancestors` + `X-Frame-Options` both block clickjacking.
 const SECURITY_HEADERS = [
   {
     key: "Content-Security-Policy",
