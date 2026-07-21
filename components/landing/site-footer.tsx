@@ -15,6 +15,14 @@ const COLUMNS = [
     heading: "Account",
     links: [{ href: "/login", label: "Sign in with GitHub" }],
   },
+  {
+    heading: "Legal",
+    links: [
+      { href: "/terms", label: "Terms" },
+      { href: "/privacy", label: "Privacy" },
+      { href: "/acceptable-use", label: "Acceptable use" },
+    ],
+  },
 ];
 
 export function SiteFooter() {
@@ -30,7 +38,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-12 sm:gap-16">
+          <div className="grid grid-cols-2 gap-12 sm:grid-cols-3 sm:gap-16">
             {COLUMNS.map((col) => (
               <div key={col.heading}>
                 <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
