@@ -73,7 +73,12 @@ export default async function ScanPage({
       </form>
 
       <p className="mt-5 font-mono text-xs leading-relaxed text-ash">
-        Read-only. We never store secrets and never change your app.
+        Read-only. We never store secrets and never change your app. By scanning,
+        you confirm you own this app or are authorized to test it — see our{" "}
+        <Link href="/acceptable-use" className="text-iris-soft hover:text-ivory">
+          acceptable use
+        </Link>{" "}
+        policy.
       </p>
 
       <Link
