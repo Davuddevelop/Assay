@@ -42,8 +42,8 @@ const STEPS = [
   {
     n: "02",
     icon: I.scan,
-    title: "Confirm it's yours",
-    body: "Add a one-line tag we give you so we know you own the app. Then Assay checks it for exposed keys, an open database, and missing protections.",
+    title: "Watch it scan",
+    body: "Assay fetches your app the way a browser does and checks it live, right in front of you — for exposed keys, an open database, and missing protections.",
   },
   {
     n: "03",

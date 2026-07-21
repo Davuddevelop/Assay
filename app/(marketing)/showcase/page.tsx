@@ -130,11 +130,11 @@ export default function ShowcasePage() {
       <Section label="Button" title="Active voice, gold restraint">
         <div className="space-y-8">
           <div className="flex flex-wrap items-center gap-3">
-            <Button variant="primary">Connect repo</Button>
+            <Button variant="primary">Scan my app</Button>
             <Button variant="ghost">See how it works</Button>
-            <Button variant="danger">Disconnect</Button>
+            <Button variant="danger">Stop watching</Button>
             <Button variant="primary" disabled>
-              Connecting…
+              Scanning…
             </Button>
           </div>
           <div className="flex flex-wrap items-center gap-3">

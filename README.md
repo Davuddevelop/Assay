@@ -29,7 +29,7 @@ npm run dev      # http://localhost:3000
 
 - `/` — landing page
 - `/sample` — a seeded demo report (works with no keys — the demo never fails)
-- `/scan` — submit a URL → confirm ownership → scan
+- `/scan` — submit a URL → scan runs immediately (no ownership-proof gate)
 - `/showcase` — the design system: tokens, type roles, and the components
 
 ## Checks
@@ -49,27 +49,31 @@ instead of WHY. Behavior stays identical; only the shape gets smaller.
 
 ## Backend — the scan engine
 
-A scan is a durable async job. The user submits a URL for an app they've
-verified they own; Assay fetches it the way the public does, runs detection-only
-checks, scores the result, and turns raw findings into plain-language fixes.
+A signed-in scan runs inline (no ownership-proof gate — a scan only reads what
+the app already serves publicly). Assay fetches it the way the public does,
+runs detection-only checks, scores the result, and turns raw findings into
+plain-language fixes. The same pipeline also runs as a durable Inngest job for
+the watch-list's scheduled re-checks.
 
 ### Architecture
 
 ```
-/scan (URL + ownership) ─▶ createScan ─▶ Inngest event (app/scan.requested)
-                                              │
-                    ┌──────────────────────────┘
-                    ▼
-        inngest/functions/run-scan.ts (durable, step-by-step)
-          1. mark the scan running
-          2. fetch the app, SSRF-guarded     (lib/scan/fetch.ts)
-          3. run detection-only checks        (lib/scan/run.ts):
-               • exposed secrets in HTML + JS bundles   (lib/scan/patterns.ts — redacted)
-               • Supabase RLS exposure, read-only probe  (lib/scan/supabase-rls.ts)
-               • missing security headers                (lib/scan/headers.ts)
-          4. score + verdict                  (lib/scan/score.ts, pure)
-          5. plain-language + paste-back fixes (lib/anthropic/explain.ts, Sonnet 4.6)
-          6. persist findings + score + verdict
+/scan (URL) ──────────────────▶ createScan ─▶ executeAndSaveScan()  ← called inline
+watch-list cron (app changed) ─▶ createScan ─▶ app/scan.requested   ← Inngest event
+                                                      │
+                                                      ▼
+                                    inngest/functions/run-scan.ts
+                                    also calls executeAndSaveScan()
+
+executeAndSaveScan()  (lib/scan/execute.ts — the one shared pipeline)
+  1. fetch the app, SSRF-guarded      (lib/scan/fetch.ts)
+  2. run detection-only checks         (lib/scan/run.ts):
+       • exposed secrets in HTML + JS bundles   (lib/scan/patterns.ts — redacted)
+       • Supabase RLS exposure, read-only probe  (lib/scan/supabase-rls.ts)
+       • missing security headers                (lib/scan/headers.ts)
+  3. score + verdict                   (lib/scan/score.ts, pure)
+  4. plain-language + paste-back fixes (lib/anthropic/explain.ts, Sonnet 4.6)
+  5. persist findings + score + verdict
 ```
 
 The Claude layer (`lib/anthropic/explain.ts`) turns each raw finding into

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /*
-  Active voice, always. Labels read "Connect repo", never "Submit".
+  Active voice, always. Labels read "Scan my app", never "Submit".
   Restraint: the primary action is a gold hairline that fills on hover —
   the only place we lean on the accent.
 */
