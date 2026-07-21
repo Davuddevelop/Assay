@@ -10,16 +10,11 @@ const STEPS = [
   },
   {
     n: "2",
-    title: "Confirm it's yours",
-    body: "Add one tag to your app so we know you own it. We only ever scan your apps.",
-  },
-  {
-    n: "3",
     title: "Get your report",
     body: "Every issue in plain English, with the exact prompt to paste back to fix it.",
   },
   {
-    n: "4",
+    n: "3",
     title: "Earn the hallmark",
     body: "Once it's clean, you get the all-clear — the confidence to publish, knowing nothing's exposed.",
   },
@@ -38,7 +33,7 @@ export function Onboarding() {
           Check your first app in under a minute
         </h2>
 
-        <ol className="mt-8 grid gap-4 sm:grid-cols-2">
+        <ol className="mt-8 grid gap-4 sm:grid-cols-3">
           {STEPS.map((step) => (
             <li
               key={step.n}

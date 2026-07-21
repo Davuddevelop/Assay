@@ -14,12 +14,12 @@ const STEPS = [
     body: "Sign in, then drop in the URL of your live app — the one built with Lovable, Bolt, Replit, or v0. No install, no code to touch.",
   },
   {
-    title: "2. Confirm you own it",
-    body: "Add the one-line verification tag we give you to your app and republish. In your builder, just say: “add this exact tag to the page head.” Assay only scans apps you own.",
+    title: "2. Watch it scan",
+    body: "No waiting on a spinner — Assay fetches your app the way a browser does and runs the checks live in front of you: exposed keys, an open database, missing protections.",
   },
   {
     title: "3. Get your report and fixes",
-    body: "Assay checks for exposed keys, an open database (Supabase RLS), and missing protections — then explains each issue in plain language with the exact prompt to paste back. Clean apps earn the hallmark: ✓ Safe to publish or ⚠ Held.",
+    body: "Every issue is explained in plain language, with the exact prompt to paste back into your builder to fix it. Clean apps earn the hallmark: ✓ Safe to publish or ⚠ Held.",
   },
 ];
 
@@ -44,7 +44,15 @@ export default function DocsPage() {
         ))}
       </div>
 
-      <p className="mt-12 text-sm text-ash">
+      <p className="mt-8 text-xs leading-relaxed text-ash">
+        Scan only apps you own or are authorized to test — see our{" "}
+        <Link href="/acceptable-use" className="text-iris-soft hover:text-ivory">
+          Acceptable Use Policy
+        </Link>
+        .
+      </p>
+
+      <p className="mt-8 text-sm text-ash">
         Ready?{" "}
         <Link href="/try" className="text-iris-soft hover:text-ivory">
           Scan your app →
