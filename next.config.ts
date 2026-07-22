@@ -29,7 +29,24 @@ const nextConfig: NextConfig = {
     root: path.dirname(fileURLToPath(import.meta.url)),
   },
   async headers() {
-    return [{ source: "/(.*)", headers: SECURITY_HEADERS }];
+    return [
+      { source: "/(.*)", headers: SECURITY_HEADERS },
+      {
+        // Page documents only (never /_next/static, which is hashed +
+        // immutable and should stay aggressively cached). Forces a
+        // revalidation on every navigation instead of letting the browser
+        // serve a stale HTML shell from a previous deploy against the
+        // current JS bundle — that mismatch is what caused the old landing
+        // page to flash before snapping to the current one after a route
+        // swap (a stale-HTML-vs-fresh-hydration mismatch, not a real bug in
+        // either page). Cheap insurance against it recurring on any future
+        // deploy for a first-time visitor.
+        source: "/((?!_next/static|_next/image).*)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+        ],
+      },
+    ];
   },
 };
 
