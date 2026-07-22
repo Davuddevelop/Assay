@@ -15,7 +15,7 @@ export async function signInWithGitHub() {
     provider: "github",
     options: {
       redirectTo: `${origin}/auth/callback`,
-      // Read access to the repos the user picks; the GitHub App grants the rest.
+      // Sign-in only — no repository access is ever requested.
       scopes: "read:user user:email",
     },
   });

@@ -4,7 +4,7 @@ import { getUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buildActivity } from "@/lib/monitor/activity";
 import { agentChatReply, type ChatTurn } from "@/lib/anthropic/agent-chat";
-import { rateLimit } from "@/lib/rate-limit";
+import { consumeRateLimit } from "@/lib/rate-limit-global";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,9 +19,12 @@ export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  if (!rateLimit(`agent-chat:${user.id}`, 20, 60_000).ok) {
+  // Global across instances — each call hits the Anthropic API (real cost), so
+  // the per-instance in-memory limiter alone isn't a sufficient abuse guard.
+  if (!(await consumeRateLimit(`agent-chat:${user.id}`, 20, 60))) {
     return NextResponse.json(
       { reply: "You're sending messages very fast — give me a few seconds and try again." },
+      { status: 429 },
     );
   }
 

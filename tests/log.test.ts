@@ -35,6 +35,17 @@ describe("log: redaction", () => {
     expect(out.install.encrypted_token).toBe("[redacted]");
   });
 
+  it("redacts a secret-shaped value even under an innocuous key", () => {
+    const out = _redact({
+      note: `failed with key sk_live_${"A".repeat(24)}`,
+      hint: `whsec_${"b".repeat(20)}`,
+      msg: "totally normal log line",
+    }) as Record<string, unknown>;
+    expect(out.note).toBe("[redacted]");
+    expect(out.hint).toBe("[redacted]");
+    expect(out.msg).toBe("totally normal log line");
+  });
+
   it("truncates long strings", () => {
     const long = "x".repeat(1000);
     const out = _redact({ note: long }) as Record<string, unknown>;

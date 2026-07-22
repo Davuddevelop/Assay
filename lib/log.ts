@@ -13,11 +13,20 @@ type Context = Record<string, unknown>;
 
 const SENSITIVE_KEY = /(token|secret|password|authorization|api[-_]?key|encryption|private[-_]?key|cookie|diff|patch|content|code|body)/i;
 
+// Defense-in-depth: catches a secret-shaped value logged under an innocuous
+// key (e.g. `note: "sk_live_..."` from an interpolated error message) that the
+// key-name check above wouldn't otherwise catch. Covers this codebase's known
+// key formats (Stripe, Resend, Supabase/JWT, Anthropic, Slack, SendGrid, AWS)
+// plus generic long hex/base64 tokens.
+const SENSITIVE_VALUE =
+  /\b(sk_live_|sk_test_|rk_live_|whsec_|re_[A-Za-z0-9]{8}|sb_secret_|sk-ant-|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|xox[abpr]-|SG\.[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16})/;
+
 const MAX_STRING = 256;
 
 function redact(value: unknown, depth = 0): unknown {
   if (depth > 4) return "[truncated]";
   if (typeof value === "string") {
+    if (SENSITIVE_VALUE.test(value)) return "[redacted]";
     return value.length > MAX_STRING
       ? `${value.slice(0, MAX_STRING)}…[${value.length} chars]`
       : value;
