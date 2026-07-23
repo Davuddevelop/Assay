@@ -57,7 +57,11 @@ export default function TermsPage() {
           is not a substitute for a professional security audit. Apps change;
           verification ages. New issues can appear that Assay does not check for.
           You remain responsible for your app&rsquo;s security. Assay is provided
-          &ldquo;as is,&rdquo; without warranties of any kind.
+          &ldquo;as is,&rdquo; without warranties of any kind. Reports and badges
+          are provided for your own informational use; Assay disclaims any duty
+          of care to, and any liability toward, anyone other than the account
+          holder who requested the scan &mdash; including third parties who view
+          a shared report or badge link.
         </p>
       </section>
 
@@ -83,7 +87,19 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>7. Limitation of liability</h2>
+        <h2>7. Indemnification</h2>
+        <p>
+          You agree to indemnify and hold Assay and its operators harmless from
+          any claim, loss, or expense (including reasonable legal fees) arising
+          from: your breach of these terms; your scanning of an app you
+          don&rsquo;t own or aren&rsquo;t authorized to test; or a third
+          party&rsquo;s reliance on a report or badge you shared, generated, or
+          embedded.
+        </p>
+      </section>
+
+      <section>
+        <h2>8. Limitation of liability</h2>
         <p>
           To the maximum extent permitted by law, Assay and its operators
           aren&rsquo;t liable for indirect, incidental, or consequential damages,
@@ -94,7 +110,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>8. Termination</h2>
+        <h2>9. Termination</h2>
         <p>
           You can stop using Assay and delete your account at any time. We may
           suspend or terminate access for breach of these terms. Sections that by
@@ -104,7 +120,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>9. Changes</h2>
+        <h2>10. Changes</h2>
         <p>
           We may update these terms; we&rsquo;ll change the date above and, for
           material changes, give reasonable notice. Continued use after a change
@@ -113,7 +129,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>10. Contact &amp; governing law</h2>
+        <h2>11. Contact &amp; governing law</h2>
         <p>
           Assay is operated by <strong>[legal entity]</strong> and these terms
           are governed by the laws of <strong>[jurisdiction]</strong>. Questions

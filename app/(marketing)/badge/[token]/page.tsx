@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -104,8 +105,18 @@ export default async function BadgePage({
           {expired
             ? `This app passed Assay's check, but the verification is older than ${VALID_DAYS} days. Apps drift as they're edited — ask the owner for a fresh check.`
             : certified
-              ? `Assay checked ${host} for exposed secrets, open databases, and missing protections and found nothing that puts users at risk.`
+              ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the time of the check.`
               : `This app has open security issues its owner needs to fix before it's safe to publish.`}
+        </p>
+
+        <p className="mx-auto mt-5 max-w-sm border-t border-line pt-4 font-mono text-[11px] leading-relaxed text-ash">
+          A bounded, automated check for specific issues — not a comprehensive
+          audit, and not a guarantee this app is secure. Provided for
+          informational use only; see{" "}
+          <Link href="/terms" className="underline underline-offset-2 hover:text-ivory-dim">
+            Terms
+          </Link>
+          .
         </p>
       </div>
 
