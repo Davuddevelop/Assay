@@ -49,7 +49,7 @@ export function resendConfig(): { apiKey: string; from: string } | null {
 
 /** Absolute base URL for links inside emails (no trailing slash). */
 export function siteUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://assay-jet.vercel.app";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://assaysecurity.com";
   return raw.replace(/\/+$/, "");
 }
 

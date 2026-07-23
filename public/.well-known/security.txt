@@ -1,5 +1,5 @@
 Contact: mailto:security@assay.dev
 Expires: 2027-07-21T00:00:00.000Z
 Preferred-Languages: en
-Canonical: https://assay-jet.vercel.app/.well-known/security.txt
-Policy: https://assay-jet.vercel.app/acceptable-use
+Canonical: https://assaysecurity.com/.well-known/security.txt
+Policy: https://assaysecurity.com/acceptable-use
