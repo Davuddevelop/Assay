@@ -76,7 +76,7 @@ them, an independent safety check isn't a nice-to-have, it's cover.
 
 ## 5. The product — what's actually built
 
-The full flow works end to end today, deployed on Vercel (`assay-jet.vercel.app`).
+The full flow works end to end today, deployed on Vercel (`assaysecurity.com`).
 
 ### The scan flow
 1. **Paste a URL** (no login needed to try it — `/try`).
