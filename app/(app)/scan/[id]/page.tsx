@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -9,6 +10,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { getScan, getScanFindings } from "@/lib/data/scans";
 import { isWatched } from "@/lib/data/monitors";
+
+export const metadata: Metadata = {
+  title: "Scan report — Assay",
+  description: "Your app's security scan results.",
+  robots: { index: false, follow: true },
+};
 
 export default async function ScanReportPage({
   params,

@@ -11,9 +11,10 @@ import { PricingCta } from "@/components/landing/pricing-cta";
 import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata: Metadata = {
-  title: "Assay — Is your app safe to publish? (classic)",
+  title: "Classic layout — Assay",
   description:
     "The previous landing design, kept for reference. The current design lives at the home page.",
+  robots: { index: false, follow: true },
 };
 
 /** The classic landing — preserved at /classic. The v2 design is the home page. */

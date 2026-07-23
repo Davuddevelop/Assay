@@ -28,9 +28,16 @@ export async function generateMetadata({
   const report = await getBadgeReport(token);
   if (!report) return { title: "Assay" };
   const host = hostOf(report.appUrl);
+  const title = `${host} — Certified safe to publish · Assay`;
+  const description = `${host} passed Assay's independent security check.`;
   return {
-    title: `${host} — Certified safe to publish · Assay`,
-    description: `${host} passed Assay's independent security check.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
   };
 }
 

@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { getDemoReport } from "@/lib/scan/demo";
 
 export const metadata: Metadata = {
-  title: "Sample report — Assay",
-  description: "See exactly what an Assay security report looks like.",
+  title: "Sample Security Scan Report — Assay",
+  description:
+    "See a real Assay security report for a deliberately vulnerable demo app — every issue explained in plain English, with the exact fix, no signup required.",
 };
 
 export const dynamic = "force-dynamic";

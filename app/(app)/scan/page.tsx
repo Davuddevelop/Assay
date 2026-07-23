@@ -8,6 +8,7 @@ import { startScan } from "@/app/(app)/scan/actions";
 export const metadata: Metadata = {
   title: "Scan an app — Assay",
   description: "Check your app for security issues before you publish.",
+  robots: { index: false, follow: true },
 };
 
 // A real scan (fetch app + crawl bundles + probe RLS/storage + Claude explain)

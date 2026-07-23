@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/section-heading";
 
 export const metadata: Metadata = {
-  title: "Docs — Assay",
-  description: "How Assay checks your app and strikes the hallmark.",
+  title: "How Lovable, Bolt, Replit & v0 App Scanning Works",
+  description:
+    "How Assay checks apps built with Lovable, Bolt, Replit, and v0 for exposed keys, open databases, and missing protections — then hands you the exact fix.",
 };
 
 const STEPS = [
