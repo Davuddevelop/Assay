@@ -6,7 +6,7 @@ import { Reveal } from "@/components/reveal";
 export const metadata: Metadata = {
   title: "Pricing — Assay",
   description:
-    "Simple pricing for an independent checkpoint on your AI-written code. Start free.",
+    "Start with a free one-time security scan for your app, or upgrade for continuous monitoring that re-checks it after every change you ship.",
 };
 
 export default function PricingPage() {

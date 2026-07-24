@@ -87,8 +87,8 @@ export function HeroV2() {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32">
-        <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
+      <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32 xl:max-w-6xl xl:pb-28 xl:pt-40">
+        <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim xl:text-sm">
           <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
             Independent
           </span>
@@ -100,7 +100,7 @@ export function HeroV2() {
           immediate
           startDelay={120}
           stagger={95}
-          className="mx-auto mt-7 block max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl"
+          className="mx-auto mt-7 block max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl xl:max-w-4xl xl:text-[5.25rem]"
         >
           The{" "}
           <span className="font-accent text-[1.06em] font-normal tracking-normal text-iris-soft">
@@ -109,7 +109,7 @@ export function HeroV2() {
           check for AI-built apps.
         </BlurText>
 
-        <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
+        <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg xl:mt-7 xl:max-w-2xl xl:text-xl">
           Real users. Real payments. Real data. The tool that wrote your code
           can&rsquo;t be the one that vouches for it — Assay is the outside check
           that proves your app is safe, in plain English, with the exact fix for
@@ -119,7 +119,7 @@ export function HeroV2() {
         <div className="hero-cta mt-9">
           <form
             onSubmit={onSubmit}
-            className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5"
+            className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5 xl:max-w-lg xl:py-2"
           >
             <input
               value={url}
@@ -128,7 +128,7 @@ export function HeroV2() {
               autoComplete="off"
               aria-label="Your app URL"
               placeholder="yourapp.lovable.app"
-              className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
+              className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash xl:text-base"
             />
             <Button type="submit" variant="primary" size="sm">
               Scan my app
@@ -139,7 +139,7 @@ export function HeroV2() {
               (chip) => (
                 <span
                   key={chip}
-                  className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim"
+                  className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim xl:text-sm"
                 >
                   <span className="h-1 w-1 rounded-full bg-iris-soft" />
                   {chip}
@@ -161,7 +161,7 @@ export function HeroV2() {
               <div aria-hidden className="hero-aurora aurora absolute inset-0" />
             </div>
             <div className="float-soft relative">
-              <ProductMock className="mx-auto max-w-3xl text-left" />
+              <ProductMock className="mx-auto max-w-3xl text-left xl:max-w-4xl" />
             </div>
           </div>
         </div>

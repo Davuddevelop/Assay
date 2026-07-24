@@ -11,6 +11,7 @@ import { signInWithGitHub } from "@/app/auth/actions";
 export const metadata: Metadata = {
   title: "Sign in — Assay",
   description: "Connect your GitHub to begin.",
+  robots: { index: false, follow: true },
 };
 
 // Static shell → served instantly from the edge; only the OAuth action hits the

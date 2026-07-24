@@ -13,6 +13,7 @@ import { relativeTime } from "@/lib/data/derive";
 export const metadata: Metadata = {
   title: "Dashboard — Assay",
   description: "Your app security scans.",
+  robots: { index: false, follow: true },
 };
 
 export default async function DashboardPage() {

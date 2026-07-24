@@ -7,6 +7,9 @@ import {
 } from "next/font/google";
 import "./globals.css";
 
+import { siteUrl } from "@/lib/env";
+import { PLANS } from "@/lib/plans";
+
 // Display — an editorial high-contrast serif for headlines and the wordmark.
 // Optical sizing (engaged in globals.css) sharpens its contrast at large sizes.
 const fraunces = Fraunces({
@@ -36,10 +39,71 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
+const description =
+  "A security checkpoint for apps built with Lovable, Bolt, Replit, and v0. Assay finds exposed keys, an open database, and missing protections — then hands you the exact fix and the hallmark.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: "Assay — Is your app safe to publish?",
-  description:
-    "A security checkpoint for apps built with Lovable, Bolt, Replit, and v0. Assay finds exposed keys, an open database, and missing protections — then hands you the exact fix and the hallmark.",
+  description,
+  openGraph: {
+    siteName: "Assay",
+    title: "Assay — Is your app safe to publish?",
+    description,
+    url: siteUrl(),
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Assay — Is your app safe to publish?",
+    description,
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "Assay",
+      url: siteUrl(),
+      description,
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Assay",
+      applicationCategory: "SecurityApplication",
+      operatingSystem: "Web",
+      url: siteUrl(),
+      description:
+        "Security scanner for apps built with Lovable, Bolt, Replit, and v0.",
+      offers: [
+        {
+          "@type": "Offer",
+          name: PLANS.free.name,
+          price: String(PLANS.free.priceMonthly),
+          priceCurrency: "USD",
+        },
+        {
+          "@type": "Offer",
+          name: PLANS.pro.name,
+          price: String(PLANS.pro.priceMonthly),
+          priceCurrency: "USD",
+        },
+        {
+          "@type": "Offer",
+          name: PLANS.team.name,
+          price: String(PLANS.team.priceMonthly),
+          priceCurrency: "USD",
+        },
+      ],
+    },
+    {
+      "@type": "WebSite",
+      name: "Assay",
+      url: siteUrl(),
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -53,6 +117,12 @@ export default function RootLayout({
       className={`dark ${fraunces.variable} ${hanken.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-onyx text-ivory">
+        {/* Structured data for search engines — kept in sync with the
+            metadata above and lib/plans.ts (no fabricated facts). */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {/* Shared metallic-gold gradient for hallmark strokes (referenced by url()). */}
         <svg width="0" height="0" aria-hidden className="absolute">
           <defs>

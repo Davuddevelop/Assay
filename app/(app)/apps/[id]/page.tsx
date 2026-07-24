@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Your app's agent — Assay",
   description: "Every check Assay ran on this app, and a direct line to ask about it.",
+  robots: { index: false, follow: true },
 };
 
 /**

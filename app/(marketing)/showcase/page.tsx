@@ -6,6 +6,7 @@ import { HallmarkStamp } from "@/components/hallmark-stamp";
 export const metadata: Metadata = {
   title: "Components — Assay",
   description: "The Assay design system: tokens, type, and the hallmark.",
+  robots: { index: false, follow: true },
 };
 
 const COLORS = [

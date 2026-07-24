@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { HeroV2 } from "@/components/landing/hero-v2";
 import { LogoLoop } from "@/components/landing/logo-loop";
 import { Problem } from "@/components/landing/problem";
@@ -7,6 +9,12 @@ import { HallmarkApplied } from "@/components/landing/hallmark-applied";
 import { Pricing } from "@/components/landing/pricing";
 import { PricingCta } from "@/components/landing/pricing-cta";
 import { SiteFooter } from "@/components/landing/site-footer";
+
+export const metadata: Metadata = {
+  title: "Is My App Safe to Publish? — Assay Security Scanner",
+  description:
+    "Free independent security scan for apps built with Lovable, Bolt, Replit, or v0. Assay checks for exposed keys, open Supabase RLS, and missing protections before you publish.",
+};
 
 /**
  * The landing page (v2) — silk-backed hero with the Blur Text reveal, the

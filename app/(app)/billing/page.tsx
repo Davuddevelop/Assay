@@ -10,7 +10,11 @@ import { Button } from "@/components/ui/button";
 import { startCheckout, openPortal } from "@/app/(app)/billing/actions";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Billing — Assay" };
+export const metadata: Metadata = {
+  title: "Billing — Assay",
+  description: "Manage your Assay plan, usage, and subscription.",
+  robots: { index: false, follow: true },
+};
 
 export default async function BillingPage({
   searchParams,

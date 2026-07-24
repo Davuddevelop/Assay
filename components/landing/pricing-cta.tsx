@@ -4,7 +4,7 @@ import { Reveal } from "@/components/reveal";
 export function PricingCta() {
   return (
     <section className="edge-b">
-      <div className="mx-auto w-full max-w-4xl px-4 py-28 sm:px-6">
+      <div className="mx-auto w-full max-w-4xl px-4 py-28 sm:px-6 xl:max-w-5xl xl:py-36">
         <Reveal>
           <div className="panel relative overflow-hidden px-6 py-20 text-center sm:px-16">
             <div
@@ -12,14 +12,14 @@ export function PricingCta() {
               className="glow absolute inset-x-0 -top-24 mx-auto h-64 max-w-md"
             />
             <div className="relative flex flex-col items-center">
-              <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl">
+              <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.02em] text-ivory sm:text-5xl xl:text-6xl">
                 Don&rsquo;t ship it on a{" "}
                 <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
                   hunch
                 </span>
                 .
               </h2>
-              <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ivory-dim">
+              <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-ivory-dim xl:max-w-lg xl:text-lg">
                 Free to find out. Paste your app&rsquo;s link and get your first
                 report — issues in plain language, with the exact fix — in about a
                 minute.

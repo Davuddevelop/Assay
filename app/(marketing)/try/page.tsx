@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LiveScan } from "@/components/scan/live-scan";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "Try a scan — Assay" };
+export const metadata: Metadata = {
+  title: "Free Vibe Coding Security Scanner — Assay",
+  description:
+    "Scan your Lovable, Bolt, Replit, or v0 app free, no login. Watch Assay check it live for exposed keys, an open database, and missing protections.",
+};
 export const dynamic = "force-dynamic";
 
 function normalize(raw: string): string {
