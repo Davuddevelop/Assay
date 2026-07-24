@@ -79,10 +79,10 @@ export function FeatureBento() {
         aria-hidden
         className="aura-soft pointer-events-none absolute left-1/2 top-24 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2"
       />
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
+      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
         <Reveal>
           <Eyebrow label="What it checks" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
             The holes vibe-coded apps ship with, then one honest{" "}
             <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
               mark

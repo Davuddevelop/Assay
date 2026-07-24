@@ -17,7 +17,7 @@ const LINKS = [
 export function SiteNav() {
   return (
     <div className="sticky top-3 z-40 px-4 sm:top-4">
-      <nav className="glass mx-auto flex h-14 w-full max-w-3xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
+      <nav className="glass mx-auto flex h-14 w-full max-w-3xl items-center xl:h-16 xl:max-w-4xl justify-between rounded-pill border border-border pl-5 pr-2.5">
         <Link
           href="/"
           aria-label="Assay home"

@@ -108,10 +108,10 @@ export function HowItWorks() {
 
   return (
     <section id="how-it-works" ref={root} className="scroll-mt-16 edge-b">
-      <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
+      <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
         <Reveal>
           <Eyebrow label="How it works" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem]">
+          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
             Three steps, no code required.
           </h2>
         </Reveal>
