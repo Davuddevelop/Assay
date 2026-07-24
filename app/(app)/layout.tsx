@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { ToastProvider } from "@/components/ui/toast";
 import { requireUser } from "@/lib/auth";
 
 export default async function AppLayout({
@@ -10,9 +11,9 @@ export default async function AppLayout({
   await requireUser();
 
   return (
-    <>
+    <ToastProvider>
       <AppHeader />
       <main className="flex-1">{children}</main>
-    </>
+    </ToastProvider>
   );
 }

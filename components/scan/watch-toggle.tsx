@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { toggleWatch } from "@/app/(app)/scan/actions";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useToast } from "@/components/ui/toast";
 import type { ScanRow } from "@/lib/db/types";
 
 const STEPS = [
@@ -20,6 +21,7 @@ const STEPS = [
  * it re-checks the moment you ship a change and flags anything that breaks.
  */
 export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean }) {
+  const { notify } = useToast();
   const [, startAction] = useTransition();
   const [activating, setActivating] = useState(false);
   const [visibleSteps, setVisibleSteps] = useState(0);
@@ -59,6 +61,14 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
       const res = await toggleWatch(scan.app_url, true, scan.id);
       if (res.reason === "limit") {
         setBlocked(true);
+        notify({
+          tone: "warn",
+          title: "You've hit your watch limit",
+          message:
+            "The free plan watches one app. Upgrade to Pro to keep continuous monitoring on every app you ship.",
+          action: { label: "Upgrade to Pro", href: "/billing" },
+          duration: 9000,
+        });
         return;
       }
       runActivation();

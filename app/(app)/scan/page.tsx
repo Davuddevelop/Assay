@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SubmitButton } from "@/components/ui/submit-button";
+import { ScanErrorToast } from "@/components/scan/scan-error-toast";
 import { requireUser } from "@/lib/auth";
 import { startScan } from "@/app/(app)/scan/actions";
 
@@ -28,6 +29,7 @@ export default async function ScanPage({
   // reads what's already public, so there's nothing to "prove" to look at it.
   return (
     <div className="relative mx-auto w-full max-w-xl px-4 py-20 sm:px-6">
+      <ScanErrorToast error={error} />
       <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 opacity-40" />
       <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
         Run an independent check.
