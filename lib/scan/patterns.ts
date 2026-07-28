@@ -128,6 +128,9 @@ function looksPublic(v: string): boolean {
 // service_role key, which bypasses all security. This avoids a false alarm on
 // every Supabase app while still catching the game-over case.
 const JWT_RE = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}/g;
+// Supabase's current server-side key format. Not global: used only with
+// `.test()`, which would otherwise advance `lastIndex` between calls.
+const SB_SECRET_RE = /sb_secret_[A-Za-z0-9_-]{16,}/;
 
 /** Mask a matched secret so only its shape is shown — never the value. */
 function redact(match: string): string {
@@ -176,19 +179,24 @@ export function scanText(text: string, source: string): RawFinding[] {
     }
   }
 
-  // Precise service_role detection (never flags the normal anon key).
-  for (const m of text.matchAll(JWT_RE)) {
-    if (decodeJwtRole(m[0]) === "service_role") {
-      out.push({
-        kind: "exposed-secret",
-        severity: "critical",
-        title: "Supabase service key exposed in client code",
-        detail:
-          "The service_role key is in the browser bundle. It bypasses all Row-Level Security — anyone can read, change, or delete any data.",
-        redactedLocation: `${source} — service_role key`,
-      });
-      break;
-    }
+  // Precise service-key detection (never flags the normal publishable key).
+  // Covers both generations: the legacy `service_role` JWT and the current
+  // opaque `sb_secret_` form. This is the single place a leaked service key is
+  // reported — the RLS probe deliberately stays quiet about it so one problem
+  // can't produce two cards and two score penalties.
+  const serviceKeyFound =
+    SB_SECRET_RE.test(text) ||
+    Array.from(text.matchAll(JWT_RE)).some((m) => decodeJwtRole(m[0]) === "service_role");
+
+  if (serviceKeyFound) {
+    out.push({
+      kind: "exposed-secret",
+      severity: "critical",
+      title: "Supabase service key exposed in client code",
+      detail:
+        "The service key is in the browser bundle. It bypasses all Row-Level Security — anyone can read, change, or delete any data.",
+      redactedLocation: `${source} — service key`,
+    });
   }
 
   return out;

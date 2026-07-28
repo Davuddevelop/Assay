@@ -21,8 +21,8 @@ export default async function SamplePage() {
         Sample report
       </p>
       <p className="mx-auto mt-3 max-w-md text-center text-sm text-ivory-dim">
-        This is a real Assay report for a deliberately-vulnerable demo app — every
-        issue in plain language, with the exact fix to paste back into your builder.
+        An example report for a deliberately-vulnerable demo app — every issue in
+        plain language, with the exact fix to paste back into your builder.
       </p>
       <div className="mt-8">
         <ScanReport scan={scan} findings={findings} />

@@ -7,6 +7,7 @@ import { detectSupabase, probeSupabaseRls } from "@/lib/scan/supabase-rls";
 import { probeSupabaseStorage } from "@/lib/scan/storage";
 import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
+import { looksUnscannable } from "@/lib/scan/content-heuristics";
 import { scoreFindings } from "@/lib/scan/score";
 import type { RawFinding } from "@/lib/scan/types";
 import type { ScanVerdict } from "@/lib/db/types";
@@ -123,6 +124,24 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
       detail:
         "Your app ships source maps, so anyone can reconstruct your original code from the browser. Fine for many apps, but strip them if your logic is sensitive.",
       redactedLocation: "client bundles (sourceMappingURL)",
+    });
+  }
+
+  // 7. Did we actually see the app? A bot challenge, a WAF block or a
+  //    placeholder page answers 200 with none of the real app, so every check
+  //    above finds nothing and a hidden app would earn the cleanest possible
+  //    report. Refuse: this is `risky`, so `scoreFindings` can never certify
+  //    it, and the report says plainly that we couldn't look rather than
+  //    implying we looked and found nothing.
+  if (looksUnscannable(app.html, app.bundles.length, ref !== null)) {
+    say("⚠ We couldn't read this app — nothing here can be certified.");
+    findings.push({
+      kind: "open-endpoint",
+      severity: "risky",
+      title: "We couldn't actually inspect your app",
+      detail:
+        "The address answered, but it returned a holding page — a bot check, a login wall, or a placeholder — instead of your app. Nothing was scanned, so this is not a clean bill of health. If your app is behind a bot filter, allow our scanner or scan the direct app URL, then run the check again.",
+      redactedLocation: app.finalUrl,
     });
   }
 

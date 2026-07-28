@@ -3,14 +3,46 @@ export interface SupabaseRef {
   anonKey: string;
 }
 
-/** Find a Supabase project URL + a JWT key in client text. Pure — tested. */
+// Supabase ships two key generations and live apps use both. The original is a
+// JWT carrying a `role` claim; the current default is a prefixed opaque string
+// (`sb_publishable_` for the browser, `sb_secret_` for the server). Matching
+// only the JWT form silently skipped the whole RLS/storage branch on every
+// modern project — and the scan then reported the database as locked down.
+const JWT_KEY_RE = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}/g;
+const PUBLISHABLE_KEY_RE = /sb_publishable_[A-Za-z0-9_-]{16,}/g;
+const SECRET_KEY_RE = /sb_secret_[A-Za-z0-9_-]{16,}/g;
+
+/**
+ * Whether a Supabase key grants full, security-bypassing access — either the
+ * legacy `service_role` JWT or the current `sb_secret_` form. Pure.
+ */
+export function isSupabaseServiceKey(key: string): boolean {
+  if (key.startsWith("sb_secret_")) return true;
+  return decodeJwtRole(key) === "service_role";
+}
+
+/**
+ * Find a Supabase project URL + a usable client key in page/bundle text.
+ *
+ * When several keys are present we deliberately prefer a NON-service key, so
+ * the probe exercises exactly the access an anonymous visitor has rather than
+ * whichever key the minifier happened to emit first. A service key is still
+ * returned when it's the only one found — on its own that's already critical.
+ * Pure — tested.
+ */
 export function detectSupabase(text: string): SupabaseRef | null {
   const url = text.match(/https?:\/\/[a-z0-9-]+\.supabase\.co/i)?.[0];
-  const anonKey = text.match(
-    /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}/,
-  )?.[0];
-  if (!url || !anonKey) return null;
-  return { url, anonKey };
+  if (!url) return null;
+
+  const candidates = [
+    ...(text.match(PUBLISHABLE_KEY_RE) ?? []),
+    ...(text.match(JWT_KEY_RE) ?? []),
+    ...(text.match(SECRET_KEY_RE) ?? []),
+  ];
+  if (candidates.length === 0) return null;
+
+  const usable = candidates.find((k) => !isSupabaseServiceKey(k));
+  return { url, anonKey: usable ?? candidates[0] };
 }
 
 /**

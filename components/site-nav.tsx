@@ -7,6 +7,10 @@ import { NavLink } from "@/components/nav-link";
 
 const LINKS = [
   { href: "/#how-it-works", label: "How it works" },
+  // Continuous monitoring is the only thing we charge for, so the page that
+  // explains it belongs in the nav — it was previously reachable only from the
+  // sitemap.
+  { href: "/watch", label: "Monitoring" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];

@@ -15,14 +15,14 @@ export default function WatchPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-iris-soft">Live example</p>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-iris-soft">Example</p>
       <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
         Assay never stops watching.
       </h1>
       <p className="mt-3 max-w-xl text-ivory-dim">
         A scan is a moment. Safety is a moving target — every prompt you ship can
-        reopen a hole. This is a real monitoring timeline: watch how Assay caught a
-        change that broke the app, and confirmed the fix.
+        reopen a hole. Here&rsquo;s an example monitoring timeline: how Assay catches a
+        change that breaks the app, then confirms the fix.
       </p>
 
       <div className="mt-10">

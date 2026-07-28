@@ -4,6 +4,7 @@ import { scanText } from "@/lib/scan/patterns";
 import { isPrivateIp, isObfuscatedIpHost } from "@/lib/scan/ssrf";
 import {
   detectSupabase,
+  isSupabaseServiceKey,
   decodeJwtRole,
   tablesFromOpenApi,
   isExposedResponse,
@@ -12,7 +13,11 @@ import {
   sensitiveColumns,
 } from "@/lib/scan/supabase-detect";
 import { discoverBundleUrls, discoverChunkRefs, hasSourceMapRef } from "@/lib/scan/bundles";
-import { looksLikeEnvFile, looksLikeGitConfig } from "@/lib/scan/content-heuristics";
+import {
+  looksLikeEnvFile,
+  looksLikeGitConfig,
+  looksUnscannable,
+} from "@/lib/scan/content-heuristics";
 import { scoreFindings } from "@/lib/scan/score";
 import { checkHeaders } from "@/lib/scan/headers";
 
@@ -116,6 +121,59 @@ describe("supabase detection", () => {
   it("decodes the JWT role", () => {
     const payload = Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url");
     expect(decodeJwtRole(`eyJhbGciOiJIUzI1NiJ9.${payload}.sig`)).toBe("service_role");
+  });
+
+  // Supabase's current key format. Matching only the legacy JWT meant the whole
+  // RLS/storage branch was skipped on modern projects — and the scan then told
+  // the owner their database looked locked down.
+  it("finds the modern sb_publishable_ key", () => {
+    const key = "sb_publishable_AbCdEf0123456789xyz";
+    const ref = detectSupabase(`createClient("https://abcd1234.supabase.co","${key}")`);
+    expect(ref?.url).toBe("https://abcd1234.supabase.co");
+    expect(ref?.anonKey).toBe(key);
+  });
+
+  it("treats both service-key generations as privileged", () => {
+    const payload = Buffer.from(JSON.stringify({ role: "service_role" })).toString("base64url");
+    expect(isSupabaseServiceKey(`eyJhbGciOiJIUzI1NiJ9.${payload}.sig`)).toBe(true);
+    expect(isSupabaseServiceKey("sb_secret_AbCdEf0123456789xyz")).toBe(true);
+    expect(isSupabaseServiceKey("sb_publishable_AbCdEf0123456789xyz")).toBe(false);
+  });
+
+  // Which key we probe with must not depend on minifier output order: probing
+  // with a service key bypasses RLS and would report every table as exposed.
+  it("prefers a publishable key over a service key, whatever the order", () => {
+    const secret = "sb_secret_AbCdEf0123456789xyz";
+    const pub = "sb_publishable_ZyXwVu9876543210abc";
+    const url = "https://abcd1234.supabase.co";
+    expect(detectSupabase(`${url} ${secret} ${pub}`)?.anonKey).toBe(pub);
+    expect(detectSupabase(`${url} ${pub} ${secret}`)?.anonKey).toBe(pub);
+  });
+
+  it("still returns a lone service key so the leak is reported", () => {
+    const secret = "sb_secret_AbCdEf0123456789xyz";
+    expect(detectSupabase(`https://abcd1234.supabase.co ${secret}`)?.anonKey).toBe(secret);
+  });
+});
+
+describe("unscannable detection", () => {
+  const CHALLENGE =
+    "<html><head><title>Just a moment...</title></head><body>Checking your browser before accessing.</body></html>";
+
+  it("flags a bot challenge that returned 200", () => {
+    expect(looksUnscannable(CHALLENGE, 0, false)).toBe(true);
+  });
+
+  it("flags a near-empty placeholder", () => {
+    expect(looksUnscannable("<html><body>Coming soon</body></html>", 0, false)).toBe(true);
+  });
+
+  // If we pulled bundles or found a backend, we clearly did see the real app —
+  // never claim otherwise, even if the HTML happens to contain a stray phrase.
+  it("does not fire when the app was actually visible", () => {
+    expect(looksUnscannable(CHALLENGE, 3, false)).toBe(false);
+    expect(looksUnscannable(CHALLENGE, 0, true)).toBe(false);
+    expect(looksUnscannable(`<html><body>${"x".repeat(5000)}</body></html>`, 0, false)).toBe(false);
   });
 });
 

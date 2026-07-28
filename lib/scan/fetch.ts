@@ -4,6 +4,7 @@ import { lookup } from "node:dns/promises";
 
 import { isPrivateIp, isObfuscatedIpHost } from "@/lib/scan/ssrf";
 import { discoverBundleUrls, discoverChunkRefs } from "@/lib/scan/bundles";
+import { ScanError } from "@/lib/scan/types";
 
 /**
  * SSRF-safe fetching of a user-submitted app URL. We only ever scan a public
@@ -24,27 +25,27 @@ export async function assertScannableUrl(rawUrl: string): Promise<URL> {
   try {
     url = new URL(rawUrl);
   } catch {
-    throw new Error("That doesn't look like a valid URL.");
+    throw new ScanError("That doesn't look like a valid URL.");
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new Error("Only http(s) URLs can be scanned.");
+    throw new ScanError("Only http(s) URLs can be scanned.");
   }
   const host = url.hostname;
-  if (!host || host === "localhost") throw new Error("That address can't be scanned.");
+  if (!host || host === "localhost") throw new ScanError("That address can't be scanned.");
 
   // Reject non-standard numeric IP encodings (decimal/hex/octal/short-form)
   // before resolving — these exist only to slip a private target past the guard.
-  if (isObfuscatedIpHost(host)) throw new Error("That address can't be scanned.");
+  if (isObfuscatedIpHost(host)) throw new ScanError("That address can't be scanned.");
 
   // Resolve every address and reject if any is private (anti-rebinding).
   let addrs: { address: string }[];
   try {
     addrs = await lookup(host, { all: true });
   } catch {
-    throw new Error("Couldn't resolve that domain.");
+    throw new ScanError("Couldn't resolve that domain.");
   }
   if (addrs.some((a) => isPrivateIp(a.address))) {
-    throw new Error("That address can't be scanned.");
+    throw new ScanError("That address can't be scanned.");
   }
   return url;
 }
@@ -106,11 +107,11 @@ async function fetchBounded(
     try {
       next = new URL(res.location, current);
     } catch {
-      throw new Error("That app redirected somewhere invalid.");
+      throw new ScanError("That app redirected somewhere invalid.");
     }
     current = await assertScannableUrl(next.toString()); // re-guard every hop
   }
-  throw new Error("That app redirected too many times.");
+  throw new ScanError("That app redirected too many times.");
 }
 
 export interface FetchedApp {
@@ -143,7 +144,7 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
   // Never certify an error/placeholder page: if the app didn't return a real
   // 200, we couldn't actually reach it — surface that instead of a false pass.
   if (main.status >= 400) {
-    throw new Error(
+    throw new ScanError(
       `We couldn't reach that app — it returned HTTP ${main.status}. Check the URL is live and public.`,
     );
   }

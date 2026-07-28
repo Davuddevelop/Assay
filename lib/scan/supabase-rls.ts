@@ -4,7 +4,7 @@ import type { RawFinding } from "@/lib/scan/types";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import {
   detectSupabase,
-  decodeJwtRole,
+  isSupabaseServiceKey,
   tablesFromOpenApi,
   isExposedResponse,
   columnsFromRow,
@@ -61,18 +61,12 @@ async function getJson(url: string, anonKey: string): Promise<{ status: number; 
 export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> {
   const findings: RawFinding[] = [];
 
-  // Exposed service key is game-over on its own.
-  if (decodeJwtRole(ref.anonKey) === "service_role") {
-    findings.push({
-      kind: "supabase-rls",
-      severity: "critical",
-      title: "Supabase service key exposed in the browser",
-      detail:
-        "The service_role key is in client code. It bypasses ALL security rules — anyone can read, change, or delete any data.",
-      redactedLocation: `${ref.url} (service_role key)`,
-    });
-    return findings; // no need to probe; this is already critical
-  }
+  // A service key bypasses RLS entirely, so probing with it would report every
+  // table as "exposed" even when the policies are correct. Bail out. The leak
+  // itself is already reported once by the secret scanner (`patterns.ts`) —
+  // reporting it here too produced two cards and a double score penalty for a
+  // single problem.
+  if (isSupabaseServiceKey(ref.anonKey)) return findings;
 
   try {
     await assertScannableUrl(ref.url);

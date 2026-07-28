@@ -3,6 +3,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 
 import { anthropicKey } from "@/lib/env";
+import { log } from "@/lib/log";
 import type { RawFinding } from "@/lib/scan/types";
 
 /**
@@ -62,9 +63,16 @@ export async function explainFindings(
   if (!key) return fallback(raw);
 
   try {
-    // Bounded so a slow/degraded API response can't blow the scan's own
-    // overall time budget — falls back to the raw finding text on timeout.
-    const client = new Anthropic({ apiKey: key, timeout: 15_000 });
+    // Bounded so a slow/degraded API response can't blow the scan's own overall
+    // time budget — falls back to the raw finding text on timeout.
+    //
+    // 15s was too tight: a typical 4–6 finding report generates well over a
+    // thousand output tokens and routinely timed out, silently replacing every
+    // paste-back fix prompt (the thing the product is actually for) with a
+    // generic sentence. Retries are off because the SDK defaults to 2, which
+    // turned one slow call into three sequential timeouts and blew the
+    // function's own 60s ceiling.
+    const client = new Anthropic({ apiKey: key, timeout: 30_000, maxRetries: 0 });
     const input = raw.map((f, i) => ({
       index: i,
       title: f.title,
@@ -86,9 +94,22 @@ export async function explainFindings(
     });
 
     const out = response.parsed_output?.findings;
-    if (!out || out.length !== raw.length) return fallback(raw);
+    if (!out || out.length !== raw.length) {
+      log.warn("explain: unusable response, falling back to raw findings", {
+        expected: raw.length,
+        got: out?.length ?? 0,
+      });
+      return fallback(raw);
+    }
     return out;
-  } catch {
+  } catch (err) {
+    // Never silent: this degradation replaces the paste-back fix prompts with
+    // generic text, and without a log there is no way to tell a rate limit from
+    // a timeout from a schema mismatch after the fact.
+    log.error("explain failed, falling back to raw findings", {
+      findings: raw.length,
+      reason: err instanceof Error ? err.message : "unknown",
+    });
     return fallback(raw);
   }
 }

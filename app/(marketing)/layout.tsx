@@ -1,4 +1,5 @@
 import { SiteNav } from "@/components/site-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { GradualBlur } from "@/components/gradual-blur";
 
@@ -23,6 +24,11 @@ export default function MarketingLayout({
       />
       <SiteNav />
       <main className="flex-1">{children}</main>
+      {/* Lives here, not per-page: it was previously rendered by the landing
+          page alone, so Privacy/Terms/Acceptable Use were unreachable from
+          /try — the exact page where someone decides whether to trust us with
+          their app's URL. */}
+      <SiteFooter />
     </>
   );
 }
