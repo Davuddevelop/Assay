@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { runScan } from "@/lib/scan/run";
 import { assertScannableUrl } from "@/lib/scan/fetch";
 import { explainFindings } from "@/lib/anthropic/explain";
+import { ScanError } from "@/lib/scan/types";
 import { consumeRateLimit } from "@/lib/rate-limit-global";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
@@ -84,8 +85,17 @@ export async function GET(req: NextRequest) {
         }));
 
         send({ type: "done", scan, findings });
-      } catch {
-        send({ type: "error", message: "We couldn't finish scanning that app. Check the URL is live and public." });
+      } catch (err) {
+        // The fetcher raises specific, already-plain-English reasons ("it
+        // returned HTTP 403", "we couldn't reach that app"). Swallowing them
+        // for a generic line left people whose app sits behind Cloudflare with
+        // no idea what went wrong. Pass ours through; keep the generic line for
+        // anything unrecognised so an internal error never leaks out.
+        const message =
+          err instanceof ScanError
+            ? err.message
+            : "We couldn't finish scanning that app. Check the URL is live and public.";
+        send({ type: "error", message });
       } finally {
         controller.close();
       }

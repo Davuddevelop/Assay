@@ -8,7 +8,6 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { HallmarkApplied } from "@/components/landing/hallmark-applied";
 import { Pricing } from "@/components/landing/pricing";
 import { PricingCta } from "@/components/landing/pricing-cta";
-import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata: Metadata = {
   title: "Classic layout — Assay",
@@ -29,7 +28,6 @@ export default function ClassicLandingPage() {
       <HallmarkApplied />
       <Pricing />
       <PricingCta />
-      <SiteFooter />
     </>
   );
 }

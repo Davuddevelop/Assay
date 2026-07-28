@@ -2,7 +2,11 @@ import "server-only";
 
 import type { RawFinding } from "@/lib/scan/types";
 import { assertScannableUrl } from "@/lib/scan/fetch";
-import { isExposedBucketListing, type SupabaseRef } from "@/lib/scan/supabase-detect";
+import {
+  isExposedBucketListing,
+  isSupabaseServiceKey,
+  type SupabaseRef,
+} from "@/lib/scan/supabase-detect";
 
 /**
  * The Storage-layer twin of the RLS check: a Supabase bucket whose objects can
@@ -58,6 +62,11 @@ async function listBucket(url: string, anonKey: string, bucket: string): Promise
  */
 export async function probeSupabaseStorage(ref: SupabaseRef): Promise<RawFinding[]> {
   const findings: RawFinding[] = [];
+
+  // A service key bypasses bucket policies, so every bucket would list and we'd
+  // wrongly report "anyone can open your users' files" on a correctly-locked
+  // project. The leaked key is reported separately by the secret scanner.
+  if (isSupabaseServiceKey(ref.anonKey)) return findings;
 
   try {
     await assertScannableUrl(ref.url);

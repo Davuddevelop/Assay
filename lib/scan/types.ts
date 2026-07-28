@@ -5,6 +5,19 @@
  */
 export type ScanSeverity = "critical" | "risky" | "minor";
 
+/**
+ * A scan failure whose message is already written for the person who submitted
+ * the URL ("it returned HTTP 403", "that app redirected too many times").
+ * Callers can surface `.message` directly; anything that is a plain `Error` is
+ * an internal fault and must be replaced with a generic line instead.
+ */
+export class ScanError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ScanError";
+  }
+}
+
 type FindingKind =
   | "exposed-secret"
   | "supabase-rls"
