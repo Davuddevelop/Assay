@@ -54,6 +54,32 @@ export async function loadConversation(monitorId: string): Promise<StoredTurn[]>
 }
 
 /**
+ * Record something the agent said on its own initiative — a regression alert,
+ * not a reply. There is no user turn to pair it with, which is the whole point:
+ * the owner opens the app and finds the agent has already spoken.
+ */
+export async function appendAgentMessage(
+  userId: string,
+  monitorId: string,
+  content: string,
+): Promise<void> {
+  try {
+    const db = createAdminClient();
+    const { error } = await db.from("agent_messages").insert({
+      user_id: userId,
+      monitor_id: monitorId,
+      role: "assistant",
+      content: content.slice(0, MAX_CONTENT),
+    });
+    if (error) log.warn("agent memory write failed", { reason: error.message });
+  } catch (err) {
+    log.warn("agent memory write failed", {
+      reason: err instanceof Error ? err.message : "unknown",
+    });
+  }
+}
+
+/**
  * Append both sides of a completed exchange. Best-effort: a failure here costs
  * the agent its memory of this turn, which must never cost the user their
  * answer — the reply has already been produced by the time we're called.
