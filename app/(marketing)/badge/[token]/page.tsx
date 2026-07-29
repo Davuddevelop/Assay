@@ -129,7 +129,7 @@ export default async function BadgePage({
 
       <div className="mt-8 text-center">
         <p className="text-sm text-ivory-dim">Is your app safe to publish?</p>
-        <Button href="/" variant="primary" size="md" className="mt-4">
+        <Button href="/try" variant="primary" size="md" className="mt-4">
           Scan yours free
         </Button>
       </div>

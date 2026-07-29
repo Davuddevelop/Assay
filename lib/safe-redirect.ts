@@ -6,6 +6,9 @@
  * it's testable without importing the route's cookie/Supabase plumbing.
  */
 export function safeNext(raw: string | null, fallback = "/dashboard"): string {
-  if (raw && /^\/(?!\/)[A-Za-z0-9/_-]*$/.test(raw)) return raw;
+  // A bare "/" passes the shape test but is never a destination worth
+  // returning to — it means "the landing page", which is where someone who
+  // just signed in least wants to be.
+  if (raw && raw !== "/" && /^\/(?!\/)[A-Za-z0-9/_-]*$/.test(raw)) return raw;
   return fallback;
 }

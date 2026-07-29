@@ -68,7 +68,7 @@ export default async function ScanPage({
         {error === "limit" && (
           <p className="mt-3 text-sm text-oxblood-soft">
             You&rsquo;ve used your scans for this month.{" "}
-            <Link href="/pricing" className="text-iris-soft hover:text-ivory">
+            <Link href="/billing" className="text-iris-soft hover:text-ivory">
               Upgrade for more →
             </Link>
           </p>

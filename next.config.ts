@@ -41,10 +41,25 @@ const nextConfig: NextConfig = {
         // swap (a stale-HTML-vs-fresh-hydration mismatch, not a real bug in
         // either page). Cheap insurance against it recurring on any future
         // deploy for a first-time visitor.
-        source: "/((?!_next/static|_next/image).*)",
+        // Excludes the signed-in surface, which is handled by the rule below.
+        source:
+          "/((?!_next/static|_next/image|dashboard|billing|settings|apps|scan|auth|api).*)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
         ],
+      },
+      {
+        // Anything behind a login is per-user HTML and must never be stored by
+        // a shared cache. The rule above marked these `public`, which invited
+        // any intermediary to keep one person's dashboard and hand it to the
+        // next visitor. `must-revalidate` made that unlikely to bite, but
+        // "unlikely" is not the standard for someone else's scan reports.
+        //
+        // `no-store` also stops the browser replaying /auth/callback from the
+        // back button, where the one-time code has already been spent and the
+        // retry lands a signed-in user on an authentication error.
+        source: "/(dashboard|billing|settings|apps|scan|auth|api)(.*)",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
       },
     ];
   },

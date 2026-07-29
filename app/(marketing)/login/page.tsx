@@ -7,6 +7,9 @@ import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
 import { LoginError } from "@/components/login-error";
 import { signInWithGitHub } from "@/app/auth/actions";
+import { getUser } from "@/lib/auth";
+import { safeNext } from "@/lib/safe-redirect";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Sign in — Assay",
@@ -14,9 +17,18 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-// Static shell → served instantly from the edge; only the OAuth action hits the
-// server. The error message is read client-side so this page never cold-starts.
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  // Already signed in? Sending them to a sign-in form is a dead end — take them
+  // where they were going instead.
+  const user = await getUser();
+  const { next } = await searchParams;
+  const dest = safeNext(next ?? null);
+  if (user) redirect(dest);
+
   return (
     <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
@@ -36,6 +48,7 @@ export default function LoginPage() {
       </Suspense>
 
       <form action={signInWithGitHub} className="mt-9 w-full">
+        {next && <input type="hidden" name="next" value={dest} />}
         <SubmitButton
           variant="primary"
           size="lg"
