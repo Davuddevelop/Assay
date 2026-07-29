@@ -8,6 +8,7 @@ import { requireUser } from "@/lib/auth";
 import { getMonitor } from "@/lib/data/monitors";
 import { listCompletedScansForUrl } from "@/lib/data/scans";
 import { buildActivity } from "@/lib/monitor/activity";
+import { loadConversation } from "@/lib/data/agent-memory";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -93,7 +94,12 @@ export default async function AppAgentPage({
       )}
 
       <div className="mt-8">
-        <AppAgent monitorId={monitor.id} appUrl={monitor.app_url} events={events} />
+        <AppAgent
+          monitorId={monitor.id}
+          appUrl={monitor.app_url}
+          events={events}
+          history={await loadConversation(monitor.id)}
+        />
       </div>
     </div>
   );

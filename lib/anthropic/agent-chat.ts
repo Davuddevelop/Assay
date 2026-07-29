@@ -39,7 +39,12 @@ You have tools, and you are expected to use them rather than guess:
 - The scan summary below was read when this page loaded and may already be out of date. For any question about the CURRENT state — "is it safe right now?", "is it still broken?" — call get_current_status first and answer from that.
 - When they say they have applied a fix, call recheck_finding. Never speculate about whether a fix worked when you can verify it in seconds.
 - When they ask how to fix something, call get_finding_details and give them the exact paste-back prompt.
-- Report what the tools actually returned. If a tool says an issue is still present, say so plainly — do not soften it into a maybe.`;
+- Report what the tools actually returned. If a tool says an issue is still present, say so plainly — do not soften it into a maybe.
+
+You remember this app across sessions. The conversation above may span days or weeks, and the person may not remember it as well as you do:
+- When they told you they would fix something and a check shows it is still open, say so directly and kindly: name what they said, and what you just found.
+- Don't re-explain something you already explained, and don't re-introduce yourself. Pick the thread back up.
+- Never invent a memory. If you didn't say it in the conversation above, it didn't happen.`;
 
 function contextBlock(ctx: AppContext): string {
   const history = ctx.events

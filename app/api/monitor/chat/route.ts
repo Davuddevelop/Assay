@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildActivity } from "@/lib/monitor/activity";
 import { agentChatReply, type ChatTurn } from "@/lib/anthropic/agent-chat";
 import { consumeRateLimit } from "@/lib/rate-limit-global";
+import { loadConversation, appendExchange } from "@/lib/data/agent-memory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { monitorId?: unknown; messages?: unknown };
+  let body: { monitorId?: unknown; message?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -39,17 +40,12 @@ export async function POST(req: NextRequest) {
   }
 
   const monitorId = typeof body.monitorId === "string" ? body.monitorId : null;
-  const turns: ChatTurn[] = Array.isArray(body.messages)
-    ? body.messages
-        .filter(
-          (m): m is { role: string; content: string } =>
-            !!m && typeof m === "object" &&
-            ((m as { role?: unknown }).role === "user" || (m as { role?: unknown }).role === "assistant") &&
-            typeof (m as { content?: unknown }).content === "string",
-        )
-        .map((m) => ({ role: m.role as "user" | "assistant", content: m.content.slice(0, 2000) }))
-    : [];
-  if (!monitorId || turns.length === 0) {
+  // Only the NEW message comes from the client now. The rest of the
+  // conversation is loaded server-side below — which is what lets it survive a
+  // refresh, and also closes the door on a client forging assistant turns to
+  // put words in the agent's mouth.
+  const message = typeof body.message === "string" ? body.message.slice(0, 2000).trim() : "";
+  if (!monitorId || !message) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 
@@ -86,6 +82,10 @@ export async function POST(req: NextRequest) {
         .order("severity")
     : { data: [] };
 
+  // Everything the agent remembers about this app, plus what was just said.
+  const past = await loadConversation(monitorId);
+  const turns: ChatTurn[] = [...past, { role: "user", content: message }];
+
   const reply = await agentChatReply(
     {
       appUrl: monitor.app_url,
@@ -101,6 +101,10 @@ export async function POST(req: NextRequest) {
     // somebody else's app.
     { userId: user.id, appUrl: monitor.app_url },
   );
+
+  // Remember the exchange. Best-effort by design — the answer is already
+  // written, and losing the memory of one turn must not cost the user a reply.
+  await appendExchange(user.id, monitorId, message, reply);
 
   return NextResponse.json({ reply });
 }
