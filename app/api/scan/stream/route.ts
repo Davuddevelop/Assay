@@ -5,6 +5,8 @@ import { assertScannableUrl } from "@/lib/scan/fetch";
 import { explainFindings } from "@/lib/anthropic/explain";
 import { ScanError } from "@/lib/scan/types";
 import { consumeRateLimit } from "@/lib/rate-limit-global";
+import { anonBudget } from "@/lib/scan/anon-budget";
+import { log } from "@/lib/log";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
 export const runtime = "nodejs";
@@ -17,6 +19,7 @@ const ANON_WINDOW_SEC = 60;
 // total outbound-fetch cost a single visitor can drive.
 const ANON_DAILY_LIMIT = 40;
 const DAY_SEC = 86_400;
+const HOUR_SEC = 3_600;
 
 function clientKey(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
@@ -52,6 +55,33 @@ export async function GET(req: NextRequest) {
             message: withinBurst
               ? "You've hit today's free-scan limit. Sign in to keep scanning."
               : "You've run a lot of scans in a short time. Wait a minute and try again.",
+          });
+          controller.close();
+          return;
+        }
+
+        // Per-IP limits bound one visitor; nothing bounded everyone at once, so
+        // a script rotating addresses could bill this account indefinitely. The
+        // per-IP gates run first on purpose — an abuser is stopped by their own
+        // quota before they can eat into the shared budget.
+        const budget = anonBudget(process.env.ANON_SCAN_BUDGET_DAILY);
+        const withinGlobalHour = await consumeRateLimit(
+          "try-global-hour",
+          budget.hourly,
+          HOUR_SEC,
+        );
+        const withinGlobalDay =
+          withinGlobalHour &&
+          (await consumeRateLimit("try-global-day", budget.daily, DAY_SEC));
+        if (!withinGlobalHour || !withinGlobalDay) {
+          log.warn("anonymous scan budget reached", {
+            window: withinGlobalHour ? "day" : "hour",
+            limit: withinGlobalHour ? budget.daily : budget.hourly,
+          });
+          send({
+            type: "error",
+            message:
+              "Free scanning is busy right now and paused for a moment. Sign in and your scan runs straight away — it's free.",
           });
           controller.close();
           return;
