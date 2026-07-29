@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/scan", label: "New scan" },
   { href: "/billing", label: "Billing" },
+  { href: "/settings/keys", label: "API keys" },
 ];
 
 /**
