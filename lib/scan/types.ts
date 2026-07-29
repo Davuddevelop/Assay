@@ -22,6 +22,7 @@ type FindingKind =
   | "exposed-secret"
   | "supabase-rls"
   | "supabase-storage"
+  | "firebase-rules"
   | "open-endpoint"
   | "missing-header"
   | "vulnerable-dependency";

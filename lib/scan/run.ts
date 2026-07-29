@@ -5,6 +5,7 @@ import { scanText } from "@/lib/scan/patterns";
 import { checkHeaders } from "@/lib/scan/headers";
 import { detectSupabase, probeSupabaseRls } from "@/lib/scan/supabase-rls";
 import { probeSupabaseStorage } from "@/lib/scan/storage";
+import { detectFirebase, probeFirebase } from "@/lib/scan/firebase";
 import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
 import { looksUnscannable } from "@/lib/scan/content-heuristics";
@@ -92,24 +93,34 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   //      safety net so one failing can't take the others down with it.
   const allText = [app.html, ...app.bundles.map((b) => b.content)].join("\n");
   const ref = detectSupabase(allText);
+  // Firebase is the other backend these builders reach for — Bolt and Replit
+  // apps use it as often as Lovable apps use Supabase, and its failure mode is
+  // identical (rules left open, every record world-readable). Without this the
+  // scan told those users their app was clean having never looked at their data.
+  const fb = detectFirebase(allText);
   const origin = new URL(app.finalUrl).origin;
 
+  const backend = ref ? "Supabase" : fb ? "Firebase" : null;
   say(
-    ref
-      ? "Detected Supabase — one bounded read to check your database is closed, not to read your data…"
+    backend
+      ? `Detected ${backend} — one bounded read to check your database is closed, not to read your data…`
       : "Checking for publicly exposed files and endpoints…",
   );
 
-  const [rlsFindings, storageFindings, exposedFileFindings] = await Promise.all([
+  const [rlsFindings, storageFindings, firebaseFindings, exposedFileFindings] = await Promise.all([
     ref ? probeSupabaseRls(ref).catch(() => []) : Promise.resolve([]),
     ref ? probeSupabaseStorage(ref).catch(() => []) : Promise.resolve([]),
+    fb ? probeFirebase(fb).catch(() => []) : Promise.resolve([]),
     probeExposedFiles(origin).catch(() => []),
   ]);
-  if (rlsFindings.length > 0) say("⚠ Your database is readable without a login.");
+  const dbFindings = [...rlsFindings, ...firebaseFindings];
+  if (dbFindings.length > 0) say("⚠ Your database is readable without a login.");
   if (storageFindings.length > 0) say("⚠ Your file storage is open to anyone.");
   if (exposedFileFindings.length > 0) say("⚠ Sensitive files are served publicly.");
-  if (ref && rlsFindings.length === 0 && storageFindings.length === 0) say("Database and storage look locked down.");
-  findings.push(...rlsFindings, ...storageFindings, ...exposedFileFindings);
+  if (backend && dbFindings.length === 0 && storageFindings.length === 0) {
+    say("Database and storage look locked down.");
+  }
+  findings.push(...dbFindings, ...storageFindings, ...exposedFileFindings);
 
   // 5. Missing security headers.
   say("Checking security headers…");
@@ -133,7 +144,7 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   //    report. Refuse: this is `risky`, so `scoreFindings` can never certify
   //    it, and the report says plainly that we couldn't look rather than
   //    implying we looked and found nothing.
-  if (looksUnscannable(app.html, app.bundles.length, ref !== null)) {
+  if (looksUnscannable(app.html, app.bundles.length, ref !== null || fb !== null)) {
     say("⚠ We couldn't read this app — nothing here can be certified.");
     findings.push({
       kind: "open-endpoint",
