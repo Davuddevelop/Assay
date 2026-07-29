@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { NavAccount } from "@/components/nav-account";
 import { Wordmark } from "@/components/wordmark";
 import { MobileMenu } from "@/components/mobile-menu";
 import { NavLink } from "@/components/nav-link";
@@ -37,9 +37,7 @@ export function SiteNav() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button href="/login" variant="primary" size="sm">
-            Sign in
-          </Button>
+          <NavAccount />
           <MobileMenu links={LINKS} />
         </div>
       </nav>

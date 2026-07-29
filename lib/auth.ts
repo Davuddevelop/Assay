@@ -1,5 +1,9 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import type { User } from "@supabase/supabase-js";
+
+import { safeNext } from "@/lib/safe-redirect";
+import { PATH_HEADER } from "@/lib/request-path";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -20,10 +24,21 @@ export async function getUser(): Promise<User | null> {
   return user ?? null;
 }
 
-/** Require a signed-in user or redirect to /login. */
+/**
+ * Require a signed-in user, or send them to sign in and bring them back.
+ *
+ * The path they were trying to reach travels as `?next=`, so someone who
+ * clicked "Upgrade to Pro" lands on billing after authenticating rather than
+ * on a default page with no memory of what they wanted. Middleware supplies
+ * the path, since Next gives a Server Component no way to ask.
+ */
 export async function requireUser(): Promise<User> {
   const user = await getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    const path = (await headers()).get(PATH_HEADER);
+    const next = safeNext(path, "");
+    redirect(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
+  }
   return user;
 }
 

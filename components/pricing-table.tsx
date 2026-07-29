@@ -18,13 +18,20 @@ function Check() {
  * prices, and a struck-diamond mark on the recommended plan — rather than the
  * generic three-floating-cards-with-a-"Most Popular"-ribbon pattern.
  */
-export function PricingTable({ currentPlan }: { currentPlan?: string }) {
+/*
+  No `currentPlan` here on purpose. It used to take one, no caller ever passed
+  it, and the "Current plan" branch was unreachable — so a paying customer was
+  told to upgrade to what they already had. Reading the real plan would make
+  this statically-prerendered marketing page dynamic, which is a poor trade for
+  an SEO surface. `/billing` is the authoritative upgrade screen and already
+  marks the current plan, and every CTA here now leads there.
+*/
+export function PricingTable() {
   return (
     <div className="overflow-hidden rounded-frame border border-line">
       <div className="grid divide-y divide-line lg:grid-cols-3 lg:divide-x lg:divide-y-0">
         {PLAN_ORDER.map((id) => {
           const plan = PLANS[id];
-          const isCurrent = currentPlan === id;
           const featured = !!plan.highlighted;
           return (
             <div key={id} className={cn("flex flex-col p-8", featured && "bg-iris/[0.05]")}>
@@ -59,20 +66,14 @@ export function PricingTable({ currentPlan }: { currentPlan?: string }) {
               </ul>
 
               <div className="mt-8">
-                {isCurrent ? (
-                  <div className="flex h-12 items-center justify-center rounded-pill border border-line text-sm text-ash">
-                    Current plan
-                  </div>
-                ) : (
-                  <Button
-                    href={plan.id === "free" ? "/login" : "/billing"}
-                    variant={featured ? "primary" : "ghost"}
-                    size="lg"
-                    className="w-full"
-                  >
-                    {plan.cta}
-                  </Button>
-                )}
+                <Button
+                  href={plan.id === "free" ? "/try" : "/billing"}
+                  variant={featured ? "primary" : "ghost"}
+                  size="lg"
+                  className="w-full"
+                >
+                  {plan.cta}
+                </Button>
               </div>
             </div>
           );

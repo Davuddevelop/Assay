@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 import { publicEnv } from "@/lib/env";
 import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/cookie-options";
+import { PATH_HEADER, SESSION_HINT_COOKIE } from "@/lib/request-path";
 
 /**
  * Refreshes the Supabase auth session on each request so Server Components see
@@ -20,7 +21,13 @@ import { AUTH_COOKIE_OPTIONS } from "@/lib/supabase/cookie-options";
  * silently re-attempting the same broken approach.
  */
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  // Carry the requested path forward so `requireUser` can send someone back to
+  // where they were trying to go after they sign in, instead of dropping them
+  // on a default page and losing their intent.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(PATH_HEADER, request.nextUrl.pathname);
+
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
 
   if (!publicEnv.supabaseUrl || !publicEnv.supabaseAnonKey) {
     return response;
@@ -39,7 +46,7 @@ export async function middleware(request: NextRequest) {
           for (const { name, value } of cookiesToSet) {
             request.cookies.set(name, value);
           }
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: requestHeaders } });
           for (const { name, value, options } of cookiesToSet) {
             response.cookies.set(name, value, options);
           }
@@ -49,7 +56,24 @@ export async function middleware(request: NextRequest) {
   );
 
   // Touch the session so @supabase/ssr can rotate the cookie if needed.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Leave a non-secret flag the statically-prerendered marketing nav can read.
+  // The real auth cookie is httpOnly and stays that way; this says only that a
+  // session exists, which grants nothing on its own.
+  if (user) {
+    response.cookies.set(SESSION_HINT_COOKIE, "1", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+  } else if (request.cookies.has(SESSION_HINT_COOKIE)) {
+    response.cookies.delete(SESSION_HINT_COOKIE);
+  }
 
   return response;
 }
