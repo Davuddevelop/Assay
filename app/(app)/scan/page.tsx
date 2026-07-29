@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ScanErrorToast } from "@/components/scan/scan-error-toast";
 import { requireUser } from "@/lib/auth";
+import { PREFILL_COOKIE } from "@/lib/scan/prefill";
 import { startScan } from "@/app/(app)/scan/actions";
 
 export const metadata: Metadata = {
@@ -24,6 +26,9 @@ export default async function ScanPage({
 }) {
   await requireUser();
   const { error, prefill } = await searchParams;
+  // Set when they came here from an anonymous report; it expires on its own, so
+  // a stale one is a filled box they can overwrite, never a wrong scan.
+  const carried = prefill ?? (await cookies()).get(PREFILL_COOKIE)?.value ?? "";
 
   // One step — paste a URL, scan runs immediately. No ownership tag: a scan only
   // reads what's already public, so there's nothing to "prove" to look at it.
@@ -44,7 +49,7 @@ export default async function ScanPage({
         <div className="glass flex items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5">
           <input
             name="url"
-            defaultValue={prefill ?? ""}
+            defaultValue={carried}
             inputMode="url"
             autoComplete="off"
             placeholder="yourapp.lovable.app"
