@@ -61,6 +61,12 @@ export const AGENT_TOOLS = [
     input_schema: { type: "object" as const, properties: {}, required: [] },
   },
   {
+    name: "list_my_apps",
+    description:
+      "List EVERY app this person is watching with Assay, worst-first: each one's safety score, verdict, how many critical and risky issues are open, when it was last checked, and whether a recent change broke something. Call this whenever they ask about more than the app in front of them — 'which of my apps should I worry about first?', 'are any of my client sites at risk?', 'what needs attention this week?'. Takes no parameters and only ever returns apps they own.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
     name: "set_monitoring",
     description:
       "Turn continuous monitoring on or off for this app. When on, Assay re-checks it whenever the owner ships a change and flags anything that breaks. Only call this when the person clearly asks to start or stop watching.",

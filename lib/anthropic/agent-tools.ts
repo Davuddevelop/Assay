@@ -34,6 +34,9 @@ export interface AgentToolContext {
   appUrl: string;
 }
 
+/** Ceiling on a portfolio sweep, so an agency with a long list can't stall a turn. */
+const MAX_PORTFOLIO_APPS = 25;
+
 interface FindingRow {
   kind: string;
   severity: string;
@@ -170,6 +173,71 @@ export async function runAgentTool(
         await inngest.send({ name: EVENTS.scanRequested, data: { scanId } });
         log.info("agent started rescan", { scanId });
         return "STARTED — a full re-scan is now running in the background. It takes about a minute. Tell them it is running and that you'll have the result shortly; do not claim any result yet.";
+      }
+
+      case "list_my_apps": {
+        // Scoped to this user throughout. The tool takes no parameters at all,
+        // so there is nothing to point somewhere else — it can only ever
+        // enumerate apps this person already owns.
+        const db = createAdminClient();
+        const { data: monitors } = await db
+          .from("monitored_apps")
+          .select("app_url")
+          .eq("user_id", ctx.userId)
+          .eq("active", true)
+          .limit(MAX_PORTFOLIO_APPS);
+        if (!monitors || monitors.length === 0) {
+          return "They aren't watching any apps yet.";
+        }
+
+        const rows = await Promise.all(
+          monitors.map(async ({ app_url }) => {
+            const { data: recent } = await db
+              .from("scans")
+              .select("id, score, verdict, completed_at")
+              .eq("app_url", app_url)
+              .eq("user_id", ctx.userId)
+              .eq("status", "completed")
+              .order("completed_at", { ascending: false })
+              .limit(2);
+            const [latest = null, previous = null] = recent ?? [];
+            if (!latest) {
+              return { appUrl: app_url, line: `${app_url} — not checked yet`, rank: 1 };
+            }
+
+            const { data: sev } = await db
+              .from("scan_findings")
+              .select("severity")
+              .eq("scan_id", latest.id);
+            const counts = { critical: 0, risky: 0, minor: 0 };
+            for (const f of sev ?? []) {
+              if (f.severity in counts) counts[f.severity as keyof typeof counts] += 1;
+            }
+
+            const d = compareScans(previous, latest);
+            const flag = d.regression ? " — A CHANGE JUST BROKE SOMETHING" : "";
+            return {
+              appUrl: app_url,
+              // Rank worst-first so the agent reads them in triage order and
+              // doesn't have to work out the ordering itself.
+              rank:
+                1000 -
+                (counts.critical * 100 + counts.risky * 10 + (d.regression ? 50 : 0)),
+              line:
+                `${app_url} — ${latest.score ?? "?"}/100, ` +
+                `${latest.verdict === "certified" ? "safe to publish" : "at risk"}, ` +
+                `${counts.critical} critical / ${counts.risky} risky / ${counts.minor} minor, ` +
+                `last checked ${latest.completed_at ?? "unknown"}${flag}`,
+            };
+          }),
+        );
+
+        rows.sort((a, b) => a.rank - b.rank);
+        return [
+          `Watching ${rows.length} app${rows.length === 1 ? "" : "s"}, most urgent first:`,
+          ...rows.map((r) => `- ${r.line}`),
+          `\nCurrently talking about: ${ctx.appUrl}. To act on a different app, tell them to open that app's own page — your tools only act on this one.`,
+        ].join("\n");
       }
 
       case "set_monitoring": {
