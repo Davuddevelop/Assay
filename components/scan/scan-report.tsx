@@ -1,5 +1,6 @@
 import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
+import { NextStep } from "@/components/scan/next-step";
 import { ScanReceipt } from "@/components/scan/scan-receipt";
 import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
@@ -15,9 +16,12 @@ function countBy(findings: ScanFindingRow[], sev: ScanFindingSeverity) {
 export function ScanReport({
   scan,
   findings,
+  showNextStep = false,
 }: {
   scan: ScanRow;
   findings: ScanFindingRow[];
+  /** Anonymous reports end with a next step; an owned report already has one. */
+  showNextStep?: boolean;
 }) {
   const certified = scan.verdict === "certified";
   // Per-finding re-check needs a real, owned scan to look up server-side; the
@@ -149,6 +153,8 @@ export function ScanReport({
 
       {/* data receipt — the trust artifact: what we did and what we kept */}
       <ScanReceipt findings={findings} />
+
+      {showNextStep && <NextStep appUrl={scan.app_url} certified={certified} />}
     </div>
   );
 }

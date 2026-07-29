@@ -73,7 +73,7 @@ export function LiveScan({ target }: { target: string }) {
   if (done) {
     return (
       <div className="mt-12">
-        <ScanReport scan={done.scan} findings={done.findings} />
+        <ScanReport scan={done.scan} findings={done.findings} showNextStep />
       </div>
     );
   }
