@@ -8,7 +8,10 @@ import { consumeRateLimit } from "@/lib/rate-limit-global";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+// The agent can now take several passes — look something up, act on it, then
+// answer — and a re-check makes a live request to the app in between. That
+// needs more headroom than a single completion did.
+export const maxDuration = 60;
 
 /**
  * Chat with the agent about ONE watched app. Auth-required; the monitor is
@@ -92,6 +95,11 @@ export async function POST(req: NextRequest) {
       findings: findings ?? [],
     },
     turns,
+    // The agent's tools act on THIS app only. Both fields are taken from the
+    // RLS-scoped monitor row resolved above — never from the request body — so
+    // there is no path by which a crafted message could point a tool at
+    // somebody else's app.
+    { userId: user.id, appUrl: monitor.app_url },
   );
 
   return NextResponse.json({ reply });
