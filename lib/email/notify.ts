@@ -3,7 +3,14 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { compareScans } from "@/lib/scan/diff";
 import { sendEmail } from "@/lib/email/resend";
-import { regressionEmail, weeklyDigestEmail, type DigestApp } from "@/lib/email/templates";
+import {
+  regressionEmail,
+  agentAlertEmail,
+  weeklyDigestEmail,
+  type DigestApp,
+} from "@/lib/email/templates";
+import { composeRegressionAlert } from "@/lib/anthropic/agent-alert";
+import { loadConversation, appendAgentMessage } from "@/lib/data/agent-memory";
 import { getUserPlan } from "@/lib/data/subscriptions";
 import { hasEmailAlerts } from "@/lib/plans";
 import { siteUrl } from "@/lib/env";
@@ -29,10 +36,11 @@ export async function notifyOnScanResult(scanId: string): Promise<{ alerted: boo
       return { alerted: false };
     }
 
-    // Only watched apps get alerts.
+    // Only watched apps get alerts. The id comes along so the agent's message
+    // can be filed into the same conversation the owner sees in the app.
     const { data: monitor } = await db
       .from("monitored_apps")
-      .select("active")
+      .select("id, active")
       .eq("user_id", scan.user_id)
       .eq("app_url", scan.app_url)
       .maybeSingle();
@@ -74,14 +82,31 @@ export async function notifyOnScanResult(scanId: string): Promise<{ alerted: boo
       .order("severity")
       .limit(3);
 
-    const msg = regressionEmail({
+    const reportUrl = `${siteUrl()}/scan/${scan.id}`;
+
+    // Let the agent write it. It has the history — that this issue has come
+    // back before, that they said they'd fixed it, that they mentioned
+    // launching — none of which a template can know. Falls back to the
+    // template on any failure: a worse alert is fine, a missing one is not.
+    const written = await composeRegressionAlert({
       appUrl: scan.app_url,
       score: current?.score ?? null,
       prevScore: previous?.score ?? null,
-      scoreDelta: delta.scoreDelta,
       topFindings: findings ?? [],
-      reportUrl: `${siteUrl()}/scan/${scan.id}`,
+      conversation: await loadConversation(monitor.id),
     });
+
+    const msg = written
+      ? agentAlertEmail({ subject: written.subject, body: written.body, reportUrl })
+      : regressionEmail({
+          appUrl: scan.app_url,
+          score: current?.score ?? null,
+          prevScore: previous?.score ?? null,
+          scoreDelta: delta.scoreDelta,
+          topFindings: findings ?? [],
+          reportUrl,
+        });
+
     const sent = await sendEmail({ to, ...msg });
     if (sent) {
       await db.from("email_log").insert({
@@ -90,8 +115,14 @@ export async function notifyOnScanResult(scanId: string): Promise<{ alerted: boo
         kind: "regression",
         app_url: scan.app_url,
       });
+      // File it into the conversation, so the email and the chat are one
+      // thread: the owner opens the app and the agent has already spoken —
+      // and whatever they reply, it answers with that in context.
+      if (written) {
+        await appendAgentMessage(scan.user_id, monitor.id, written.body);
+      }
     }
-    log.info("regression alert", { scanId, sent });
+    log.info("regression alert", { scanId, sent, authored: Boolean(written) });
     return { alerted: sent };
   } catch {
     log.error("notify failed", { scanId });

@@ -5,6 +5,7 @@ import { scanText } from "@/lib/scan/patterns";
 import { checkHeaders } from "@/lib/scan/headers";
 import { detectSupabase, probeSupabaseRls } from "@/lib/scan/supabase-rls";
 import { probeSupabaseStorage } from "@/lib/scan/storage";
+import { detectFirebase, probeFirebase } from "@/lib/scan/firebase";
 import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
 import type { RawFinding } from "@/lib/scan/types";
@@ -61,6 +62,11 @@ export async function recheckFinding(
     case "supabase-storage": {
       const ref = detectSupabase(allText);
       found = ref ? await probeSupabaseStorage(ref).catch(() => []) : [];
+      break;
+    }
+    case "firebase-rules": {
+      const fb = detectFirebase(allText);
+      found = fb ? await probeFirebase(fb).catch(() => []) : [];
       break;
     }
     case "open-endpoint": {

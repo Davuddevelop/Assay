@@ -99,6 +99,37 @@ Each finding comes with an exact prompt to paste back into your builder.`;
   return { subject, html: shell(subject, inner), text };
 }
 
+// ── Agent-authored alert ─────────────────────────────────────────────────────
+
+/**
+ * The same envelope, carrying the agent's own words instead of a fixed layout.
+ * Deliberately plain: when the agent has written the message, the job of the
+ * template is to stay out of its way and add only the link back.
+ */
+export function agentAlertEmail(input: {
+  subject: string;
+  body: string;
+  reportUrl: string;
+}): { subject: string; html: string; text: string } {
+  const { subject, body, reportUrl } = input;
+
+  const paragraphs = body
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map(
+      (p) =>
+        `<p style="margin:0 0 14px;color:${IVORY};font-size:15px;line-height:1.65;">${escapeHtml(p)}</p>`,
+    )
+    .join("");
+
+  const inner = `${paragraphs}
+<div style="margin-top:22px;">${button("Open the report", reportUrl)}</div>`;
+
+  const text = `${body}\n\nOpen the report: ${reportUrl}`;
+  return { subject, html: shell(subject, inner), text };
+}
+
 // ── Weekly digest ────────────────────────────────────────────────────────────
 
 export interface DigestApp {

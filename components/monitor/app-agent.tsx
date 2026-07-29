@@ -38,12 +38,17 @@ export function AppAgent({
   monitorId,
   appUrl,
   events,
+  history = [],
 }: {
   monitorId: string;
   appUrl: string;
   events: ActivityEvent[]; // oldest → newest
+  /** What the agent already remembers, rendered with the page. */
+  history?: ChatMsg[];
 }) {
-  const [chat, setChat] = useState<ChatMsg[]>([]);
+  // Seeded from the server so the conversation is simply there on load — no
+  // flash of an empty thread, and no re-typing what you already told it.
+  const [chat, setChat] = useState<ChatMsg[]>(history);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
@@ -64,7 +69,8 @@ export function AppAgent({
       const res = await fetch("/api/monitor/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ monitorId, messages: next }),
+        // Only the new message travels — the server holds the conversation.
+        body: JSON.stringify({ monitorId, message: text }),
       });
       const data = (await res.json()) as { reply?: string };
       setChat((c) => [

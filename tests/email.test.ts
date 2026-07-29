@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import {
   regressionEmail,
+  agentAlertEmail,
   weeklyDigestEmail,
 } from "@/lib/email/templates";
 
@@ -56,6 +57,38 @@ describe("regressionEmail", () => {
       scoreDelta: null,
     });
     expect(html).toContain("flagged at risk");
+  });
+});
+
+describe("agentAlertEmail", () => {
+  const base = {
+    subject: "Your database is readable again",
+    body: "A change you shipped this morning turned the lock on your database off again.\n\nYou told me last week you'd fixed this one.",
+    reportUrl: "https://assaysecurity.com/scan/abc",
+  };
+
+  it("carries the agent's own words and a link back", () => {
+    const { subject, html, text } = agentAlertEmail(base);
+    expect(subject).toBe(base.subject);
+    expect(html).toContain("turned the lock on your database off again");
+    expect(html).toContain(base.reportUrl);
+    expect(text).toContain(base.reportUrl);
+  });
+
+  it("keeps paragraph breaks the agent wrote", () => {
+    const { html } = agentAlertEmail(base);
+    expect(html.match(/<p style=/g)?.length).toBe(2);
+  });
+
+  // The body is model-generated prose. It is never trusted as markup — an
+  // angle bracket in an app name or a finding title must not become a tag.
+  it("escapes the body rather than rendering it as HTML", () => {
+    const { html } = agentAlertEmail({
+      ...base,
+      body: 'Someone can read <script>alert("x")</script> right now.',
+    });
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;");
   });
 });
 

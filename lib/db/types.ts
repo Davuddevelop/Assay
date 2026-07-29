@@ -142,6 +142,28 @@ export type MonitoredAppRow = {
   created_at: string;
 };
 
+/** One side of a persisted exchange with a watched app's agent. */
+/** An API key's metadata. The plaintext key is never stored — only its hash. */
+type ApiKeyRow = {
+  id: string;
+  user_id: string;
+  prefix: string;
+  key_hash: string;
+  label: string;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
+};
+
+type AgentMessageRow = {
+  id: string;
+  user_id: string;
+  monitor_id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+};
+
 type EmailLogRow = {
   id: string;
   user_id: string;
@@ -200,6 +222,8 @@ export interface Database {
       badges: Table<BadgeRow, "scan_id" | "public_token">;
       scan_usage: Table<ScanUsageRow, "user_id" | "month">;
       monitored_apps: Table<MonitoredAppRow, "user_id" | "app_url">;
+      api_keys: Table<ApiKeyRow, "user_id" | "prefix" | "key_hash">;
+      agent_messages: Table<AgentMessageRow, "user_id" | "monitor_id" | "role" | "content">;
       email_log: Table<EmailLogRow, "user_id" | "kind">;
       subscriptions: Table<SubscriptionRow, "user_id">;
     };
