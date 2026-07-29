@@ -69,10 +69,16 @@ export default function TermsPage() {
         <h2>5. Plans and billing</h2>
         <p>
           Assay has a free tier and paid plans. Paid plans are billed monthly in
-          advance through Stripe and renew until you cancel. You can cancel any
-          time from your billing page; access continues until the end of the paid
-          period. Fees are non-refundable except where required by law. We may
-          change prices with notice for future billing periods.
+          advance and renew until you cancel. Payments are processed by{" "}
+          <strong>Paddle</strong>, which is the merchant and seller of record for
+          every paid plan: your purchase contract for the transaction is with
+          Paddle, they issue your invoice, and they collect any VAT or sales tax
+          due in your country. Paddle&rsquo;s own terms apply to the payment
+          alongside these terms. You can cancel any time from your billing page;
+          access continues until the end of the paid period. Fees are
+          non-refundable except where required by law or under Paddle&rsquo;s
+          refund policy. We may change prices with notice for future billing
+          periods.
         </p>
       </section>
 

@@ -29,8 +29,9 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Usage &amp; billing.</strong> Scan counts for metering, your
-            plan, and — if you subscribe — a Stripe customer id. Card details go
-            straight to Stripe; we never see or store them.
+            plan, and — if you subscribe — a Paddle customer id. Paddle is the
+            seller of record for paid plans: your card details, billing address,
+            and any tax identifiers go to Paddle, and we never see or store them.
           </li>
         </ul>
       </section>
@@ -71,7 +72,7 @@ export default function PrivacyPage() {
           <li><strong>Supabase</strong> — database, authentication.</li>
           <li><strong>Vercel</strong> — hosting.</li>
           <li><strong>Anthropic</strong> — generating plain-language explanations from findings (no secret values are sent).</li>
-          <li><strong>Stripe</strong> — payments (paid plans only).</li>
+          <li><strong>Paddle</strong> — payments and tax, as seller of record (paid plans only).</li>
           <li><strong>Resend</strong> — sending alert emails (paid plans only).</li>
           <li><strong>Inngest</strong> — scheduling background re-checks.</li>
         </ul>

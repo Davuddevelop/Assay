@@ -6,7 +6,7 @@ import type { PlanId } from "@/lib/plans";
 import type { SubscriptionRow } from "@/lib/db/types";
 
 /**
- * A subscription is only "live" when Stripe says it's active (or on the grace
+ * A subscription is only "live" when Paddle says it's active (or on the grace
  * window we treat as active). Past-due / canceled falls back to Free so a lapsed
  * payment quietly drops entitlements instead of granting paid features forever.
  */
@@ -46,7 +46,7 @@ export async function getSubscription(): Promise<SubscriptionRow | null> {
   return data ?? null;
 }
 
-/** Look up a subscription by Stripe customer id — used by the webhook. */
+/** Look up a subscription by Paddle customer id — used by the webhook. */
 export async function getSubscriptionByCustomer(
   customerId: string,
 ): Promise<SubscriptionRow | null> {
@@ -54,12 +54,12 @@ export async function getSubscriptionByCustomer(
   const { data } = await db
     .from("subscriptions")
     .select("*")
-    .eq("stripe_customer_id", customerId)
+    .eq("billing_customer_id", customerId)
     .maybeSingle();
   return data ?? null;
 }
 
-/** Upsert subscription state (service role) — the Stripe webhook's write path. */
+/** Upsert subscription state (service role) — the Paddle webhook's write path. */
 export async function upsertSubscription(
   row: Partial<SubscriptionRow> & { user_id: string },
 ): Promise<void> {
