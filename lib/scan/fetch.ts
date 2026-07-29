@@ -60,7 +60,7 @@ async function fetchOnce(
     const res = await fetch(url, {
       signal: controller.signal,
       redirect: "manual", // never let the runtime auto-follow — see fetchBounded
-      headers: { "user-agent": "AssayScanner/1.0 (+https://assay.dev)" },
+      headers: { "user-agent": "AssayScanner/1.0 (+https://assaysecurity.com)" },
     });
     if (res.status >= 300 && res.status < 400) {
       return { text: "", headers: res.headers, status: res.status, location: res.headers.get("location") };

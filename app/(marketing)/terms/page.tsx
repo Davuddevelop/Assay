@@ -134,7 +134,7 @@ export default function TermsPage() {
           Assay is operated by <strong>[legal entity]</strong> and these terms
           are governed by the laws of <strong>[jurisdiction]</strong>. Questions
           go to{" "}
-          <a href="mailto:hello@assay.dev">hello@assay.dev</a>.
+          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>.
         </p>
       </section>
     </LegalDoc>

@@ -57,7 +57,7 @@ export default function AcceptableUsePage() {
         <h2>Reporting a vulnerability in Assay</h2>
         <p>
           Found a security issue in Assay itself? Tell us first at{" "}
-          <a href="mailto:security@assay.dev">security@assay.dev</a>, with enough
+          <a href="mailto:security@assaysecurity.com">security@assaysecurity.com</a>, with enough
           detail to reproduce it. We welcome good-faith research and won&rsquo;t
           pursue legal action against researchers who:
         </p>
