@@ -177,8 +177,8 @@ export type SubscriptionRow = {
   user_id: string;
   plan: string;
   status: string;
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
+  billing_customer_id: string | null;
+  billing_subscription_id: string | null;
   current_period_end: string | null;
   updated_at: string;
 };

@@ -54,24 +54,33 @@ export function siteUrl(): string {
 }
 
 /**
- * Stripe config, or null when unset. Billing is optional: the app runs fully
+ * Paddle config, or null when unset. Billing is optional: the app runs fully
  * without it (everyone is Free), the pricing page still renders, and checkout
- * simply reports it's unavailable. `priceIds` maps a paid plan id to its Stripe
- * Price. `webhookSecret` verifies incoming webhook signatures.
+ * simply reports it's unavailable. `priceIds` maps a paid plan id to its Paddle
+ * Price (`pri_…`). `webhookSecret` verifies incoming webhook signatures.
+ *
+ * Paddle is the merchant of record, so it also collects and remits VAT — the
+ * reason to use it over a plain gateway when selling software internationally
+ * from a one-person company.
+ *
+ * `PADDLE_ENV=sandbox` points at Paddle's test stack; anything else is live.
  */
-export function stripeConfig(): {
-  secretKey: string;
+export function paddleConfig(): {
+  apiKey: string;
+  apiBase: string;
   webhookSecret: string;
   priceIds: { pro: string; team: string };
 } | null {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) return null;
+  const apiKey = process.env.PADDLE_API_KEY;
+  if (!apiKey) return null;
+  const sandbox = process.env.PADDLE_ENV === "sandbox";
   return {
-    secretKey,
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+    apiKey,
+    apiBase: sandbox ? "https://sandbox-api.paddle.com" : "https://api.paddle.com",
+    webhookSecret: process.env.PADDLE_WEBHOOK_SECRET ?? "",
     priceIds: {
-      pro: process.env.STRIPE_PRICE_PRO ?? "",
-      team: process.env.STRIPE_PRICE_TEAM ?? "",
+      pro: process.env.PADDLE_PRICE_PRO ?? "",
+      team: process.env.PADDLE_PRICE_TEAM ?? "",
     },
   };
 }

@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/auth";
 import { getUserPlan, getSubscription } from "@/lib/data/subscriptions";
 import { scanUsageThisMonth } from "@/lib/usage";
 import { getPlan, PLANS, PLAN_ORDER, formatPrice, checksLimit } from "@/lib/plans";
-import { stripeConfig } from "@/lib/env";
+import { paddleConfig } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import { startCheckout, openPortal } from "@/app/(app)/billing/actions";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export default async function BillingPage({
   ]);
   const plan = getPlan(planId);
   const limit = checksLimit(planId);
-  const billingOn = stripeConfig() !== null;
+  const billingOn = paddleConfig() !== null;
 
   const notice =
     success === "1"
@@ -78,7 +78,7 @@ export default async function BillingPage({
             {used} / {limit.toLocaleString()} scans this month
           </p>
         </div>
-        {sub?.stripe_customer_id && planId !== "free" && (
+        {sub?.billing_customer_id && planId !== "free" && (
           <form action={openPortal}>
             <Button type="submit" variant="ghost" size="md">
               Manage subscription
