@@ -44,7 +44,7 @@ export function anthropicKey(): string | null {
 export function resendConfig(): { apiKey: string; from: string } | null {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return null;
-  return { apiKey, from: process.env.EMAIL_FROM ?? "Assay <alerts@assay.dev>" };
+  return { apiKey, from: process.env.EMAIL_FROM ?? "Assay <alerts@assaysecurity.com>" };
 }
 
 /** Absolute base URL for links inside emails (no trailing slash). */

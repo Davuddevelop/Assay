@@ -42,8 +42,8 @@ export function LegalDoc({
 
       <p className="mt-14 border-t border-line pt-6 text-xs text-ash">
         Questions? Email{" "}
-        <a href="mailto:hello@assay.dev" className="text-iris-soft hover:text-ivory">
-          hello@assay.dev
+        <a href="mailto:hello@assaysecurity.com" className="text-iris-soft hover:text-ivory">
+          hello@assaysecurity.com
         </a>
         .
       </p>

@@ -91,7 +91,7 @@ export default function PrivacyPage() {
         <h2>Your rights</h2>
         <p>
           You can access, correct, export, or delete your data. Email{" "}
-          <a href="mailto:hello@assay.dev">hello@assay.dev</a> and we&rsquo;ll
+          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a> and we&rsquo;ll
           help. Depending on where you live, you may have additional rights under
           laws such as the GDPR or CCPA.
         </p>
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
         <h2>Contact</h2>
         <p>
           Privacy questions go to{" "}
-          <a href="mailto:hello@assay.dev">hello@assay.dev</a>. Assay is operated
+          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>. Assay is operated
           by <strong>[legal entity]</strong>.
         </p>
       </section>

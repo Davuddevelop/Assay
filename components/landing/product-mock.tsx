@@ -61,7 +61,7 @@ export function ProductMock({ className }: { className?: string }) {
           <span className="h-3 w-3 rounded-full bg-border-strong" />
         </div>
         <div className="flex h-7 flex-1 items-center justify-center rounded-pill bg-onyx/60 px-4 font-mono text-xs text-ash">
-          assay.dev/report/my-saas.lovable.app
+          assaysecurity.com/report/my-saas.lovable.app
         </div>
       </div>
 
