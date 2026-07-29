@@ -9,11 +9,13 @@ import { log } from "@/lib/log";
  * codebase's no-SDK style. Only the two things billing needs: open a checkout,
  * and open the customer portal so someone can cancel without emailing us.
  *
- * Checkout is created server-side and the buyer is redirected to the hosted
- * page, rather than opening Paddle's overlay in the browser. That keeps the
- * strict Content-Security-Policy intact — the overlay would need an external
- * script and frame permissions — and keeps the price the buyer sees decided by
- * the server, never by a client that could be edited.
+ * The transaction is created server-side so the price being charged is decided
+ * here and reaches the browser only as an opaque id. Paddle Billing has no
+ * hosted checkout page, though: with a default payment link configured, the
+ * `checkout.url` it returns is our own /billing URL carrying `?_ptxn=<id>`,
+ * and the payment UI is an overlay that only Paddle.js can draw. That is what
+ * components/billing/paddle-checkout.tsx is for — without it the redirect
+ * lands on a page where nothing happens.
  *
  * Every call returns null when Paddle isn't configured, so the app runs fine
  * without billing.
