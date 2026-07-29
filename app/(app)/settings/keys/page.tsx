@@ -19,20 +19,6 @@ export default async function KeysPage() {
   const keys = await listApiKeys(user.id);
   const endpoint = `${siteUrl()}/api/mcp`;
 
-  const mcpConfig = JSON.stringify(
-    {
-      mcpServers: {
-        assay: {
-          type: "http",
-          url: endpoint,
-          headers: { Authorization: "Bearer YOUR_KEY" },
-        },
-      },
-    },
-    null,
-    2,
-  );
-
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
       <Link
@@ -51,10 +37,15 @@ export default async function KeysPage() {
         you carrying findings back by hand. Scans count against your plan exactly
         as they do here.
       </p>
+      <p className="mt-3 max-w-2xl text-sm text-ash">
+        You don&rsquo;t need a key to use Assay. Scanning from the dashboard works
+        the same and takes no setup — this is for driving it from your editor.
+      </p>
 
-      <CreateKeyForm />
+      {/* Creating a key is also the only moment we can hand over a config that
+          already works, so the setup instructions live inside this panel. */}
+      <CreateKeyForm endpoint={endpoint} />
 
-      {/* live keys */}
       <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
         Your keys
       </h2>
@@ -86,29 +77,30 @@ export default async function KeysPage() {
           ))}
         </ul>
       )}
+      {keys.length > 0 && (
+        <p className="mt-3 text-sm text-ash">
+          Setup instructions appear when a key is created, because that is the only
+          time the key itself can be shown. Lost yours? Revoke it and make a new one.
+        </p>
+      )}
 
-      {/* setup */}
       <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
-        Connect your agent
+        What your agent can do
       </h2>
-      <p className="mt-3 text-sm text-ivory-dim">
-        Add Assay as an MCP server. In Claude Code that is one command:
-      </p>
-      <pre className="mt-4 overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface/60 p-4 font-mono text-xs text-ivory">
-        {`claude mcp add --transport http assay ${endpoint} \\\n  --header "Authorization: Bearer YOUR_KEY"`}
-      </pre>
-      <p className="mt-4 text-sm text-ivory-dim">
-        For any other MCP client, point it at the same endpoint:
-      </p>
-      <pre className="mt-4 overflow-x-auto rounded-[var(--radius-card)] border border-line bg-surface/60 p-4 font-mono text-xs text-ivory">
-        {mcpConfig}
-      </pre>
+      <ul className="mt-4 space-y-3 text-sm text-ivory-dim">
+        <li>
+          <span className="font-mono text-ivory">check_app_security</span> — scans a
+          live app and returns a verdict, a score, and the fix for each issue. Takes
+          about a minute and uses one scan from your plan.
+        </li>
+        <li>
+          <span className="font-mono text-ivory">get_last_result</span> — reads back
+          the previous verdict for an app. Instant, and costs nothing.
+        </li>
+      </ul>
       <p className="mt-4 text-sm text-ash">
-        Then ask your agent to check the app before you deploy. It can run{" "}
-        <span className="font-mono text-ivory-dim">check_app_security</span> to
-        scan, or <span className="font-mono text-ivory-dim">get_last_result</span>{" "}
-        to read back the previous verdict without spending a scan. A key reaches
-        only its own account&rsquo;s apps.
+        A key reaches only its own account&rsquo;s apps. The endpoint is{" "}
+        <span className="font-mono text-ivory-dim">{endpoint}</span>.
       </p>
     </div>
   );
