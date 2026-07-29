@@ -12,6 +12,11 @@
 export const publicEnv = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+  // Paddle's client-side token is designed to be public — it can only open a
+  // checkout, never read or change anything. The secret API key stays server-
+  // side in paddleConfig().
+  paddleClientToken: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? "",
+  paddleEnv: process.env.NEXT_PUBLIC_PADDLE_ENV ?? "",
 } as const;
 
 /**
