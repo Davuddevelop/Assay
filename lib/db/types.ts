@@ -148,12 +148,18 @@ export type MonitoredAppRow = {
 type ScanStatRow = {
   id: number;
   platform: string;
-  verdict: string;
-  score: number;
+  /** 'started' until the scan resolves; a row left at 'started' is a timeout. */
+  outcome: string;
+  /** A fixed bucket, never a message — see ScanFailureReason. */
+  failure_reason: string | null;
+  /** Null until the scan finishes, and forever if it never does. */
+  verdict: string | null;
+  score: number | null;
   critical: number;
   risky: number;
   minor: number;
   created_at: string;
+  resolved_at: string | null;
 };
 
 type ApiKeyRow = {
@@ -238,7 +244,9 @@ export interface Database {
       agent_messages: Table<AgentMessageRow, "user_id" | "monitor_id" | "role" | "content">;
       email_log: Table<EmailLogRow, "user_id" | "kind">;
       subscriptions: Table<SubscriptionRow, "user_id">;
-      scan_stats: Table<ScanStatRow, "platform" | "verdict" | "score">;
+      // verdict/score are no longer required on insert: a row is opened when a
+      // scan starts, long before either is known.
+      scan_stats: Table<ScanStatRow, "platform">;
     };
     Views: Record<string, never>;
     Functions: {

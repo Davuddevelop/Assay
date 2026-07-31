@@ -8,6 +8,8 @@ import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 interface DoneData {
   scan: ScanRow;
   findings: ScanFindingRow[];
+  /** True until the plain-English pass lands, so the report can say so. */
+  explaining: boolean;
 }
 
 /**
@@ -35,6 +37,10 @@ export function LiveScan({ target }: { target: string }) {
         const decoder = new TextDecoder();
         let buf = "";
 
+        // Tracked locally as well as in state: when the stream ends we need to
+        // know whether a verdict ever arrived, and setState isn't readable here.
+        let settled = false;
+
         for (;;) {
           const { done: streamDone, value } = await reader.read();
           if (streamDone) break;
@@ -45,9 +51,26 @@ export function LiveScan({ target }: { target: string }) {
             if (!part.trim()) continue;
             const evt = JSON.parse(part);
             if (evt.type === "log") setLines((l) => [...l, evt.line]);
-            else if (evt.type === "done") setDone({ scan: evt.scan, findings: evt.findings });
-            else if (evt.type === "error") setError(evt.message);
+            else if (evt.type === "done") {
+              settled = true;
+              setDone({ scan: evt.scan, findings: evt.findings, explaining: !!evt.explaining });
+            } else if (evt.type === "explained") {
+              setDone((d) => (d ? { ...d, findings: evt.findings, explaining: false } : d));
+            } else if (evt.type === "error") {
+              settled = true;
+              setError(evt.message);
+            }
           }
+        }
+
+        // A stream can end without ever sending a verdict — the platform caps a
+        // function at 60s and kills it mid-scan, taking the connection with it.
+        // Without this branch the loop just exited and the reader was left
+        // watching a dead log feed forever, with no error and no way back.
+        if (!settled && !ctrl.signal.aborted) {
+          setError(
+            "The scan was cut short before it finished — that usually means the app took too long to respond. Try again; it often works second time.",
+          );
         }
       } catch {
         if (!ctrl.signal.aborted) setError("We couldn't reach that app.");
@@ -61,19 +84,27 @@ export function LiveScan({ target }: { target: string }) {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight });
   }, [lines]);
 
+  // The report wins over a late error on purpose: once a verdict has been
+  // delivered, a connection dropping during the plain-English pass must not
+  // replace a finished report with a failure.
+  if (done) {
+    return (
+      <div className="mt-12">
+        {done.explaining && (
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-ash">
+            Writing plain-English fixes…
+          </p>
+        )}
+        <ScanReport scan={done.scan} findings={done.findings} showNextStep />
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="mt-12 rounded-card border border-oxblood/40 bg-oxblood/10 p-6">
         <p className="font-display text-lg font-bold text-ivory">Couldn&rsquo;t scan that app.</p>
         <p className="mt-1 text-sm text-ivory-dim">{error}</p>
-      </div>
-    );
-  }
-
-  if (done) {
-    return (
-      <div className="mt-12">
-        <ScanReport scan={done.scan} findings={done.findings} showNextStep />
       </div>
     );
   }

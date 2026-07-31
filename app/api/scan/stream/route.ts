@@ -6,7 +6,7 @@ import { explainFindings } from "@/lib/anthropic/explain";
 import { ScanError } from "@/lib/scan/types";
 import { consumeRateLimit } from "@/lib/rate-limit-global";
 import { anonBudget } from "@/lib/scan/anon-budget";
-import { recordScanStat } from "@/lib/data/scan-stats";
+import { openScanStat, completeScanStat, failScanStat } from "@/lib/data/scan-stats";
 import { log } from "@/lib/log";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
@@ -45,12 +45,19 @@ export async function GET(req: NextRequest) {
       const enc = new TextEncoder();
       const send = (obj: unknown) => controller.enqueue(enc.encode(JSON.stringify(obj) + "\n"));
 
+      // Opened before anything can go wrong and closed on every path out, so a
+      // row left reading 'started' means the platform killed us mid-scan — the
+      // one failure that cannot report itself.
+      let statId: number | null = null;
+
       try {
+        statId = await openScanStat();
         const ip = clientKey(req);
         const withinBurst = await consumeRateLimit(`try:${ip}`, ANON_LIMIT, ANON_WINDOW_SEC);
         const withinDaily =
           withinBurst && (await consumeRateLimit(`try-day:${ip}`, ANON_DAILY_LIMIT, DAY_SEC));
         if (!withinBurst || !withinDaily) {
+          failScanStat(statId, "rate_limited");
           send({
             type: "error",
             message: withinBurst
@@ -79,6 +86,7 @@ export async function GET(req: NextRequest) {
             window: withinGlobalHour ? "day" : "hour",
             limit: withinGlobalHour ? budget.daily : budget.hourly,
           });
+          failScanStat(statId, "rate_limited");
           send({
             type: "error",
             message:
@@ -90,15 +98,13 @@ export async function GET(req: NextRequest) {
         try {
           await assertScannableUrl(target);
         } catch {
+          failScanStat(statId, "rejected_url");
           send({ type: "error", message: "That doesn't look like a public app URL. Try the full link." });
           controller.close();
           return;
         }
 
         const result = await runScan(target, (line) => send({ type: "log", line }));
-
-        send({ type: "log", line: "Writing plain-English fixes…" });
-        const explained = await explainFindings(result.findings, result.platform);
         const now = new Date().toISOString();
 
         const scan: ScanRow = {
@@ -106,27 +112,59 @@ export async function GET(req: NextRequest) {
           status: "completed", score: result.score, verdict: result.verdict,
           is_demo: false, error: null, created_at: now, completed_at: now,
         };
+
+        // Raw findings first. The verdict is known the moment the probe ends,
+        // and everything after this is enrichment.
         const findings: ScanFindingRow[] = result.findings.map((f, i) => ({
           id: String(i), scan_id: "inline", kind: f.kind, severity: f.severity,
-          title: explained[i]?.title ?? f.title,
-          plain_explanation: explained[i]?.plain_explanation ?? f.detail,
-          fix_prompt: explained[i]?.fix_prompt ?? `Fix this security issue in my app: ${f.title}. ${f.detail}`,
-          manual_steps: (explained[i]?.manual_steps ?? []).join("\n"),
+          title: f.title,
+          plain_explanation: f.detail,
+          fix_prompt: `Fix this security issue in my app: ${f.title}. ${f.detail}`,
+          manual_steps: "",
           redacted_location: f.redactedLocation, created_at: now,
         }));
 
-        // The only trace this scan leaves: its shape, with nothing that could
-        // identify who ran it or what they scanned. Without this, /try — the
-        // most-used path in the product — produced no evidence it ever ran.
-        recordScanStat({
+        // Send the report BEFORE explaining it.
+        //
+        // The explanation step makes one model call across every finding, so the
+        // more a scan finds the longer it runs — and the platform kills the
+        // function at 60s. That put the slowest stage on the critical path and
+        // made badly broken apps, the ones this product exists for, the most
+        // likely to die with nothing shown. Now the verdict lands immediately
+        // and the plain-English fixes arrive after, so a timeout costs polish
+        // instead of the whole result.
+        completeScanStat(statId, {
           platform: result.platform,
           verdict: result.verdict,
           score: result.score,
           findings: result.findings,
         });
+        send({ type: "done", scan, findings, explaining: result.findings.length > 0 });
 
-        send({ type: "done", scan, findings });
+        if (result.findings.length > 0) {
+          try {
+            const explained = await explainFindings(result.findings, result.platform);
+            send({
+              type: "explained",
+              findings: findings.map((f, i) => ({
+                ...f,
+                title: explained[i]?.title ?? f.title,
+                plain_explanation: explained[i]?.plain_explanation ?? f.plain_explanation,
+                fix_prompt: explained[i]?.fix_prompt ?? f.fix_prompt,
+                manual_steps: (explained[i]?.manual_steps ?? []).join("\n"),
+              })),
+            });
+          } catch (err) {
+            // The report is already delivered, so this is a downgrade, not a
+            // failure — the reader keeps the technical wording.
+            log.warn("explain failed after report sent", {
+              reason: err instanceof Error ? err.message : "unknown",
+            });
+            send({ type: "explained", findings });
+          }
+        }
       } catch (err) {
+        failScanStat(statId, err instanceof ScanError ? "unreachable" : "unknown");
         // The fetcher raises specific, already-plain-English reasons ("it
         // returned HTTP 403", "we couldn't reach that app"). Swallowing them
         // for a generic line left people whose app sits behind Cloudflare with
