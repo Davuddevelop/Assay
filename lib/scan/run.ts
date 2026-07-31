@@ -9,19 +9,10 @@ import { detectFirebase, probeFirebase } from "@/lib/scan/firebase";
 import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
 import { looksUnscannable } from "@/lib/scan/content-heuristics";
+import { detectPlatform } from "@/lib/scan/platform";
 import { scoreFindings } from "@/lib/scan/score";
 import type { RawFinding } from "@/lib/scan/types";
 import type { ScanVerdict } from "@/lib/db/types";
-
-/** Best-effort detection of the builder a vibe-coded app came from. Pure. */
-function detectPlatform(html: string): string {
-  const h = html.toLowerCase();
-  if (h.includes("gptengineer") || h.includes("lovable")) return "lovable";
-  if (h.includes("bolt.new") || h.includes("stackblitz")) return "bolt";
-  if (h.includes("replit")) return "replit";
-  if (h.includes("v0.dev") || h.includes("v0.app")) return "v0";
-  return "unknown";
-}
 
 function shortBundleName(url: string): string {
   try {
@@ -160,5 +151,10 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   const { score, verdict } = scoreFindings(deduped);
   say("Scoring the results…");
 
-  return { platform: detectPlatform(app.html), findings: deduped, score, verdict };
+  return {
+    platform: detectPlatform(app.html, appUrl),
+    findings: deduped,
+    score,
+    verdict,
+  };
 }
