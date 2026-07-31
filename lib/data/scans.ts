@@ -10,9 +10,23 @@ import type {
 } from "@/lib/db/types";
 
 // ── reads (user-scoped, RLS) ──────────────────────────────────────────────────
+/**
+ * Scan history, newest first.
+ *
+ * Bounded, because monitoring re-checks a watched app every three hours: an
+ * unbounded select grows without limit and eventually loads thousands of rows
+ * to render a page that groups them down to a handful. The cap is generous
+ * enough that the per-app counts stay accurate for any realistic account.
+ */
+const SCAN_HISTORY_LIMIT = 500;
+
 export async function listScans(): Promise<ScanRow[]> {
   const db = await createClient();
-  const { data } = await db.from("scans").select("*").order("created_at", { ascending: false });
+  const { data } = await db
+    .from("scans")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(SCAN_HISTORY_LIMIT);
   return data ?? [];
 }
 
