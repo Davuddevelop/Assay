@@ -163,9 +163,12 @@ export default function TermsPage() {
       <section>
         <h2>12. Contact &amp; governing law</h2>
         <p>
-          Assay is operated by <strong>[legal entity]</strong> and these terms
-          are governed by the laws of <strong>[jurisdiction]</strong>. Questions
-          go to{" "}
+          Assay is operated by <strong>Aynur Əliyeva</strong>, based in Baku,
+          Azerbaijan Republic. These terms are governed by the laws of the{" "}
+          <strong>Azerbaijan Republic</strong>, and the courts of Baku have
+          jurisdiction over any dispute &mdash; except where the consumer law of
+          your own country gives you the right to bring a claim locally, which
+          nothing here takes away. Questions go to{" "}
           <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>.
         </p>
       </section>

@@ -125,7 +125,8 @@ export default function PrivacyPage() {
         <p>
           Privacy questions go to{" "}
           <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>. Assay is operated
-          by <strong>[legal entity]</strong>.
+          by <strong>Aynur Əliyeva</strong>, based in Baku, Azerbaijan Republic,
+          who is the data controller for the information described above.
         </p>
       </section>
     </LegalDoc>
