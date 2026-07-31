@@ -45,7 +45,7 @@ export default async function BillingPage({
           : null;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
+    <div className="mx-auto w-full max-w-4xl xl:max-w-5xl px-4 py-12 sm:px-6">
       {/* Paddle redirects back here with ?_ptxn=<id> — the overlay is the only
           checkout UI Paddle Billing has, so it has to be opened client-side. */}
       <Suspense fallback={null}>

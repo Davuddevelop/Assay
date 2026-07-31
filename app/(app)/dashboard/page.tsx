@@ -27,7 +27,7 @@ export default async function DashboardPage() {
   const needsAttention = apps.filter((a) => a.latest.verdict !== "certified").length;
 
   return (
-    <div className="relative mx-auto w-full max-w-5xl px-4 py-16 sm:px-6">
+    <div className="relative mx-auto w-full max-w-5xl xl:max-w-6xl px-4 py-16 sm:px-6">
       <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 opacity-40" />
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>

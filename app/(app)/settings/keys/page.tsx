@@ -20,7 +20,7 @@ export default async function KeysPage() {
   const endpoint = `${siteUrl()}/api/mcp`;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
+    <div className="mx-auto w-full max-w-4xl xl:max-w-5xl px-4 py-12 sm:px-6">
       <Link
         href="/dashboard"
         className="font-mono text-xs uppercase tracking-[0.14em] text-ash transition-colors hover:text-ivory"

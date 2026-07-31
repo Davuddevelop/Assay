@@ -79,6 +79,35 @@
 
   html {
     height: 100%;
+
+    /*
+      Scale the whole interface up on large displays.
+
+      The complaint this answers is that on a laptop or desktop the app looked
+      small and adrift — not minimal, just empty. Two things caused it: type and
+      controls sized for a tablet, and containers that stopped growing. Both are
+      expressed in rem, and Tailwind's spacing and max-width scales are rem too,
+      so moving the root size lifts text, padding, gaps, controls and container
+      widths together, in proportion. One rule instead of an `xl:` variant on
+      every class in the codebase.
+
+      Deliberately modest — 6% then 12%, not a redesign. And deliberately above
+      1280px only, so phone and tablet layouts, which are already right, never
+      see it.
+    */
+    font-size: 16px;
+  }
+
+  @media (min-width: 1280px) {
+    html {
+      font-size: 17px;
+    }
+  }
+
+  @media (min-width: 1680px) {
+    html {
+      font-size: 18px;
+    }
   }
 
   body {

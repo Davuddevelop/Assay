@@ -24,7 +24,7 @@ export async function AppHeader() {
 
   return (
     <div className="sticky top-3 z-40 px-4 sm:top-4">
-      <nav className="glass mx-auto flex h-14 w-full max-w-4xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
+      <nav className="glass mx-auto flex h-14 w-full max-w-4xl xl:max-w-5xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
         <div className="flex items-center gap-8">
           <Link
             href="/dashboard"

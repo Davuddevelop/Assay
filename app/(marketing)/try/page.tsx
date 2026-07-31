@@ -26,7 +26,7 @@ export default async function TryPage({
   const target = url ? normalize(url) : null;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-16 sm:py-24">
+    <main className="mx-auto w-full max-w-3xl xl:max-w-4xl px-4 py-16 sm:py-24">
       <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ivory">
         The independent check for your app.
       </h1>
