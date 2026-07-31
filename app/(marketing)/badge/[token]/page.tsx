@@ -33,6 +33,10 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Self-canonical. These are the pages people share and embed, so they are
+    // the most likely to be reached by a link carrying tracking parameters —
+    // this keeps every variant consolidated onto one URL.
+    alternates: { canonical: `/badge/${token}` },
     openGraph: {
       title,
       description,

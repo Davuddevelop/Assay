@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/refunds" },
   title: "Refund Policy — Assay",
   description:
     "Full refund within 14 days of any charge, no conditions. How to request one and how long it takes.",

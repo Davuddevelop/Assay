@@ -4,6 +4,7 @@ import { PricingTable } from "@/components/pricing-table";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/pricing" },
   title: "Pricing — Assay",
   description:
     "Start with a free one-time security scan for your app, or upgrade for continuous monitoring that re-checks it after every change you ship.",

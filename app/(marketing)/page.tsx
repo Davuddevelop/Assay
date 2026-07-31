@@ -10,6 +10,7 @@ import { Pricing } from "@/components/landing/pricing";
 import { PricingCta } from "@/components/landing/pricing-cta";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/" },
   title: "Is My App Safe to Publish? — Assay Security Scanner",
   description:
     "Free independent security scan for apps built with Lovable, Bolt, Replit, or v0. Assay checks for exposed keys, open Supabase RLS, and missing protections before you publish.",

@@ -5,6 +5,7 @@ import { MonitorView } from "@/components/monitor/monitor-view";
 import { getDemoMonitor } from "@/lib/monitor/demo";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/watch" },
   title: "Continuous Security Monitoring for AI-Built Apps",
   description:
     "Assay keeps watching apps built with Lovable, Bolt, Replit, and v0, and catches the change that reopens a hole — before your users do.",

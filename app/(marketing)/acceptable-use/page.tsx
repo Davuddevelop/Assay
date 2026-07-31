@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/acceptable-use" },
   title: "Acceptable Use Policy — Assay",
   description:
     "Scan only apps you own. How Assay scans, what's prohibited, and how to report a vulnerability.",

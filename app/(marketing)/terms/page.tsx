@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/terms" },
   title: "Terms of Service — Assay",
   description: "The terms that govern your use of Assay.",
 };
