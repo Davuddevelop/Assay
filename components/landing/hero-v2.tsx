@@ -99,14 +99,20 @@ export function HeroV2() {
           as="h1"
           immediate
           startDelay={120}
-          stagger={95}
-          className="mx-auto mt-7 block max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl xl:max-w-4xl xl:text-[5.25rem]"
+          stagger={70}
+          className="mx-auto mt-7 block max-w-3xl text-balance font-display text-[2.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ivory sm:max-w-4xl sm:text-6xl xl:max-w-5xl xl:text-7xl"
         >
-          The{" "}
+          AI built your app.
+          {/* Setup and payoff are two beats — once there's room for the second
+              sentence on one line, break on the full stop rather than wherever
+              the text happens to run out. */}
+          <br className="hidden lg:inline" /> Assay checks what it left{" "}
+          {/* The accent word carries its own full stop: BlurText splits on
+              whitespace, so a bare "." would become its own word span and could
+              orphan onto the next line. */}
           <span className="font-accent text-[1.06em] font-normal tracking-normal text-iris-soft">
-            independent
-          </span>{" "}
-          check for AI-built apps.
+            open.
+          </span>
         </BlurText>
 
         <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg xl:mt-7 xl:max-w-2xl xl:text-xl">

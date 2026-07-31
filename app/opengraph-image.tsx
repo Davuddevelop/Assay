@@ -90,7 +90,7 @@ export default async function Image() {
             color: "#b9b6f7",
           }}
         >
-          The independent check for AI-built apps.
+          AI built your app. Assay checks what it left open.
         </div>
       </div>
     ),
