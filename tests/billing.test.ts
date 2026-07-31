@@ -3,6 +3,38 @@ import { createHmac } from "node:crypto";
 
 import { watchLimit, hasEmailAlerts, checksLimit, getPlan } from "@/lib/plans";
 import { verifyPaddleSignature } from "@/lib/paddle/signature";
+import { sandboxOnProduction } from "@/lib/env";
+
+describe("sandbox billing is unreachable from production", () => {
+  // Paddle's test card is public, and the sandbox webhook points at the
+  // production URL so the integration can be tested end to end. If production
+  // ever holds sandbox credentials, any visitor can pay with 4242 4242 4242
+  // 4242 and have a real paid plan written to the real database — the
+  // signature check passes, because the secret genuinely is ours.
+  it("refuses the one combination that gives away free plans", () => {
+    expect(sandboxOnProduction("production", "sandbox")).toBe(true);
+  });
+
+  it("leaves previews and local development alone — testing belongs there", () => {
+    expect(sandboxOnProduction("preview", "sandbox")).toBe(false);
+    expect(sandboxOnProduction("development", "sandbox")).toBe(false);
+    expect(sandboxOnProduction(undefined, "sandbox")).toBe(false);
+  });
+
+  it("allows production once it holds live credentials", () => {
+    expect(sandboxOnProduction("production", undefined)).toBe(false);
+    expect(sandboxOnProduction("production", "")).toBe(false);
+    expect(sandboxOnProduction("production", "live")).toBe(false);
+  });
+
+  // Only the exact string disables live mode, so a typo fails closed —
+  // production stays live rather than silently dropping into test billing.
+  it("treats anything other than exactly 'sandbox' as live", () => {
+    for (const v of ["Sandbox", "SANDBOX", " sandbox", "sandbox "]) {
+      expect(sandboxOnProduction("production", v)).toBe(false);
+    }
+  });
+});
 
 describe("plan gating", () => {
   it("free watches one app and gets no email alerts", () => {

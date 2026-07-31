@@ -70,6 +70,29 @@ export function siteUrl(): string {
  *
  * `PADDLE_ENV=sandbox` points at Paddle's test stack; anything else is live.
  */
+
+/**
+ * Sandbox billing must never be reachable from the production deployment.
+ *
+ * Paddle's test card number is public knowledge, and the sandbox webhook is
+ * pointed at the production URL so the integration can be tested end to end.
+ * Together those mean that if production ever runs with sandbox credentials,
+ * any visitor can open checkout, pay with 4242 4242 4242 4242, and have a real
+ * paid plan written to the real database — the signature check passes, because
+ * the secret genuinely is ours.
+ *
+ * There is no legitimate reason for the production deployment to talk to
+ * sandbox, so this refuses rather than warns. Previews and local development
+ * are unaffected, which is where testing belongs. Pure, and exported so the
+ * rule is pinned by a test rather than living only in a reviewer's memory.
+ */
+export function sandboxOnProduction(
+  vercelEnv: string | undefined,
+  paddleEnv: string | undefined,
+): boolean {
+  return vercelEnv === "production" && paddleEnv === "sandbox";
+}
+
 export function paddleConfig(): {
   apiKey: string;
   apiBase: string;
@@ -78,6 +101,10 @@ export function paddleConfig(): {
 } | null {
   const apiKey = process.env.PADDLE_API_KEY;
   if (!apiKey) return null;
+  // Billing reports itself unconfigured rather than half-configured: the
+  // upgrade buttons disappear and the webhook stops granting plans, which is
+  // the correct behaviour for a deployment holding the wrong credentials.
+  if (sandboxOnProduction(process.env.VERCEL_ENV, process.env.PADDLE_ENV)) return null;
   const sandbox = process.env.PADDLE_ENV === "sandbox";
   return {
     apiKey,
