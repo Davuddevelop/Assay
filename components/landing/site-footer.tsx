@@ -14,7 +14,13 @@ const COLUMNS = [
   },
   {
     heading: "Account",
-    links: [{ href: "/login", label: "Sign in with GitHub" }],
+    links: [
+      { href: "/login", label: "Sign in with GitHub" },
+      // A reachable human. Payment providers check for this during review, and
+      // it was previously findable only by opening the Terms and reading to the
+      // last section — which is not what "contact us" means to anyone.
+      { href: "mailto:hello@assaysecurity.com", label: "hello@assaysecurity.com" },
+    ],
   },
   {
     heading: "Legal",
@@ -22,6 +28,7 @@ const COLUMNS = [
       { href: "/terms", label: "Terms" },
       { href: "/privacy", label: "Privacy" },
       { href: "/acceptable-use", label: "Acceptable use" },
+      { href: "/terms#refunds", label: "Refunds" },
     ],
   },
 ];

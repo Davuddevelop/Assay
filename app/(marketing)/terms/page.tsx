@@ -81,7 +81,9 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section>
+      {/* Linked directly from the footer — a refund policy nobody can find is
+          not a refund policy, and reviewers look for one. */}
+      <section id="refunds" className="scroll-mt-24">
         <h2>6. Refunds</h2>
         <p>
           <strong>

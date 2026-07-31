@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { paddleConfig } from "@/lib/env";
 import { verifyPaddleSignature } from "@/lib/paddle/signature";
+import { isPaddleWebhookIp } from "@/lib/paddle/ips";
 import { upsertSubscription, getSubscriptionByCustomer } from "@/lib/data/subscriptions";
 import type { PlanId } from "@/lib/plans";
 import { log } from "@/lib/log";
@@ -25,6 +26,15 @@ export async function POST(req: NextRequest) {
   const sig = req.headers.get("paddle-signature");
   if (!verifyPaddleSignature(payload, sig, cfg.webhookSecret)) {
     return NextResponse.json({ error: "bad signature" }, { status: 400 });
+  }
+
+  // Second question, after "is this signed": did it come from Paddle's network.
+  // Only matters if the signing secret ever leaks — the signature is the real
+  // control — so it runs after the cheap check and never replaces it.
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  if (!(await isPaddleWebhookIp(ip))) {
+    log.warn("paddle webhook from unexpected address", { type: "rejected" });
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   let event: PaddleEvent;
