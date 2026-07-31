@@ -106,7 +106,8 @@ export default function TermsPage() {
           went wrong on our side &mdash; a failed scan you were billed for, a
           duplicate charge, or a renewal you had already cancelled. Nothing here
           limits any refund right you have under the consumer law of your own
-          country.
+          country. The full policy, in plain language, is at{" "}
+          <Link href="/refunds">assaysecurity.com/refunds</Link>.
         </p>
       </section>
 

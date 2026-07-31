@@ -28,7 +28,7 @@ const COLUMNS = [
       { href: "/terms", label: "Terms" },
       { href: "/privacy", label: "Privacy" },
       { href: "/acceptable-use", label: "Acceptable use" },
-      { href: "/terms#refunds", label: "Refunds" },
+      { href: "/refunds", label: "Refunds" },
     ],
   },
 ];
