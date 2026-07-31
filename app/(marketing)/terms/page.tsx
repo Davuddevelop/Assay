@@ -32,8 +32,16 @@ export default function TermsPage() {
         <h2>2. Your account</h2>
         <p>
           You sign in with GitHub. You&rsquo;re responsible for activity under
-          your account and for keeping your login secure. You must be old enough
-          to form a binding contract in your jurisdiction.
+          your account and for keeping your login secure.
+        </p>
+        <p>
+          <strong>You must be at least 16 years old to use Assay.</strong> If
+          you are under 18, you may only use it with the involvement of a parent
+          or guardian, who accepts these terms with you and is responsible for
+          any paid plan. We don&rsquo;t knowingly collect data from anyone under
+          16 &mdash; tell us at{" "}
+          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>{" "}
+          if that has happened and we&rsquo;ll delete it.
         </p>
       </section>
 
@@ -139,8 +147,15 @@ export default function TermsPage() {
           To the maximum extent permitted by law, Assay and its operators
           aren&rsquo;t liable for indirect, incidental, or consequential damages,
           or for any loss arising from a security issue Assay did not detect. Our
-          total liability for any claim is limited to the amount you paid us in
-          the three months before the claim.
+          total liability for any claim is limited to the greater of (a) the
+          amount you paid us in the three months before the claim, or (b) US$100.
+        </p>
+        <p>
+          Some countries don&rsquo;t allow the exclusion of certain warranties or
+          liabilities. Where that&rsquo;s the case, the limits above apply only
+          as far as that law permits, and nothing here removes a right you
+          can&rsquo;t contract out of &mdash; including liability for fraud,
+          death, or personal injury caused by negligence.
         </p>
       </section>
 

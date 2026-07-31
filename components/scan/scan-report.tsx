@@ -67,7 +67,7 @@ export function ScanReport({
               </span>
             </div>
             <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-[2.6rem]">
-              {certified ? "Safe to publish." : "Not safe to publish — yet."}
+              {certified ? "No issues found." : "Issues found — fix before publishing."}
             </h1>
             <p className="mt-2 max-w-sm text-xs leading-relaxed text-ash">
               A point-in-time check for the specific issues below — not a

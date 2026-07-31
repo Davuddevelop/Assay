@@ -9,7 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Share proof — turns a certified scan into a public, shareable page the owner
- * can link from their site ("Certified safe to publish by Assay"). Minting is
+ * can link from their site ("Checked by Assay"). Minting is
  * lazy: nothing public exists until the owner asks for it. The public page
  * carries the verification's freshness, so a link that ages quietly pressures a
  * re-check — the growth-plus-retention loop.
@@ -30,7 +30,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
 
   if (url) {
     const svgUrl = `${url}/badge.svg`;
-    const embed = `<a href="${url}"><img src="${svgUrl}" alt="Certified safe to publish by Assay" height="28"></a>`;
+    const embed = `<a href="${url}"><img src="${svgUrl}" alt="Checked by Assay — no issues found" height="28"></a>`;
     return (
       <div className="panel p-6 sm:p-7">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
@@ -86,7 +86,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
         </p>
         <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
           Turn this pass into a public proof page you can share with your users —
-          &ldquo;Certified safe to publish by Assay.&rdquo;
+          &ldquo;Checked by Assay &mdash; no issues found.&rdquo;
           {failed && (
             <span className="mt-2 block text-oxblood-soft">
               Couldn&rsquo;t create the link. Try again.

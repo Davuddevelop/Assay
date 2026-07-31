@@ -66,11 +66,48 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2>How we use it</h2>
+        <h2>How we use it, and why we&rsquo;re allowed to</h2>
         <p>
-          To run scans, show you your reports, meter and bill your plan, send the
-          alerts you asked for by watching an app, and keep the service secure.
-          We don&rsquo;t sell your data or use it for advertising.
+          We don&rsquo;t sell your data or use it for advertising. Under the GDPR
+          every use needs a legal basis; here is ours, purpose by purpose.
+        </p>
+        <ul>
+          <li>
+            <strong>Running scans, storing your reports, keeping you signed in,
+            and sending the alerts you asked for</strong> &mdash; performance of
+            our contract with you. This is the service you signed up for.
+          </li>
+          <li>
+            <strong>Metering and billing your plan</strong> &mdash; performance
+            of the contract, and our legal obligation to keep tax records.
+          </li>
+          <li>
+            <strong>Rate limiting, abuse prevention, and keeping the service
+            secure</strong> &mdash; our legitimate interest in not having the
+            service abused, which we consider not to override your rights since
+            it uses the minimum data needed and protects every user.
+          </li>
+          <li>
+            <strong>Anonymous scan statistics and page analytics</strong> &mdash;
+            legitimate interest in understanding how the product is used. Neither
+            identifies you.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Where your data goes</h2>
+        <p>
+          Assay is operated from Azerbaijan, and the providers listed above run
+          mainly in the United States and the European Union. If you are in the
+          EEA or the UK, that means your data leaves your region.
+        </p>
+        <p>
+          Each of those providers publishes a data processing agreement
+          incorporating the European Commission&rsquo;s Standard Contractual
+          Clauses, and those clauses are the safeguard these transfers rely on.
+          We use them under those terms and don&rsquo;t transfer your data
+          anywhere else.
         </p>
       </section>
 
@@ -92,22 +129,55 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2>Retention</h2>
-        <p>
-          We keep your scans and account data while your account is active. Delete
-          your account and we remove your personal data, except where we must keep
-          limited records (for example, billing history) to meet legal
-          obligations.
-        </p>
+        <h2>How long we keep it</h2>
+        <ul>
+          <li>
+            <strong>Account, scans, findings, and your conversations with the
+            agent</strong> &mdash; while your account is open. Delete your
+            account and these are deleted with it, within 30 days.
+          </li>
+          <li>
+            <strong>A record of alert emails sent</strong> &mdash; 12 months, so
+            we don&rsquo;t send you the same alert twice.
+          </li>
+          <li>
+            <strong>Rate-limiting counters</strong> &mdash; hours to days. They
+            expire on their own.
+          </li>
+          <li>
+            <strong>Billing records</strong> &mdash; held by Paddle as seller of
+            record, for as long as tax law requires them (generally several
+            years). Deleting your Assay account does not erase these, because we
+            aren&rsquo;t permitted to destroy them.
+          </li>
+          <li>
+            <strong>Anonymous scan statistics</strong> &mdash; kept indefinitely.
+            They contain no URL, no address, and no account, so there is nothing
+            in them to connect to you.
+          </li>
+        </ul>
       </section>
 
       <section>
         <h2>Your rights</h2>
         <p>
-          You can access, correct, export, or delete your data. Email{" "}
-          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a> and we&rsquo;ll
-          help. Depending on where you live, you may have additional rights under
-          laws such as the GDPR or CCPA.
+          You can ask us to give you a copy of your data, correct it, export it,
+          delete it, or restrict what we do with it. You can also object to any
+          processing we do on the basis of legitimate interests. Email{" "}
+          <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a> and
+          we&rsquo;ll act on it within 30 days. It&rsquo;s free, and we won&rsquo;t
+          ask why.
+        </p>
+        <p>
+          <strong>
+            If you are in the EEA or the UK and think we&rsquo;ve handled your
+            data badly, you can complain to your national data protection
+            authority
+          </strong>{" "}
+          &mdash; you don&rsquo;t have to come to us first, though we&rsquo;d
+          rather you did so we can fix it. If you are in California, the CCPA
+          gives you comparable rights, and we don&rsquo;t sell or share personal
+          information as it defines those terms.
         </p>
       </section>
 

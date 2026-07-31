@@ -80,7 +80,7 @@ export function MonitorView({
               Assay checked this app {latest ? relativeTime(latest.at) : "recently"} · next check in ~{nextCheckHours}h
             </p>
             <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
-              {certified ? "Still safe to publish." : "Needs attention."}
+              {certified ? "Still clear." : "Needs attention."}
             </h1>
             <p className="mt-2 text-sm text-ivory-dim">
               Every edit you ship can reopen a hole. Assay re-checks the whole app

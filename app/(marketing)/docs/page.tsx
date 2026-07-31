@@ -20,7 +20,7 @@ const STEPS = [
   },
   {
     title: "3. Get your report and fixes",
-    body: "Every issue is explained in plain language, with the exact prompt to paste back into your builder to fix it. Clean apps earn the hallmark: ✓ Safe to publish or ⚠ Held.",
+    body: "Every issue is explained in plain language, with the exact prompt to paste back into your builder to fix it. Clean apps earn the hallmark: ✓ Assayed or ⚠ Held.",
   },
 ];
 

@@ -42,7 +42,7 @@ export function SiteFooter() {
             <Wordmark />
             <p className="mt-4 text-sm leading-relaxed text-ash">
               A security checkpoint for apps built with AI. A mark struck on work
-              that&rsquo;s safe to publish.
+              that passes its checks.
             </p>
           </div>
 

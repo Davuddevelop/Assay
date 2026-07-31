@@ -161,7 +161,7 @@ export function FeatureBento() {
               icon={I.hallmark}
               label="The verdict"
               title="A clear yes or no"
-              body="No critical or risky issues? You get a clean bill of health — safe to publish. Anything unsafe is Held, with the exact fix to paste back."
+              body="No critical or risky issues? The hallmark is struck and you get a shareable proof page. Anything unsafe is Held, with the exact fix to paste back."
             >
               <div className="flex flex-wrap items-center gap-3">
                 <HallmarkStamp state="assayed" animate={false} />

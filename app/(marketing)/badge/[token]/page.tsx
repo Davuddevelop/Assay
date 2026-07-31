@@ -28,8 +28,8 @@ export async function generateMetadata({
   const report = await getBadgeReport(token);
   if (!report) return { title: "Assay" };
   const host = hostOf(report.appUrl);
-  const title = `${host} — Certified safe to publish · Assay`;
-  const description = `${host} passed Assay's independent security check.`;
+  const title = `${host} — checked by Assay`;
+  const description = `${host} passed Assay's independent security check — no issues found in the checks Assay runs.`;
   return {
     title,
     description,
@@ -76,10 +76,10 @@ export default async function BadgePage({
 
         <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
           {!certified
-            ? "Not certified."
+            ? "Issues found."
             : expired
-              ? "Certification expired."
-              : "Certified safe to publish."}
+              ? "This check has expired."
+              : "No issues found."}
         </h1>
 
         <p
@@ -113,7 +113,7 @@ export default async function BadgePage({
             ? `This app passed Assay's check, but the verification is older than ${VALID_DAYS} days. Apps drift as they're edited — ask the owner for a fresh check.`
             : certified
               ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the time of the check.`
-              : `This app has open security issues its owner needs to fix before it's safe to publish.`}
+              : `Assay found open security issues on this app at the time of the check.`}
         </p>
 
         <p className="mx-auto mt-5 max-w-sm border-t border-line pt-4 font-mono text-[11px] leading-relaxed text-ash">

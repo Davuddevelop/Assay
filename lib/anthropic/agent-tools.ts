@@ -101,7 +101,7 @@ export async function runAgentTool(
           : "- none, the app is clean";
         return [
           `Score: ${scan.score ?? "unknown"}/100`,
-          `Verdict: ${scan.verdict === "certified" ? "safe to publish" : "at risk — has open issues"}`,
+          `Verdict: ${scan.verdict === "certified" ? "no issues found" : "at risk — has open issues"}`,
           `Last checked: ${scan.completed_at ?? "unknown"}`,
           `Open findings:\n${list}`,
         ].join("\n");
@@ -225,7 +225,7 @@ export async function runAgentTool(
                 (counts.critical * 100 + counts.risky * 10 + (d.regression ? 50 : 0)),
               line:
                 `${app_url} — ${latest.score ?? "?"}/100, ` +
-                `${latest.verdict === "certified" ? "safe to publish" : "at risk"}, ` +
+                `${latest.verdict === "certified" ? "no issues found" : "at risk"}, ` +
                 `${counts.critical} critical / ${counts.risky} risky / ${counts.minor} minor, ` +
                 `last checked ${latest.completed_at ?? "unknown"}${flag}`,
             };

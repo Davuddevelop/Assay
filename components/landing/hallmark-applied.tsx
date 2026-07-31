@@ -31,7 +31,7 @@ export function HallmarkApplied() {
                 <span className="font-mono text-xs text-ash">my-saas.lovable.app</span>
               </div>
               <h3 className="mt-6 text-lg font-medium text-ivory">
-                Safe to publish
+                No issues found
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-ivory-dim">
                 No secret keys in the browser. Database locked down — rows are
@@ -48,7 +48,7 @@ export function HallmarkApplied() {
                 <span className="font-mono text-xs text-ash">my-store.lovable.app</span>
               </div>
               <h3 className="mt-6 text-lg font-medium text-ivory">
-                Not safe to publish — yet
+                Issues found
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-ivory-dim">
                 Critical:{" "}

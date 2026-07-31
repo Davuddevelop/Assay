@@ -73,7 +73,7 @@ export function ProductMock({ className }: { className?: string }) {
               Scan · my-saas.lovable.app
             </p>
             <h3 className="mt-2 text-lg font-semibold leading-snug text-ivory">
-              Safe to publish
+              No issues found
             </h3>
           </div>
           {/* the hallmark strikes once the checks resolve */}

@@ -14,7 +14,7 @@ export interface Score {
 
 /**
  * Turn findings into a 0–100 safety score and a verdict. Pure and strict:
- * "Certified safe to publish" requires zero critical AND zero risky findings —
+ * A "certified" verdict requires zero critical AND zero risky findings —
  * a clean bill, not just a passing grade. Minor issues lower the score but
  * don't block certification.
  */

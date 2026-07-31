@@ -61,7 +61,7 @@ function contextBlock(ctx: AppContext): string {
 
   return `App being watched: ${ctx.appUrl}
 Current score: ${ctx.latestScore ?? "not scanned yet"} / 100
-Current verdict: ${ctx.latestVerdict === "certified" ? "safe to publish" : ctx.latestVerdict === "at_risk" ? "at risk — has open issues" : "unknown"}
+Current verdict: ${ctx.latestVerdict === "certified" ? "no issues found" : ctx.latestVerdict === "at_risk" ? "at risk — has open issues" : "unknown"}
 
 Check history (newest first):
 ${history || "- no checks yet — the baseline scan hasn't run"}
