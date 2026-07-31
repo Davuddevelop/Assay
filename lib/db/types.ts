@@ -144,6 +144,18 @@ export type MonitoredAppRow = {
 
 /** One side of a persisted exchange with a watched app's agent. */
 /** An API key's metadata. The plaintext key is never stored — only its hash. */
+/** Anonymous scan telemetry — shape of a result, never who ran it. */
+type ScanStatRow = {
+  id: number;
+  platform: string;
+  verdict: string;
+  score: number;
+  critical: number;
+  risky: number;
+  minor: number;
+  created_at: string;
+};
+
 type ApiKeyRow = {
   id: string;
   user_id: string;
@@ -226,6 +238,7 @@ export interface Database {
       agent_messages: Table<AgentMessageRow, "user_id" | "monitor_id" | "role" | "content">;
       email_log: Table<EmailLogRow, "user_id" | "kind">;
       subscriptions: Table<SubscriptionRow, "user_id">;
+      scan_stats: Table<ScanStatRow, "platform" | "verdict" | "score">;
     };
     Views: Record<string, never>;
     Functions: {

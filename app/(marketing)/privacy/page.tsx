@@ -33,6 +33,14 @@ export default function PrivacyPage() {
             seller of record for paid plans: your card details, billing address,
             and any tax identifiers go to Paddle, and we never see or store them.
           </li>
+          <li>
+            <strong>Anonymous scan statistics.</strong> When a scan runs without
+            an account, we keep the <em>shape</em> of the result and nothing else:
+            which builder made the app, the verdict, the score, and how many
+            issues of each severity. No URL, no IP address, no account — nothing
+            that could identify you or your app. It tells us how often AI-built
+            apps ship with an open database, and lets us publish that.
+          </li>
         </ul>
       </section>
 
@@ -75,6 +83,11 @@ export default function PrivacyPage() {
           <li><strong>Paddle</strong> — payments and tax, as seller of record (paid plans only).</li>
           <li><strong>Resend</strong> — sending alert emails (paid plans only).</li>
           <li><strong>Inngest</strong> — scheduling background re-checks.</li>
+          <li>
+            <strong>Vercel Analytics</strong> — page views and performance. It
+            sets no cookies and collects no personal data, which is why this site
+            has no cookie banner.
+          </li>
         </ul>
       </section>
 

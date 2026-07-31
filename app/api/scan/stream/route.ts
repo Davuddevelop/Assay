@@ -6,6 +6,7 @@ import { explainFindings } from "@/lib/anthropic/explain";
 import { ScanError } from "@/lib/scan/types";
 import { consumeRateLimit } from "@/lib/rate-limit-global";
 import { anonBudget } from "@/lib/scan/anon-budget";
+import { recordScanStat } from "@/lib/data/scan-stats";
 import { log } from "@/lib/log";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
 
@@ -113,6 +114,16 @@ export async function GET(req: NextRequest) {
           manual_steps: (explained[i]?.manual_steps ?? []).join("\n"),
           redacted_location: f.redactedLocation, created_at: now,
         }));
+
+        // The only trace this scan leaves: its shape, with nothing that could
+        // identify who ran it or what they scanned. Without this, /try — the
+        // most-used path in the product — produced no evidence it ever ran.
+        recordScanStat({
+          platform: result.platform,
+          verdict: result.verdict,
+          score: result.score,
+          findings: result.findings,
+        });
 
         send({ type: "done", scan, findings });
       } catch (err) {
