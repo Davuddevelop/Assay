@@ -75,15 +75,41 @@ export default function TermsPage() {
           Paddle, they issue your invoice, and they collect any VAT or sales tax
           due in your country. Paddle&rsquo;s own terms apply to the payment
           alongside these terms. You can cancel any time from your billing page;
-          access continues until the end of the paid period. Fees are
-          non-refundable except where required by law or under Paddle&rsquo;s
-          refund policy. We may change prices with notice for future billing
-          periods.
+          access continues until the end of the paid period, and you are not
+          charged again. We may change prices with notice, and any change applies
+          only to future billing periods &mdash; never to one you have paid for.
         </p>
       </section>
 
       <section>
-        <h2>6. Acceptable use &amp; limits</h2>
+        <h2>6. Refunds</h2>
+        <p>
+          <strong>
+            If Assay isn&rsquo;t what you expected, email{" "}
+            <a href="mailto:hello@assaysecurity.com">hello@assaysecurity.com</a>{" "}
+            within 14 days of a charge and we will refund it in full.
+          </strong>{" "}
+          No conditions and no explanation required. This applies to your first
+          payment and to any renewal.
+        </p>
+        <p>
+          Refunds are issued by Paddle, the seller of record, back to the
+          original payment method &mdash; typically within 5&ndash;10 business
+          days depending on your bank. You may also request a refund directly
+          from Paddle using the receipt they emailed you.
+        </p>
+        <p>
+          Beyond that window, a subscription can be cancelled at any time to stop
+          future charges, and we&rsquo;ll still consider a refund if something
+          went wrong on our side &mdash; a failed scan you were billed for, a
+          duplicate charge, or a renewal you had already cancelled. Nothing here
+          limits any refund right you have under the consumer law of your own
+          country.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Acceptable use &amp; limits</h2>
         <p>
           Don&rsquo;t abuse the service: no scanning of apps you don&rsquo;t own,
           no attempts to overload or circumvent rate limits, no use of Assay to
@@ -93,7 +119,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>7. Indemnification</h2>
+        <h2>8. Indemnification</h2>
         <p>
           You agree to indemnify and hold Assay and its operators harmless from
           any claim, loss, or expense (including reasonable legal fees) arising
@@ -105,7 +131,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>8. Limitation of liability</h2>
+        <h2>9. Limitation of liability</h2>
         <p>
           To the maximum extent permitted by law, Assay and its operators
           aren&rsquo;t liable for indirect, incidental, or consequential damages,
@@ -116,7 +142,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>9. Termination</h2>
+        <h2>10. Termination</h2>
         <p>
           You can stop using Assay and delete your account at any time. We may
           suspend or terminate access for breach of these terms. Sections that by
@@ -126,7 +152,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>10. Changes</h2>
+        <h2>11. Changes</h2>
         <p>
           We may update these terms; we&rsquo;ll change the date above and, for
           material changes, give reasonable notice. Continued use after a change
@@ -135,7 +161,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2>11. Contact &amp; governing law</h2>
+        <h2>12. Contact &amp; governing law</h2>
         <p>
           Assay is operated by <strong>[legal entity]</strong> and these terms
           are governed by the laws of <strong>[jurisdiction]</strong>. Questions
