@@ -35,7 +35,7 @@ export default async function LoginPage({
         aria-hidden
         className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-1/3 opacity-90"
       />
-      <HallmarkMark metallic className="relative h-10 w-10" />
+      <HallmarkMark className="relative h-10 w-10 text-ivory" />
 
       <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">

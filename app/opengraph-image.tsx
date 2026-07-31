@@ -1,9 +1,11 @@
 import { ImageResponse } from "next/og";
 
+import { MARK_PATH, MARK_VIEWBOX } from "@/lib/brand";
+
 // Default OG image for marketing pages that don't override it. Colors match
-// the current app/globals.css @theme tokens: onyx (#111113, page ground),
-// ivory (#edeef0, primary text), and the iris accent gradient (#c4b5fd →
-// #8b8bf0 → #5b7cf0) used for the hallmark stamp.
+// the current app/globals.css @theme tokens: onyx (#111113, page ground) and
+// ivory (#edeef0, primary text). The mark is monochrome ivory (#f4f1ea), as
+// supplied.
 //
 // Default (Node) runtime, not edge — this image has no dynamic/request data,
 // so it can be statically generated once at build time instead of rendered
@@ -39,38 +41,10 @@ export default async function Image() {
             gap: 28,
           }}
         >
-          {/* Hallmark mark: a rotated square (diamond seal) with a struck
-              triangle cut out, matching components/wordmark.tsx. */}
-          <svg width="96" height="96" viewBox="0 0 24 24">
-            <defs>
-              <mask id="cut">
-                <rect
-                  x="5"
-                  y="5"
-                  width="14"
-                  height="14"
-                  rx="4"
-                  transform="rotate(45 12 12)"
-                  fill="white"
-                />
-                <path d="M12 7.3 16 14.7 8 14.7Z" fill="black" />
-              </mask>
-              <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#c4b5fd" />
-                <stop offset="50%" stopColor="#8b8bf0" />
-                <stop offset="100%" stopColor="#5b7cf0" />
-              </linearGradient>
-            </defs>
-            <rect
-              x="5"
-              y="5"
-              width="14"
-              height="14"
-              rx="4"
-              transform="rotate(45 12 12)"
-              fill="url(#gold)"
-              mask="url(#cut)"
-            />
+          {/* Same geometry as the nav mark — imported, not copied, because the
+              two used to hold separate copies of the paths and drifted apart. */}
+          <svg width="96" height="96" viewBox={MARK_VIEWBOX}>
+            <path fill="#f4f1ea" fillRule="evenodd" d={MARK_PATH} />
           </svg>
           <span
             style={{

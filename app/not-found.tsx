@@ -10,7 +10,7 @@ export default function NotFound() {
         aria-hidden
         className="aurora pointer-events-none absolute inset-x-0 top-1/4 h-64 opacity-50"
       />
-      <HallmarkMark metallic className="relative h-10 w-10" />
+      <HallmarkMark className="relative h-10 w-10 text-ivory" />
       <p className="mt-8 font-mono text-xs uppercase tracking-[0.2em] text-ash">
         404
       </p>
