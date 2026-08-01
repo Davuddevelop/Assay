@@ -17,8 +17,21 @@ export interface Plan {
   repoLimit: number | null;
   /** How many apps can be watched (continuous re-checking); null = unlimited. */
   watchLimit: number | null;
-  /** Whether this plan gets email alerts (regression + weekly digest). */
-  emailAlerts: boolean;
+  /**
+   * Whether a regression on a watched app emails the owner.
+   *
+   * Free plans get this. It was paid, which quietly broke the only loop that
+   * brings a non-coder back: a scan is a fact about the past, and nobody
+   * revisits a dashboard to check on an app they think is fine. Without the
+   * email, watching does nothing they will ever see. It also costs almost
+   * nothing — monitoring is change-detected, so this fires only when someone
+   * ships an edit that actually reopens something, and the monthly scan
+   * allowance caps it. Being emailed the day your app breaks is also the best
+   * moment this product will ever have to earn a subscription.
+   */
+  regressionAlerts: boolean;
+  /** The weekly summary of everything watched — the paid habit. */
+  weeklyDigest: boolean;
   seats: number;
   features: string[];
   cta: string;
@@ -30,18 +43,19 @@ export const PLANS: Record<PlanId, Plan> = {
     id: "free",
     name: "Free",
     priceMonthly: 0,
-    tagline: "For checking your first app.",
+    tagline: "One app, watched for good.",
     checksPerMonth: 100,
     repoLimit: 1,
     watchLimit: 1,
-    emailAlerts: false,
+    regressionAlerts: true,
+    weeklyDigest: false,
     seats: 1,
     cta: "Start free",
     features: [
-      "1 app",
+      "1 app, re-checked whenever you ship",
+      "Email the moment a change breaks something",
       "100 scans / month",
       "Plain-language report + paste-back fixes",
-      "Watch 1 app — regressions on your dashboard",
       "Saved scan history",
     ],
   },
@@ -53,17 +67,17 @@ export const PLANS: Record<PlanId, Plan> = {
     checksPerMonth: 2000,
     repoLimit: null,
     watchLimit: null,
-    emailAlerts: true,
+    regressionAlerts: true,
+    weeklyDigest: true,
     seats: 1,
     cta: "Upgrade to Pro",
     highlighted: true,
     features: [
-      "Unlimited apps",
+      "Unlimited apps, all watched",
       "2,000 scans / month",
-      "Continuous re-scans on every change",
-      "Email alerts when a change breaks something",
-      "Weekly watch digest",
+      "Weekly digest across everything you've shipped",
       "Priority scan queue",
+      "Full scan history per app",
     ],
   },
   team: {
@@ -74,7 +88,8 @@ export const PLANS: Record<PlanId, Plan> = {
     checksPerMonth: 10000,
     repoLimit: null,
     watchLimit: null,
-    emailAlerts: true,
+    regressionAlerts: true,
+    weeklyDigest: true,
     seats: 10,
     cta: "Start Team",
     features: [
@@ -108,9 +123,14 @@ export function watchLimit(planId: string): number | null {
   return getPlan(planId).watchLimit;
 }
 
-/** Whether this plan receives email alerts (regression + weekly digest). */
-export function hasEmailAlerts(planId: string): boolean {
-  return getPlan(planId).emailAlerts;
+/** Whether a regression on a watched app emails the owner. Every plan does. */
+export function hasRegressionAlerts(planId: string): boolean {
+  return getPlan(planId).regressionAlerts;
+}
+
+/** Whether this plan receives the weekly summary of everything watched. */
+export function hasWeeklyDigest(planId: string): boolean {
+  return getPlan(planId).weeklyDigest;
 }
 
 /** The next paid plan to upsell from the current one, or null if top tier. */

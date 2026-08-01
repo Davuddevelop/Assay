@@ -141,8 +141,8 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
             Watch more apps
           </p>
           <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
-            Free watches one app. Upgrade to Pro to watch every app you ship —
-            with email alerts the moment a change breaks something.
+            Free watches one app, alerts included. Upgrade to Pro to watch every
+            app you ship, and get a weekly digest across all of them.
           </p>
         </div>
         <Button href="/billing" variant="primary" size="md" className="shrink-0">

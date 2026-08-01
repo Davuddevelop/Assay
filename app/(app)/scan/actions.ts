@@ -37,6 +37,26 @@ async function launch(userId: string, appUrl: string): Promise<never> {
   // (Inngest) on the critical path. The daily watch-list re-check still uses
   // Inngest, since a scheduler is the one thing this can't replace.
   await executeAndSaveScan(scanId, appUrl);
+
+  // Watch it by default, within the plan's allowance.
+  //
+  // Watching was opt-in behind a toggle on the report, which meant the loop
+  // that gives this product a second day — ship an edit, something reopens,
+  // get told — only started for someone who went looking for a switch. A
+  // one-off scan is a fact about the past; nobody comes back for that. Turning
+  // it on is also what the person was implicitly asking for by scanning at all,
+  // and the toggle stays there to turn it off.
+  try {
+    const watched = await activeWatchUrls(userId);
+    const limit = watchLimit(plan);
+    const atCapacity = limit !== null && watched.length >= limit;
+    if (!atCapacity && !watched.includes(appUrl)) {
+      await setWatch(userId, appUrl, true);
+    }
+  } catch {
+    // Never cost someone their report because the watch write failed.
+  }
+
   redirect(`/scan/${scanId}`);
 }
 

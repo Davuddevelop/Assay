@@ -12,7 +12,7 @@ import {
 import { composeRegressionAlert } from "@/lib/anthropic/agent-alert";
 import { loadConversation, appendAgentMessage } from "@/lib/data/agent-memory";
 import { getUserPlan } from "@/lib/data/subscriptions";
-import { hasEmailAlerts } from "@/lib/plans";
+import { hasRegressionAlerts, hasWeeklyDigest } from "@/lib/plans";
 import { siteUrl } from "@/lib/env";
 import { log } from "@/lib/log";
 
@@ -46,9 +46,10 @@ export async function notifyOnScanResult(scanId: string): Promise<{ alerted: boo
       .maybeSingle();
     if (!monitor?.active) return { alerted: false };
 
-    // Email alerts are a paid feature — Free watchers still see regressions on
-    // their dashboard, but the email nudge is Pro/Team only.
-    if (!hasEmailAlerts(await getUserPlan(scan.user_id))) return { alerted: false };
+    // Every plan gets this, including Free. Gating it meant a free watcher was
+    // only told on a dashboard they had no reason to revisit, so the one event
+    // that could bring them back never reached them.
+    if (!hasRegressionAlerts(await getUserPlan(scan.user_id))) return { alerted: false };
 
     // Compare against the previous completed scan of the same app.
     const { data: scans } = await db
@@ -180,8 +181,8 @@ export async function sendWeeklyDigests(): Promise<{ sent: number }> {
         }),
       );
 
-      // Weekly digest is a paid feature.
-      if (!hasEmailAlerts(await getUserPlan(userId))) continue;
+      // The digest stays paid: it's the habit, not the emergency.
+      if (!hasWeeklyDigest(await getUserPlan(userId))) continue;
 
       const { data: userRes } = await db.auth.admin.getUserById(userId);
       const to = userRes?.user?.email;

@@ -1,7 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { createHmac } from "node:crypto";
 
-import { watchLimit, hasEmailAlerts, checksLimit, getPlan } from "@/lib/plans";
+import {
+  watchLimit,
+  hasRegressionAlerts,
+  hasWeeklyDigest,
+  checksLimit,
+  getPlan,
+} from "@/lib/plans";
 import { verifyPaddleSignature } from "@/lib/paddle/signature";
 import { sandboxOnProduction } from "@/lib/env";
 
@@ -37,21 +43,32 @@ describe("sandbox billing is unreachable from production", () => {
 });
 
 describe("plan gating", () => {
-  it("free watches one app and gets no email alerts", () => {
-    expect(watchLimit("free")).toBe(1);
-    expect(hasEmailAlerts("free")).toBe(false);
+  // Free gets the regression email on purpose. It is the only event that can
+  // bring a non-coder back, it costs one message and only when something
+  // actually broke, and being emailed the day your app breaks is the best
+  // moment this product will ever have to earn a subscription. Paywalling it
+  // meant a free watcher was told only on a dashboard they never revisited.
+  it("every plan emails the owner when a watched app regresses", () => {
+    expect(hasRegressionAlerts("free")).toBe(true);
+    expect(hasRegressionAlerts("pro")).toBe(true);
+    expect(hasRegressionAlerts("team")).toBe(true);
   });
 
-  it("paid plans watch unlimited apps and get email alerts", () => {
+  it("the weekly digest stays paid — it is the habit, not the emergency", () => {
+    expect(hasWeeklyDigest("free")).toBe(false);
+    expect(hasWeeklyDigest("pro")).toBe(true);
+    expect(hasWeeklyDigest("team")).toBe(true);
+  });
+
+  it("free watches one app; paid plans watch unlimited", () => {
+    expect(watchLimit("free")).toBe(1);
     expect(watchLimit("pro")).toBeNull();
     expect(watchLimit("team")).toBeNull();
-    expect(hasEmailAlerts("pro")).toBe(true);
-    expect(hasEmailAlerts("team")).toBe(true);
   });
 
   it("unknown plan ids fall back to free's limits", () => {
     expect(watchLimit("bogus")).toBe(1);
-    expect(hasEmailAlerts("bogus")).toBe(false);
+    expect(hasWeeklyDigest("bogus")).toBe(false);
     expect(checksLimit("bogus")).toBe(getPlan("free").checksPerMonth);
   });
 

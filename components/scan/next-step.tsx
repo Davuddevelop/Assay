@@ -13,37 +13,44 @@ import { continueWithApp } from "@/app/(marketing)/try/actions";
  * The fix is not to take the findings away. Giving away the diagnosis is the
  * whole reason anyone tries this, and gating it would trade the top of the
  * funnel for nothing. What is actually scarce is the part they cannot produce
- * themselves: proof, and continuity. A person can fix their own app, but they
- * cannot verify it, cannot show anyone, and cannot notice the day it breaks
- * again. So that is what the ending asks them to come back for — and the ask
- * differs by verdict, because "you have nine problems" and "you have none" are
- * not the same conversation.
+ * themselves: noticing the day it breaks again.
+ *
+ * This used to lead with the badge. A displayable mark is the right long-term
+ * asset, but a badge from a company nobody has heard of adds no credibility to
+ * anyone's landing page, so it was asking people to work for something worth
+ * nothing yet. The alert is worth something on day one — it is the only thing
+ * here that a person cannot do for themselves, at any price, by being careful.
+ * So the ask is now: let us watch it, and we will tell you.
  */
 export function NextStep({ appUrl, certified }: { appUrl: string; certified: boolean }) {
   return (
     <div className="mt-8 rounded-[var(--radius-card)] border border-iris/40 bg-iris/[0.05] p-6 sm:p-7">
       <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
-        {certified ? "Keep it" : "Next"}
+        {certified ? "Keep it that way" : "After you fix them"}
       </p>
 
       <h2 className="mt-3 font-display text-2xl font-bold tracking-[-0.02em] text-ivory">
-        {certified ? "Now hold onto it." : "Fix these, then prove it."}
+        {certified
+          ? "This is true today. Not next week."
+          : "The next edit can reopen any of these."}
       </h2>
 
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-ivory-dim">
         {certified ? (
           <>
-            Passing today isn&rsquo;t the same as passing next week — every edit can
-            reopen a hole, and this pass is only good for {VALID_DAYS} days. Sign in
-            to claim the badge for this app, and Assay re-checks it whenever it
-            changes instead of you having to remember.
+            You&rsquo;ll keep editing this app, and every edit can reopen a hole
+            you just closed. Assay can watch it: whenever you ship a change, it
+            re-checks, and if something breaks it emails you the same day with
+            the fix. One app watched free, alerts included. This pass is good for{" "}
+            {VALID_DAYS} days on its own.
           </>
         ) : (
           <>
-            Every fix above is yours already — free, no account, paste them straight
-            back into your builder. What you don&rsquo;t have is proof you applied
-            them. Sign in and re-run this same check: pass, and you get a badge you
-            can show, and Assay tells you the day something reopens it.
+            Every fix above is yours already — free, no account, paste them
+            straight back into your builder. The part you can&rsquo;t do yourself
+            is notice when one comes back. Assay can watch this app: it re-checks
+            whenever you ship, and emails you the day something reopens. One app
+            watched free, alerts included.
           </>
         )}
       </p>
@@ -51,7 +58,7 @@ export function NextStep({ appUrl, certified }: { appUrl: string; certified: boo
       <form action={continueWithApp} className="mt-6">
         <input type="hidden" name="url" value={appUrl} />
         <SubmitButton size="md" pendingText="One moment…">
-          {certified ? "Claim my badge — free" : "Verify my fix — free"}
+          Watch this app — free
         </SubmitButton>
       </form>
 
