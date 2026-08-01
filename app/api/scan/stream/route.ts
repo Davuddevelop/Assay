@@ -122,6 +122,8 @@ export async function GET(req: NextRequest) {
           fix_prompt: `Fix this security issue in my app: ${f.title}. ${f.detail}`,
           manual_steps: "",
           redacted_location: f.redactedLocation, created_at: now,
+          // Redacted proof rides only on this live payload — never persisted.
+          proof: f.proof,
         }));
 
         // Send the report BEFORE explaining it.

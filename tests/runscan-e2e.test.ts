@@ -64,8 +64,15 @@ function buildFetchRouter() {
     if (url === "https://abcdefgh.supabase.co/rest/v1/") {
       return new Response(JSON.stringify({ paths: { "/profiles": {} } }), { status: 200 });
     }
-    if (url === "https://abcdefgh.supabase.co/rest/v1/profiles?select=*&limit=1") {
-      return new Response(JSON.stringify([{ id: 1, email: "leaked@example.com" }]), { status: 200 });
+    if (url === "https://abcdefgh.supabase.co/rest/v1/profiles?select=*&limit=5") {
+      // Several rows so the proof's row count and redaction get exercised.
+      return new Response(
+        JSON.stringify([
+          { id: 1, email: "leaked@example.com", full_name: "Real Person" },
+          { id: 2, email: "second@example.com", full_name: "Other Person" },
+        ]),
+        { status: 200 },
+      );
     }
     if (method === "POST" && url === "https://abcdefgh.supabase.co/storage/v1/object/list/avatars") {
       return new Response(JSON.stringify([{ name: "user-1234.jpg" }]), { status: 200 });
@@ -132,6 +139,16 @@ describe("runScan — end-to-end against two contrasting simulated live apps", (
     expect(kinds).toContain("missing-header");
     expect(result.verdict).toBe("at_risk");
     expect(result.score).toBeLessThan(50);
+
+    // The RLS finding must carry redacted proof, and no raw value the mock
+    // returned may survive anywhere in it — this is the safety contract.
+    const rls = result.findings.find((f) => f.kind === "supabase-rls");
+    expect(rls?.proof).toBeDefined();
+    expect(rls?.proof?.rowCount).toBe(2);
+    const proofBlob = JSON.stringify(rls?.proof);
+    expect(proofBlob).not.toContain("leaked@example.com");
+    expect(proofBlob).not.toContain("Real Person");
+    expect(proofBlob).toContain("@example.com"); // shape kept, identity gone
   });
 
   it("certifies a genuinely clean app with different findings than the vulnerable one", async () => {

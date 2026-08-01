@@ -63,25 +63,61 @@ export function FindingCard({
       <h3 className="mt-4 text-lg font-semibold leading-snug text-ivory">{finding.title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-ivory-dim">{finding.plain_explanation}</p>
 
-      {evidence && evidence.items.length > 0 && (
-        <div className="mt-5 rounded-[var(--radius-control)] border border-oxblood/40 bg-oxblood/10 p-4">
+      {/* The proof, when we captured it: real records pulled from the live app,
+          redacted. This is the "oh damn" — an abstract "RLS is off" becomes
+          their user's actual (masked) email in front of them. Falls back to the
+          column chips when there's no row-level proof (e.g. a saved scan, where
+          proof is never persisted). */}
+      {finding.proof && finding.proof.rows.length > 0 ? (
+        <div className="mt-5 rounded-[var(--radius-control)] border border-oxblood/50 bg-oxblood/10 p-4">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-oxblood-soft">
-            Exposed right now · no login required
+            We pulled {finding.proof.rowCount}
+            {finding.proof.rowCount === 1 ? " row" : " rows"} from{" "}
+            <span className="text-ivory">{finding.proof.table}</span> · no login,
+            no account
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {evidence.label && (
-              <span className="font-mono text-xs text-ivory">{evidence.label}</span>
-            )}
-            {evidence.items.map((item) => (
-              <span
-                key={item}
-                className="rounded-pill border border-oxblood/40 bg-oxblood/10 px-2.5 py-0.5 font-mono text-[11px] text-oxblood-soft"
+          <div className="mt-3 space-y-2">
+            {finding.proof.rows.map((row, ri) => (
+              <div
+                key={ri}
+                className="flex flex-wrap gap-x-4 gap-y-1 rounded-[var(--radius-control)] border border-oxblood/25 bg-onyx/40 px-3 py-2"
               >
-                {item}
-              </span>
+                {row.map((cell) => (
+                  <span key={cell.column} className="font-mono text-[12px]">
+                    <span className="text-ash">{cell.column}: </span>
+                    <span className="text-oxblood-soft">{cell.value}</span>
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
+          <p className="mt-3 font-mono text-[10px] text-ash">
+            Redacted for your safety — the real values were fully readable. This
+            data is never stored.
+          </p>
         </div>
+      ) : (
+        evidence &&
+        evidence.items.length > 0 && (
+          <div className="mt-5 rounded-[var(--radius-control)] border border-oxblood/40 bg-oxblood/10 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-oxblood-soft">
+              Exposed right now · no login required
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {evidence.label && (
+                <span className="font-mono text-xs text-ivory">{evidence.label}</span>
+              )}
+              {evidence.items.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-pill border border-oxblood/40 bg-oxblood/10 px-2.5 py-0.5 font-mono text-[11px] text-oxblood-soft"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
       )}
 
       {finding.fix_prompt && (

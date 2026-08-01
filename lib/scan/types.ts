@@ -27,6 +27,21 @@ type FindingKind =
   | "missing-header"
   | "vulnerable-dependency";
 
+/**
+ * A redacted preview of data that was actually reachable without auth. Every
+ * value here has passed through lib/scan/redact — masked by type, capped, and
+ * proven by tests to reveal nothing that could identify or contact a person.
+ * This is the "here are real records we just pulled from your database" proof.
+ */
+export interface ExposureProof {
+  /** The table the rows came from. */
+  table: string;
+  /** How many rows the unauthenticated request returned in total. */
+  rowCount: number;
+  /** A few redacted rows — each a list of {column, masked value}. */
+  rows: { column: string; value: string }[][];
+}
+
 export interface RawFinding {
   kind: FindingKind;
   severity: ScanSeverity;
@@ -36,4 +51,9 @@ export interface RawFinding {
   detail: string;
   /** Where it was found, with any secret value redacted. */
   redactedLocation: string | null;
+  /**
+   * Redacted proof this was live, when the check could safely capture it. Never
+   * contains a raw value. Passed straight to the report, never to the AI.
+   */
+  proof?: ExposureProof;
 }

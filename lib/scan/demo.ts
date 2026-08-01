@@ -1,5 +1,10 @@
 import { scoreFindings } from "@/lib/scan/score";
-import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
+import type {
+  ScanRow,
+  ScanFindingRow,
+  ScanFindingSeverity,
+  ExposureProof,
+} from "@/lib/db/types";
 
 const DEMO_URL = "https://my-saas.lovable.app";
 
@@ -11,6 +16,7 @@ interface SeedFinding {
   fix_prompt: string;
   manual_steps: string;
   redacted_location: string;
+  proof?: ExposureProof;
 }
 
 /** A realistic, complete sample report — the demo must always look finished. */
@@ -26,6 +32,32 @@ const DEMO_FINDINGS: SeedFinding[] = [
     manual_steps:
       "Open your Supabase dashboard → Authentication is fine, go to Table Editor.\nFor each table, click the table → … menu → Edit table → toggle on 'Enable Row Level Security'.\nThen Policies → New policy → 'Enable read for users based on user_id'.",
     redacted_location: "users: email, full_name, phone, stripe_customer_id",
+    // Same shape a live scan produces — already redacted, so it's safe to ship
+    // as a fixture. This is what makes the sample the strongest page to share.
+    proof: {
+      table: "users",
+      rowCount: 47,
+      rows: [
+        [
+          { column: "email", value: "k••••@gmail.com" },
+          { column: "full_name", value: "K•••• P••••" },
+          { column: "phone", value: "+9945 ••• 67" },
+          { column: "stripe_customer_id", value: "cus_••••4Qb" },
+        ],
+        [
+          { column: "email", value: "a••••@icloud.com" },
+          { column: "full_name", value: "A•••• Y••••" },
+          { column: "phone", value: "+9055 ••• 21" },
+          { column: "stripe_customer_id", value: "cus_••••7Lm" },
+        ],
+        [
+          { column: "email", value: "d••••@outlook.com" },
+          { column: "full_name", value: "D•••• A••••" },
+          { column: "phone", value: "+1455 ••• 90" },
+          { column: "stripe_customer_id", value: "cus_••••9Rp" },
+        ],
+      ],
+    },
   },
   {
     kind: "supabase-storage",

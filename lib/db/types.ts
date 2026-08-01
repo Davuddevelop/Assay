@@ -77,6 +77,11 @@ type UsageRow = {
 
 // ── Pivot: app security scans ────────────────────────────────────────────────
 type ScanStatus = "queued" | "running" | "completed" | "error";
+// Type-only import — erased at compile time, so it introduces no runtime
+// dependency or import cycle between the schema mirror and the scanner types.
+import type { ExposureProof } from "@/lib/scan/types";
+export type { ExposureProof };
+
 export type ScanVerdict = "certified" | "at_risk";
 export type ScanFindingSeverity = "critical" | "risky" | "minor";
 
@@ -105,6 +110,12 @@ export type ScanFindingRow = {
   manual_steps: string;
   redacted_location: string | null;
   created_at: string;
+  /**
+   * Redacted proof this was reachable live. In-memory only — it is never
+   * written to or read from the database, so a saved scan won't carry it. It
+   * exists to make the anonymous /try report undeniable at the moment it lands.
+   */
+  proof?: ExposureProof;
 };
 
 type OwnershipProofRow = {

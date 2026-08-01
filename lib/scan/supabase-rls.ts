@@ -1,7 +1,8 @@
 import "server-only";
 
-import type { RawFinding } from "@/lib/scan/types";
+import type { RawFinding, ExposureProof } from "@/lib/scan/types";
 import { assertScannableUrl } from "@/lib/scan/fetch";
+import { redactRow } from "@/lib/scan/redact";
 import {
   detectSupabase,
   isSupabaseServiceKey,
@@ -29,6 +30,11 @@ const MAX_TABLES = 6;
 const PROBE_BUDGET_MS = 10_000;
 // Tried only when the DB won't list its tables — common vibe-coded table names.
 const COMMON_TABLES = ["users", "profiles", "customers", "orders", "posts", "messages"];
+// How many real rows to pull for the proof, and how many to actually show. We
+// read a handful so the "N rows" count is real, and render at most PROOF_ROWS
+// of them redacted — enough to be undeniable, never enough to be a dump.
+const PROOF_FETCH_LIMIT = 5;
+const PROOF_ROWS = 3;
 
 /** A single request that NEVER throws — network/timeout errors become status 0. */
 async function getJson(url: string, anonKey: string): Promise<{ status: number; body: unknown }> {
@@ -75,10 +81,12 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
   }
 
   const exposed: string[] = [];
-  // The column names of the first table we catch exposed — the schema of what
-  // leaked, never the values. This is the visceral proof the report shows.
+  // The first table we catch exposed becomes the evidence: its columns, and a
+  // few of its rows redacted into proof. Raw values live only inside this try
+  // block and never leave it un-redacted.
   let evidenceTable = "";
   let evidenceColumns: string[] = [];
+  let evidenceProof: ExposureProof | undefined;
   try {
     const deadline = Date.now() + PROBE_BUDGET_MS;
 
@@ -91,17 +99,19 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
 
     for (const table of tables) {
       if (Date.now() > deadline) break; // out of budget — report what we found
+      // Pull a handful of rows, not one: the count in the proof ("47 rows")
+      // needs the real number, and the extra rows are redacted the same way.
       const res = await getJson(
-        `${ref.url}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`,
+        `${ref.url}/rest/v1/${encodeURIComponent(table)}?select=*&limit=${PROOF_FETCH_LIMIT}`,
         ref.anonKey,
       );
       // Rows returned to an unauthenticated request → RLS is not protecting it.
-      // We read ONLY the column names; the values are never touched or stored.
       if (isExposedResponse(res.status, res.body)) {
         exposed.push(table);
         if (evidenceColumns.length === 0) {
           evidenceTable = table;
           evidenceColumns = columnsFromRow(res.body);
+          evidenceProof = buildProof(table, res.body, evidenceColumns);
         }
       }
     }
@@ -124,8 +134,29 @@ export async function probeSupabaseRls(ref: SupabaseRef): Promise<RawFinding[]> 
       // Passed through verbatim to the report (never sent to the AI), so the
       // "here's what's exposed right now" proof always survives. Schema only.
       redactedLocation: shown.length ? `${evidenceTable}: ${shown.join(", ")}` : exposed.join(", "),
+      proof: evidenceProof,
     });
   }
 
   return findings;
+}
+
+/**
+ * Turn the raw rows the probe pulled into a redacted proof object. Every value
+ * goes through lib/scan/redact; nothing raw leaves this function. Returns
+ * undefined rather than an empty proof so the report can simply check presence.
+ */
+function buildProof(
+  table: string,
+  body: unknown,
+  columns: string[],
+): ExposureProof | undefined {
+  if (!Array.isArray(body) || body.length === 0) return undefined;
+  const preferred = sensitiveColumns(columns);
+  const rows = body
+    .slice(0, PROOF_ROWS)
+    .filter((r): r is Record<string, unknown> => !!r && typeof r === "object")
+    .map((r) => redactRow(r, preferred));
+  if (rows.length === 0) return undefined;
+  return { table, rowCount: body.length, rows };
 }
