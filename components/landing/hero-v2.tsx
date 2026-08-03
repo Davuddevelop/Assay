@@ -40,12 +40,6 @@ export function HeroV2() {
           .from(".hero-sub", { autoAlpha: 0, y: 16 }, "+=0.5")
           .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.3")
           .from(".hero-product", { autoAlpha: 0, y: 28, duration: 0.8 }, "-=0.2");
-
-        gsap.to(".hero-aurora", {
-          yPercent: 16,
-          ease: "none",
-          scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
-        });
       });
 
       mm.add("(prefers-reduced-motion: no-preference) and (pointer: fine)", () => {
@@ -81,7 +75,6 @@ export function HeroV2() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -top-32 bottom-0 -z-10 overflow-hidden"
       >
-        <div className="aurora absolute inset-0 opacity-40" />
         <Silk className="absolute inset-0 h-full w-full opacity-70" />
         <div className="absolute inset-0 bg-onyx/25" />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
@@ -163,9 +156,6 @@ export function HeroV2() {
 
         <div className="hero-product relative mt-20">
           <div className="hero-parallax relative">
-            <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[640px] w-[1080px] max-w-[150vw] -translate-x-1/2">
-              <div aria-hidden className="hero-aurora aurora absolute inset-0" />
-            </div>
             <div className="float-soft relative">
               <ProductMock className="mx-auto max-w-3xl text-left xl:max-w-4xl" />
             </div>

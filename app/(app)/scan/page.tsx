@@ -35,7 +35,7 @@ export default async function ScanPage({
   return (
     <div className="relative mx-auto w-full max-w-xl px-4 py-20 sm:px-6">
       <ScanErrorToast error={error} />
-      <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 opacity-40" />
+      <div aria-hidden className="field pointer-events-none absolute inset-x-0 top-0 -z-10 h-72" />
       <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
         Run an independent check.
       </h1>

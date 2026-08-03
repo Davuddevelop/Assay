@@ -15,7 +15,7 @@ export default function PricingPage() {
     <div className="relative mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
       <div
         aria-hidden
-        className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 opacity-40"
+        className="field pointer-events-none absolute inset-x-0 top-0 -z-10 h-96"
       />
 
       <Reveal>

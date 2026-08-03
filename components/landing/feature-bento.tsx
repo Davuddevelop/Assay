@@ -75,10 +75,6 @@ const TABLES = [
 export function FeatureBento() {
   return (
     <section className="edge-b relative overflow-hidden">
-      <div
-        aria-hidden
-        className="aura-soft pointer-events-none absolute left-1/2 top-24 h-[420px] w-[820px] max-w-[120vw] -translate-x-1/2"
-      />
       <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
         <Reveal>
           <Eyebrow label="What it checks" />

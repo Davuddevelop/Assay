@@ -28,7 +28,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="relative mx-auto w-full max-w-5xl xl:max-w-6xl px-4 py-16 sm:px-6">
-      <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 opacity-40" />
+      <div aria-hidden className="field pointer-events-none absolute inset-x-0 top-0 -z-10 h-80" />
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">

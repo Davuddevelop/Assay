@@ -8,7 +8,7 @@ export default function NotFound() {
     <div className="relative mx-auto flex min-h-[80vh] w-full max-w-md flex-col items-center justify-center px-4 text-center">
       <div
         aria-hidden
-        className="aurora pointer-events-none absolute inset-x-0 top-1/4 h-64 opacity-50"
+        className="field pointer-events-none absolute inset-x-0 top-0 h-80"
       />
       <HallmarkMark className="relative h-10 w-10 text-ivory" />
       <p className="mt-8 font-mono text-xs uppercase tracking-[0.2em] text-ash">

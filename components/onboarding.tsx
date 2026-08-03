@@ -24,7 +24,7 @@ const STEPS = [
 export function Onboarding() {
   return (
     <div className="panel relative overflow-hidden p-8 sm:p-10">
-      <div aria-hidden className="aurora pointer-events-none absolute inset-x-0 -top-32 h-64 opacity-30" />
+      <div aria-hidden className="field pointer-events-none absolute inset-x-0 -top-32 h-64" />
       <div className="relative">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
           Get started

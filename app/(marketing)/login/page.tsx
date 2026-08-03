@@ -33,7 +33,7 @@ export default async function LoginPage({
     <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
       <div
         aria-hidden
-        className="aurora pointer-events-none absolute inset-x-0 bottom-0 top-1/3 opacity-90"
+        className="field pointer-events-none absolute inset-0"
       />
       <HallmarkMark className="relative h-10 w-10 text-ivory" />
 

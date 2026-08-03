@@ -19,7 +19,7 @@
   --color-ivory-dim: var(--slate-11); /* secondary text */
   --color-ivory: var(--slate-12); /* primary text (#edeef0) */
 
-  /* Iris — the single cool accent, matched to the aurora (the hallmark) */
+  /* Iris — the single cool accent, spent only on the hallmark. */
   --color-iris: #8b8bf0; /* accent text/border */
   --color-iris-soft: #b9b6f7; /* lighter */
 
@@ -196,32 +196,29 @@
 }
 
 /*
-  Aurora — a soft cool glow blooming from below, the modern AI-startup signature.
-  Layered violet / indigo / blue radials, heavily blurred.
+  Field — a fine measurement grid, in place of the glow that used to be here.
+
+  What was here was a layered violet/indigo/blue radial bloom, and its own
+  comment called it "the modern AI-startup signature", which is exactly the
+  problem: it is the default output of the tools our users build with, so it
+  made a site with good bones read as templated.
+
+  A ruled field is the opposite move. It is nearly invisible, it costs no blur
+  and no paint budget, and it belongs to this product specifically — an assay
+  office measures things, and graph paper is what measuring looks like. It also
+  can't compete with the accent colour, because it has none.
+
+  Masked to fade out so it never tiles to a hard edge.
 */
-.aurora {
-  background:
-    radial-gradient(
-      42% 46% at 50% 50%,
-      color-mix(in srgb, var(--color-iris) 88%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      32% 40% at 30% 56%,
-      color-mix(in srgb, #6d5cf0 76%, transparent),
-      transparent 72%
-    ),
-    radial-gradient(
-      32% 40% at 70% 56%,
-      color-mix(in srgb, #4f86f0 68%, transparent),
-      transparent 72%
-    ),
-    radial-gradient(
-      16% 24% at 50% 60%,
-      color-mix(in srgb, #c4b5fd 60%, transparent),
-      transparent 70%
-    );
-  filter: blur(60px);
+.field {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+  /* Fades downward rather than radially: these panels are top bands, and a
+     radial mask collapsed the grid to an invisible island in the middle. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
 }
 
 /* Glass — for the floating pill nav and glassy surfaces. */
@@ -232,20 +229,6 @@
 }
 
 /* Movement — a consistent, soft motion system. All reduced-motion safe. */
-@keyframes aurora-drift {
-  0%,
-  100% {
-    transform: translate3d(-3%, 1%, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(3%, -2%, 0) scale(1.08);
-  }
-}
-
-.aurora {
-  animation: aurora-drift 18s ease-in-out infinite;
-}
-
 @keyframes float-soft {
   0%,
   100% {
@@ -364,18 +347,6 @@
       transparent
     )
     1;
-}
-
-/* A faint, cool bloom that gives the flat dark ground depth behind a section
-   anchor. Cheaper and quieter than the hero aurora — pure light, no motion. */
-.aura-soft {
-  background: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--color-iris) 22%, transparent),
-    transparent 72%
-  );
-  filter: blur(64px);
-  opacity: 0.55;
 }
 
 /* Interactive panels catch a soft iris glow + a brighter edge on hover —
