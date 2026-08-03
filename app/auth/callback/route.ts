@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { claimInstallations } from "@/lib/auth";
 import { safeNext } from "@/lib/safe-redirect";
 import { PREFILL_COOKIE } from "@/lib/scan/prefill";
+import { recordFunnelEvent } from "@/lib/data/funnel";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +30,14 @@ export async function GET(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (user) await claimInstallations(user);
+      if (user) {
+        await claimInstallations(user);
+        // Closes the funnel. `carrying` means this person arrived from an
+        // anonymous report rather than the front door, which is the only
+        // attribution available without tracking anyone across the site.
+        recordFunnelEvent("signup");
+        if (carrying) recordFunnelEvent("signup_from_scan");
+      }
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

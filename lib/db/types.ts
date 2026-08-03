@@ -153,8 +153,13 @@ export type MonitoredAppRow = {
   created_at: string;
 };
 
-/** One side of a persisted exchange with a watched app's agent. */
-/** An API key's metadata. The plaintext key is never stored — only its hash. */
+/** A step between "ran a scan" and "has an account". Counts only, never who. */
+type FunnelEventRow = {
+  id: number;
+  event: string;
+  created_at: string;
+};
+
 /** Anonymous scan telemetry — shape of a result, never who ran it. */
 type ScanStatRow = {
   id: number;
@@ -258,6 +263,7 @@ export interface Database {
       // verdict/score are no longer required on insert: a row is opened when a
       // scan starts, long before either is known.
       scan_stats: Table<ScanStatRow, "platform">;
+      funnel_events: Table<FunnelEventRow, "event">;
     };
     Views: Record<string, never>;
     Functions: {
