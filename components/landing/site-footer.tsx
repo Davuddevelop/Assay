@@ -13,9 +13,13 @@ const COLUMNS = [
     ],
   },
   {
-    heading: "Account",
+    heading: "Company",
     links: [
-      { href: "/login", label: "Sign in with GitHub" },
+      // Who runs this, and what the scanner does and doesn't check. Someone
+      // deciding whether to hand us a client's URL is deciding whether to
+      // trust a person, and nothing on the site answered that.
+      { href: "/about", label: "About" },
+      { href: "/login", label: "Sign in" },
       // A reachable human. Payment providers check for this during review, and
       // it was previously findable only by opening the Terms and reading to the
       // last section — which is not what "contact us" means to anyone.

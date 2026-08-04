@@ -15,7 +15,9 @@ export function ScanReceipt({ findings }: { findings: ScanFindingRow[] }) {
     receipt.secretsSeen > 0
       ? `${receipt.secretsSeen} exposed secret${receipt.secretsSeen === 1 ? "" : "s"} seen — 0 stored. We record where a key leaked, never the key itself.`
       : "No secrets found — and we never store a secret value even when we do.",
-    "0 rows of your data read. Database checks confirm access is open or closed; they never pull your users' records.",
+    receipt.readRows
+      ? "A few rows read, 0 stored. To prove your database is readable we pulled a small sample, masked every value before it reached this page, and wrote none of it down."
+      : "0 rows of your data read. Database checks confirm access is open or closed; they never pull your users' records.",
     `We kept the ${receipt.findingsKept} finding${receipt.findingsKept === 1 ? "" : "s"} above and nothing else — no page content, no source code, no secrets.`,
   ];
 
