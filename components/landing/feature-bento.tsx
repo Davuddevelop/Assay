@@ -78,12 +78,11 @@ export function FeatureBento() {
       <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
         <Reveal>
           <Eyebrow label="What it checks" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
-            The holes vibe-coded apps ship with, then one honest{" "}
-            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
-              mark
-            </span>
-            .
+          {/* max-w-3xl, not 2xl: without the italic word the line is shorter,
+              and at this display size a 2xl measure broke it across three
+              ragged lines. */}
+          <h2 className="mt-6 max-w-3xl text-balance font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
+            The holes vibe-coded apps ship with, then one honest mark.
           </h2>
         </Reveal>
 

@@ -312,16 +312,6 @@
   pointer-events: none;
 }
 
-/* A soft warm halo placed behind a hero element. */
-.glow {
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    color-mix(in srgb, var(--color-gold) 24%, transparent),
-    transparent 72%
-  );
-  filter: blur(46px);
-}
-
 /* A quiet lift on hover for interactive cards. */
 .lift {
   transition:

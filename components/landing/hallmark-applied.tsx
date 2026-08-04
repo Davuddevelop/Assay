@@ -9,12 +9,8 @@ export function HallmarkApplied() {
       <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
-          <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
-            Two apps, judged{" "}
-            <span className="font-accent text-[1.08em] font-normal tracking-normal text-iris-soft">
-              two ways
-            </span>
-            .
+          <h2 className="mt-6 max-w-3xl text-balance font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
+            Two apps, judged two ways.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim xl:text-lg">
             A mark you can trust because it says exactly what was checked and what
