@@ -80,9 +80,18 @@ export function HeroV2() {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
+      {/* Accent discipline.
+          The token file states the rule — "Iris: the single cool accent, spent
+          only on the hallmark" — and this screen was breaking it seven ways at
+          once: the Independent pill, the italic headline word, four chip dots
+          and the sample-report link were all accent-coloured, while the actual
+          call to action was plain ivory. The accent was on every decoration
+          and never on the thing we want pressed. All of it is neutral now; the
+          italic serif is distinction enough for the headline word without
+          colour doing the same job twice. */}
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32 xl:max-w-6xl xl:pb-28 xl:pt-40">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim xl:text-sm">
-          <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
+          <span className="rounded-pill bg-surface px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory-dim">
             Independent
           </span>
           One check across Lovable, Bolt, Replit &amp; v0
@@ -103,7 +112,7 @@ export function HeroV2() {
           {/* The accent word carries its own full stop: BlurText splits on
               whitespace, so a bare "." would become its own word span and could
               orphan onto the next line. */}
-          <span className="font-accent text-[1.06em] font-normal tracking-normal text-iris-soft">
+          <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
             open.
           </span>
         </BlurText>
@@ -140,7 +149,7 @@ export function HeroV2() {
                   key={chip}
                   className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim xl:text-sm"
                 >
-                  <span className="h-1 w-1 rounded-full bg-iris-soft" />
+                  <span className="h-1 w-1 rounded-full bg-border-strong" />
                   {chip}
                 </span>
               ),
@@ -148,7 +157,7 @@ export function HeroV2() {
           </div>
           <a
             href="/sample"
-            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft transition-colors hover:text-ivory"
+            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
           >
             See a sample report →
           </a>

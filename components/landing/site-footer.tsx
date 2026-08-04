@@ -10,6 +10,10 @@ const COLUMNS = [
       { href: "/watch", label: "Monitoring" },
       { href: "/pricing", label: "Pricing" },
       { href: "/docs", label: "Docs" },
+      {
+        href: "/guides/why-lovable-apps-ship-with-the-database-open",
+        label: "Why databases ship open",
+      },
     ],
   },
   {

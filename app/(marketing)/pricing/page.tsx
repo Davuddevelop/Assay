@@ -25,7 +25,9 @@ export default function PricingPage() {
           </p>
           <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] tracking-[-0.025em] text-ivory sm:text-5xl">
             Pay for what you{" "}
-            <span className="font-accent text-[1.06em] font-normal tracking-normal text-iris-soft">
+            {/* Ivory, not accent — matches the hero. The italic serif is the
+                distinction; colouring it too spends the accent on a decoration. */}
+            <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
               ship
             </span>
             .

@@ -42,7 +42,9 @@ export function FindingCard({
   return (
     <div
       className={cn(
-        "rounded-[var(--radius-card)] border p-6",
+        // print-finding keeps a finding from splitting across two sheets — see
+        // the @media print block in globals.css.
+        "print-finding rounded-[var(--radius-card)] border p-6",
         isExposure ? "border-oxblood/50 bg-oxblood/5" : "border-line bg-surface/40",
       )}
     >

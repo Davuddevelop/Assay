@@ -492,3 +492,114 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+  Print.
+
+  There was no print stylesheet in this repo at all, which mattered more than
+  it sounds: the scan report is the client-facing deliverable (CLAUDE.md §3),
+  and the thing a freelancer actually does with a finished report is send it to
+  the client. Printing produced the floating nav, the footer, the scroll
+  progress bar, the film grain and a "Copy fix" button, on paper.
+
+  Ink over atmosphere. The screen report is dark because the product is dark;
+  a printed one is a document, and a document that dumps a full-bleed charcoal
+  ground into someone's printer is a document nobody prints twice. So the page
+  inverts to ink-on-white and keeps only the marks that carry meaning.
+*/
+@media print {
+  /* Chrome and decoration — none of it is content. */
+  nav,
+  footer,
+  button,
+  .no-print,
+  .atmosphere,
+  .field,
+  .glass,
+  .gradual-blur {
+    display: none !important;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Every panel becomes a ruled block rather than a filled card: fills read as
+     grey mud once a printer halftones them. */
+  *,
+  *::before,
+  *::after {
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    /* backdrop-filter is separate from filter: without this the page-top
+       GradualBlur frosts the first inch of the printed page. */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .panel,
+  [class*="bg-surface"],
+  [class*="bg-onyx"] {
+    background-color: transparent !important;
+  }
+
+  [class*="text-ivory"],
+  [class*="text-ash"] {
+    color: #111 !important;
+  }
+
+  /* The one colour worth the ink: severity. A printed report whose critical
+     findings look the same as its minor ones has lost the only thing the
+     reader needs at a glance. */
+  [class*="text-oxblood"] {
+    color: #a3352b !important;
+  }
+
+  /* Accent text is a pale lilac chosen to sit on charcoal. On white it is
+     almost invisible, which would have printed the single most useful line on
+     the report — the paste-back fix label — as a ghost. */
+  [class*="text-iris"],
+  [class*="text-gold"] {
+    color: #4b48a8 !important;
+  }
+
+  [class*="border-"] {
+    border-color: #c9c9c9 !important;
+  }
+
+  [class*="border-oxblood"] {
+    border-color: #a3352b !important;
+  }
+
+  /* A finding is a unit — never let one break across two sheets. */
+  .print-finding {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* The manual steps are collapsed behind a <details> on screen. On paper
+     there is nothing to click, so a collapsed one is simply content the
+     printed copy is missing — PrintButton forces every <details> open on
+     `beforeprint`, because a closed one cannot be opened from CSS. All that's
+     left here is to drop the now-meaningless "Prefer to do it by hand?"
+     disclosure label. */
+  details > summary {
+    display: none !important;
+  }
+
+  a[href] {
+    text-decoration: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}

@@ -109,7 +109,7 @@ export function Hero() {
 
       <div className="relative mx-auto w-full max-w-5xl px-4 pb-20 pt-24 text-center sm:px-6 sm:pt-32">
         <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim">
-          <span className="rounded-pill bg-iris/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
+          <span className="rounded-pill bg-surface px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory-dim">
             Independent
           </span>
           One check across Lovable, Bolt, Replit &amp; v0
@@ -117,7 +117,7 @@ export function Hero() {
 
         <h1 className="mx-auto mt-7 max-w-3xl font-display text-[2.9rem] font-bold leading-[1.04] tracking-[-0.03em] text-ivory sm:text-7xl">
           <span className="hero-word inline-block">The</span>{" "}
-          <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-iris-soft">
+          <span className="hero-word font-accent inline-block text-[1.06em] font-normal tracking-normal text-ivory">
             independent
           </span>{" "}
           <span className="hero-word inline-block">check</span>{" "}
@@ -159,7 +159,7 @@ export function Hero() {
                   key={chip}
                   className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim"
                 >
-                  <span className="h-1 w-1 rounded-full bg-iris-soft" />
+                  <span className="h-1 w-1 rounded-full bg-border-strong" />
                   {chip}
                 </span>
               ),
@@ -167,7 +167,7 @@ export function Hero() {
           </div>
           <a
             href="/sample"
-            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft transition-colors hover:text-ivory"
+            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
           >
             See a sample report →
           </a>

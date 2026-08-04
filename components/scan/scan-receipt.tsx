@@ -29,7 +29,7 @@ export function ScanReceipt({ findings }: { findings: ScanFindingRow[] }) {
       <ul className="mt-4 space-y-2.5">
         {lines.map((line) => (
           <li key={line} className="flex gap-2.5 text-sm leading-relaxed text-ivory-dim">
-            <span aria-hidden className="mt-0.5 shrink-0 text-iris-soft">
+            <span aria-hidden className="mt-0.5 shrink-0 text-ash">
               ✓
             </span>
             <span>{line}</span>

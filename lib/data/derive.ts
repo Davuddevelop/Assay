@@ -75,6 +75,31 @@ export function pickLatestByRepo<T extends Pick<CheckRow, "repo_id">>(
   return out;
 }
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/**
+ * Absolute check date for a report, e.g. "4 August 2026".
+ *
+ * Deliberately UTC and hand-formatted rather than `toLocaleDateString`. The
+ * report renders on the server for /sample and /scan/[id] but on the client
+ * for the live /try scan, and a locale- or timezone-dependent string would
+ * differ between the two and trip a hydration mismatch. A report is also a
+ * document someone hands to a client — it should read the same to both of them
+ * regardless of where either one is sitting.
+ *
+ * Returns "" for a missing or unparseable timestamp so callers can omit the
+ * line rather than print "Invalid Date" on a deliverable.
+ */
+export function formatReportDate(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return "";
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
 /** Compact relative time, e.g. "just now", "3h ago", "2d ago". */
 export function relativeTime(iso: string, now = Date.now()): string {
   const then = new Date(iso).getTime();

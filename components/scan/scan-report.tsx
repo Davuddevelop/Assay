@@ -2,7 +2,9 @@ import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { NextStep } from "@/components/scan/next-step";
 import { ScanReceipt } from "@/components/scan/scan-receipt";
+import { PrintButton } from "@/components/scan/print-button";
 import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
+import { formatReportDate } from "@/lib/data/derive";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +26,9 @@ export function ScanReport({
   showNextStep?: boolean;
 }) {
   const certified = scan.verdict === "certified";
+  // Fall back to created_at: a scan that finished but never stamped
+  // completed_at would otherwise print a dateless report.
+  const checkedOn = formatReportDate(scan.completed_at ?? scan.created_at);
   // Per-finding re-check needs a real, owned scan to look up server-side; the
   // anonymous /try and seeded /sample reports use synthetic ids, so gate it off.
   const recheckable = !scan.is_demo && scan.user_id !== null && scan.id.length > 12;
@@ -41,11 +46,20 @@ export function ScanReport({
     <div>
       {/* audit header — a report readout, not a marketing hero */}
       <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface/40">
-        <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-2.5">
-          <p className="truncate font-mono text-xs text-ash">{scan.app_url}</p>
-          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.2em] text-ash">
-            Security audit
-          </span>
+        {/* Letterhead. This is the strategic artifact (CLAUDE.md §3) — the thing
+            a freelancer hands to a paying client — and it had no date on it.
+            An undated report isn't a document. Shown on every report, not only
+            a passing one: the failing report is the one that gets forwarded. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-line px-5 py-2.5">
+          <p className="min-w-0 truncate font-mono text-xs text-ash">{scan.app_url}</p>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-ash">
+              {checkedOn && <span>Checked {checkedOn}</span>}
+              <span aria-hidden className="h-3 w-px bg-line" />
+              <span>assaysecurity.com</span>
+            </div>
+            <PrintButton />
+          </div>
         </div>
 
         <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">

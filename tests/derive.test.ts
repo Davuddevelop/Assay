@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 
-import { pickLatestByRepo, relativeTime, groupScansByApp } from "@/lib/data/derive";
+import {
+  pickLatestByRepo,
+  relativeTime,
+  groupScansByApp,
+  formatReportDate,
+} from "@/lib/data/derive";
 import type { ScanRow } from "@/lib/db/types";
 
 describe("pickLatestByRepo", () => {
@@ -113,5 +118,29 @@ describe("groupScansByApp", () => {
 
   it("returns nothing for no scans", () => {
     expect(groupScansByApp([])).toEqual([]);
+  });
+});
+
+describe("formatReportDate", () => {
+  it("formats an absolute, unambiguous date", () => {
+    expect(formatReportDate("2026-08-04T09:15:00Z")).toBe("4 August 2026");
+    expect(formatReportDate("2026-01-31T23:00:00Z")).toBe("31 January 2026");
+  });
+
+  // The report renders server-side for /sample and /scan/[id] but client-side
+  // for the live /try scan. A locale- or timezone-dependent string would differ
+  // between the two and trip a hydration mismatch, so the format is fixed UTC.
+  it("reads off UTC, not the machine's timezone", () => {
+    // 23:30 UTC is already the next day in Baku (+04) — the date must not move.
+    expect(formatReportDate("2026-08-04T23:30:00Z")).toBe("4 August 2026");
+    expect(formatReportDate("2026-08-04T00:30:00Z")).toBe("4 August 2026");
+  });
+
+  // A deliverable must never print "Invalid Date" at a client.
+  it("returns empty for anything it can't format, so the line is omitted", () => {
+    expect(formatReportDate(null)).toBe("");
+    expect(formatReportDate(undefined)).toBe("");
+    expect(formatReportDate("")).toBe("");
+    expect(formatReportDate("not a date")).toBe("");
   });
 });

@@ -34,7 +34,7 @@ export function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden
-      className="invisible fixed inset-x-0 top-0 z-50 h-[3px] origin-left scale-x-0 bg-[image:var(--gradient-gold)]"
+      className="no-print invisible fixed inset-x-0 top-0 z-50 h-[3px] origin-left scale-x-0 bg-[image:var(--gradient-gold)]"
     />
   );
 }
