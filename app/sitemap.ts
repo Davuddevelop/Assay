@@ -39,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${base}/client-handoff`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${base}/guides/why-lovable-apps-ship-with-the-database-open`,
       lastModified,
       changeFrequency: "monthly",

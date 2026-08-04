@@ -84,6 +84,14 @@ export function FeatureBento() {
           <h2 className="mt-6 max-w-3xl text-balance font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
             The holes vibe-coded apps ship with, then one honest mark.
           </h2>
+          {/* Positioned as evidence, not as the pitch. The argument is made
+              above; this is what backs it up. A list of checks is what every
+              competitor leads with and it's the part we can't win on. */}
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim xl:text-lg">
+            An outside opinion is only worth having if it&rsquo;s a real one.
+            Here&rsquo;s what Assay actually looks at, from outside your app,
+            with no login and no access to your code.
+          </p>
         </Reveal>
 
         <Reveal delay={90}>

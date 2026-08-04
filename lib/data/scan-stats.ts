@@ -97,3 +97,40 @@ function update(id: number, patch: Record<string, unknown>): void {
     });
   }
 }
+
+/**
+ * How many scans have actually completed. Read live, never written down in
+ * code — a number typed into a component is a number that can be quietly
+ * rounded up later, and this one is meant to be checkable.
+ *
+ * Returns null on any failure, including a missing service-role key at build
+ * time. A marketing page must never fail to render because a counter
+ * didn't load.
+ *
+ * IMPORTANT, and the reason the caller has a threshold: this counts every
+ * completed scan, including the founder's own testing. scan_stats deliberately
+ * stores no URL, no IP and no user id (see 0013_scan_stats.sql), which is the
+ * right design for a privacy-respecting telemetry table and also means there
+ * is no way to filter internal scans out. So this number is honest about what
+ * it is — "scans run" — and must never be presented as "customers" or "apps
+ * checked by real users", because it isn't that and we cannot make it that.
+ */
+export async function countCompletedScans(): Promise<number | null> {
+  try {
+    const db = createAdminClient();
+    const { count, error } = await db
+      .from("scan_stats")
+      .select("id", { count: "exact", head: true })
+      .eq("outcome", "completed");
+    if (error) {
+      log.warn("scan count failed", { reason: error.message });
+      return null;
+    }
+    return count ?? null;
+  } catch (err) {
+    log.warn("scan count failed", {
+      reason: err instanceof Error ? err.message : "unknown",
+    });
+    return null;
+  }
+}

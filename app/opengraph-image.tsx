@@ -57,6 +57,10 @@ export default async function Image() {
             Assay
           </span>
         </div>
+        {/* Keep this in step with the h1 in components/landing/hero-v2.tsx.
+            The two are separate strings by necessity — this renders through
+            Satori and can't import a React component — so they drift silently
+            unless changed together. */}
         <div
           style={{
             marginTop: 28,
@@ -64,7 +68,7 @@ export default async function Image() {
             color: "#b9b6f7",
           }}
         >
-          AI built your app. Assay checks what it left open.
+          The tool that built your app can&rsquo;t be the one that clears it.
         </div>
       </div>
     ),

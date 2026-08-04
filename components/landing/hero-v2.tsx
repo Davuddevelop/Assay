@@ -97,6 +97,13 @@ export function HeroV2() {
           One check across Lovable, Bolt, Replit &amp; v0
         </p>
 
+        {/* The argument is the headline now.
+            This used to open with what Assay checks, and the actual argument —
+            that the builder can't be the one that vouches for its own output —
+            sat as a subordinate clause in the middle of the paragraph below.
+            The strongest thing we have to say was the third thing anyone read.
+            Every competitor in this category leads with a feature list, and we
+            cannot win a feature list; we can win the idea. */}
         <BlurText
           as="h1"
           immediate
@@ -104,24 +111,24 @@ export function HeroV2() {
           stagger={70}
           className="mx-auto mt-7 block max-w-3xl text-balance font-display text-[2.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ivory sm:max-w-4xl sm:text-6xl xl:max-w-5xl xl:text-7xl"
         >
-          AI built your app.
+          The tool that built your app
           {/* Setup and payoff are two beats — once there's room for the second
-              sentence on one line, break on the full stop rather than wherever
-              the text happens to run out. */}
-          <br className="hidden lg:inline" /> Assay checks what it left{" "}
+              half on one line, break there rather than wherever the text
+              happens to run out. */}
+          <br className="hidden lg:inline" /> can&rsquo;t be the one that{" "}
           {/* The accent word carries its own full stop: BlurText splits on
               whitespace, so a bare "." would become its own word span and could
               orphan onto the next line. */}
           <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
-            open.
+            clears it.
           </span>
         </BlurText>
 
         <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg xl:mt-7 xl:max-w-2xl xl:text-xl">
-          Real users. Real payments. Real data. The tool that wrote your code
-          can&rsquo;t be the one that vouches for it — Assay is the outside check
-          that proves your app is safe, in plain English, with the exact fix for
-          anything it finds.
+          Assay is the outside check. Paste your app&rsquo;s link and we look at
+          it the way a stranger would — no login, no access to your code — then
+          tell you in plain English what&rsquo;s exposed and exactly how to fix
+          it.
         </p>
 
         <div className="hero-cta mt-9">
