@@ -89,3 +89,33 @@ I'm 14, a solo founder, and deliberately building real technical depth — I cod
 ## 9. Current priority
 
 **Traction, not features.** The bottleneck is real users and retention data, not missing functionality. Before building anything new, the honest question is: does this help someone use Assay for the first time, or come back a second time? If not, it probably shouldn't be built this week.
+
+## 10. Positioning (settled 2026-08-05)
+
+The wedge is **the argument, not the check list.** Competitors (Vibe App Scanner, VibeEval) already have more checks, MCP, badges and monitoring. We cannot win breadth and must not try. What they structurally cannot have is the position: a platform checking its own output is not an outside opinion.
+
+- The home page leads with *"The tool that built your app can't be the one that clears it."* Checks are evidence, never the headline.
+- The narrow beachhead is **the client-handoff moment** (`/client-handoff`) — not "agencies", which both competitors already claim. The moment the app is finished and the invoice is about to go out is where an independent check is worth money.
+- `/gdg` is the noindex variant for personal outreach. Delete the route if the angle dies.
+
+**Proof rules, absolute:** no invented testimonials, no rounded-up counts. `components/landing/social-proof.tsx` ships an empty `QUOTES` array and renders `null`. The scan counter is read live and hidden below `MIN_SCANS_TO_SHOW`. `scan_stats` stores no URL, IP or user id, so it *cannot* separate founder testing from real users — the number is labelled "scans run" and must never be called customers or real users.
+
+## 11. Onboarding questions — scope limit
+
+Two questions maximum at first sign-in, and each must **change something real** or it's a survey wearing a personalization costume.
+
+1. **What do you build with?** — Lovable / Bolt / Replit / v0 / Something else.
+   Changes: prefills the scan form, and fixes the fact that 92% of scans record `platform = 'unknown'`, which currently makes the telemetry table unable to answer its own core question.
+2. **Who is it for?** — My own projects / Client work / My company.
+   Changes: *client work* surfaces the PDF report and `/client-handoff` first; *own projects* surfaces monitoring first.
+
+Never ask company size, role, budget, or "how did you hear about us." None of them change a pixel, and at this stage every extra field is a person who doesn't finish signing up.
+
+**Stage check before building this:** there is ~1 signed-in user. The bottleneck is people signing in at all, not what happens after (§9). Build the two questions only if they take under half a day; otherwise the platform prefill alone is the part that pays for itself.
+
+## 12. Scanning things we don't own
+
+The ownership gate is a checkbox, not a check. That means it is currently possible to scan `google.com`, and someone did. Two consequences:
+
+- **§5 is aspirational, not enforced.** Either implement the meta-tag verification or amend §5 to say what is actually true. An unenforced non-negotiable is worse than an honest limit.
+- **Never validate the scanner against a site we don't own.** A result on `google.com` proves nothing about whether Assay works on the apps it is for — Google has no Supabase, no exposed secrets, and its `AIza` keys are deliberately public. Test against a deliberately-vulnerable app we control (`lib/scan/demo.ts` is the fixture).
