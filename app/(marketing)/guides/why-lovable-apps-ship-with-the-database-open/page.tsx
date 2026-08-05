@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Eyebrow } from "@/components/section-heading";
+import { GuideFooter } from "@/components/guide-footer";
 
 export const metadata: Metadata = {
   alternates: {
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 /**
  * The first written guide.
  *
- * Deliberately one hand-written page, not a blog engine: no index route, no
- * MDX pipeline, no tag system (CLAUDE.md §2 — don't build for scale we don't
- * have). If a second guide ever earns its place, that's the moment to think
- * about a system, not before.
+ * Still hand-written pages rather than a blog engine — no MDX pipeline, no
+ * tags, no CMS (CLAUDE.md §2). The only shared machinery is lib/guides.ts,
+ * which the index, the sitemap and the read-next footer all derive from, so a
+ * guide cannot ship unlinked or unsubmitted.
  *
  * Every number here is stated with its sample size in the same breath. The
  * dataset is small and saying so is the point — §4 says never overclaim, and a
@@ -152,22 +152,8 @@ export default function GuidePage() {
         </p>
       </div>
 
-      <div className="mt-16 border-t border-line pt-8">
-        <p className="text-sm leading-relaxed text-ivory-dim">
-          Assay checks this automatically, from outside your app, with no login
-          — along with exposed keys, open file storage and missing browser
-          protections. It reports what it finds in plain English with the fix
-          attached, and it never stores your data.{" "}
-          <Link href="/about" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
-            What it doesn&rsquo;t check is written down too.
-          </Link>
-        </p>
-        <p className="mt-6 text-sm text-ash">
-          <Link href="/try" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
-            Check your app →
-          </Link>
-        </p>
-      </div>
+      <GuideFooter slug="why-lovable-apps-ship-with-the-database-open" />
+
     </div>
   );
 }

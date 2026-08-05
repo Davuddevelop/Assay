@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { siteUrl } from "@/lib/env";
+import { GUIDES } from "@/lib/guides";
 
 /**
  * Static sitemap for the public marketing surface only. Private/functional
@@ -45,11 +46,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${base}/guides/why-lovable-apps-ship-with-the-database-open`,
+      url: `${base}/guides`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    // Generated from the guide index, so a guide can't ship unsubmitted.
+    ...GUIDES.map((g) => ({
+      url: `${base}/guides/${g.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${base}/about`,
       lastModified,

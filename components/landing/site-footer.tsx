@@ -11,10 +11,7 @@ const COLUMNS = [
       { href: "/client-handoff", label: "For client work" },
       { href: "/pricing", label: "Pricing" },
       { href: "/docs", label: "Docs" },
-      {
-        href: "/guides/why-lovable-apps-ship-with-the-database-open",
-        label: "Why databases ship open",
-      },
+      { href: "/guides", label: "Guides" },
     ],
   },
   {
