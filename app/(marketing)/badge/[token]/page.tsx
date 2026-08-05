@@ -6,6 +6,7 @@ import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Button } from "@/components/ui/button";
 import { getBadgeReport } from "@/lib/data/scans";
 import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
+import { formatReportDate } from "@/lib/data/derive";
 import { cn } from "@/lib/utils";
 
 // Public, read-by-token — always fresh, never cached to a stale verdict.
@@ -57,6 +58,7 @@ export default async function BadgePage({
   const certified = report.verdict === "certified";
   const host = hostOf(report.appUrl);
   const fresh = verificationFreshness(report.completedAt);
+  const struckOn = formatReportDate(report.struckAt);
   const expired = fresh.state === "expired";
 
   const tone =
@@ -78,9 +80,12 @@ export default async function BadgePage({
           <HallmarkStamp state={certified && !expired ? "assayed" : "held"} animate={false} />
         </div>
 
+        {/* Standing, not a souvenir. This page resolves the latest check, so
+            an app that regressed after the mark was struck says so here —
+            without anyone having to update anything. */}
         <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
           {!certified
-            ? "Issues found."
+            ? "This mark is no longer valid."
             : expired
               ? "This check has expired."
               : "No issues found."}
@@ -101,7 +106,7 @@ export default async function BadgePage({
             <span
               className={cn(
                 "font-display text-4xl font-bold tabular-nums",
-                certified && !expired ? "text-iris-soft" : "text-oxblood-soft",
+                certified && !expired ? "text-ivory" : "text-oxblood-soft",
               )}
             >
               {report.score}
@@ -112,12 +117,26 @@ export default async function BadgePage({
           </div>
         )}
 
+        {/* Deliberately vague on failure. Naming what is wrong with a live app
+            on a public URL hands an attacker a map, so this says only that the
+            mark no longer stands. The owner sees the detail when they sign in;
+            nobody else ever does. */}
         <p className="mx-auto mt-6 max-w-sm text-sm leading-relaxed text-ivory-dim">
           {expired
             ? `This app passed Assay's check, but the verification is older than ${VALID_DAYS} days. Apps drift as they're edited — ask the owner for a fresh check.`
             : certified
-              ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the time of the check.`
-              : `Assay found open security issues on this app at the time of the check.`}
+              ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the last check.`
+              : `A later check found this app no longer meets the standard it was marked for. The details go to the owner, not here. Ask them for a current report.`}
+        </p>
+
+        {/* What re-verification actually means for this app. Claiming continuous
+            checking on an app nothing is re-checking would be the exact kind of
+            overclaim the mark exists to prevent. */}
+        <p className="mx-auto mt-5 max-w-sm text-xs leading-relaxed text-ash">
+          {report.watched
+            ? "This mark re-verifies itself. Assay re-checks this app automatically, and this page updates on its own — including revoking the mark if the app stops passing. Neither the owner nor Assay can hold it open."
+            : "This is a point-in-time check. This app isn't on continuous monitoring, so this page reflects the last check that was run, not today."}
+          {struckOn && ` Mark first struck ${struckOn}.`}
         </p>
 
         <p className="mx-auto mt-5 max-w-sm border-t border-line pt-4 font-mono text-[11px] leading-relaxed text-ash">

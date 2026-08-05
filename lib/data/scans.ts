@@ -6,7 +6,6 @@ import type {
   ScanRow,
   ScanFindingRow,
   ScanVerdict,
-  ScanFindingSeverity,
 } from "@/lib/db/types";
 
 // ── reads (user-scoped, RLS) ──────────────────────────────────────────────────
@@ -108,17 +107,38 @@ export async function ensureBadge(scanId: string): Promise<string | null> {
 
 export interface BadgeReport {
   appUrl: string;
+  /** The verdict of the most recent completed scan — not the one it was minted from. */
   verdict: ScanVerdict | null;
   score: number | null;
+  /** When the *current* verdict was established. */
   completedAt: string | null;
-  findings: { severity: ScanFindingSeverity; title: string }[];
+  /** When the mark was first struck. Provenance, not standing. */
+  struckAt: string | null;
+  /** Whether the app is actively re-checked. A mark that claims live
+   *  verification while nothing re-checks it would be a lie. */
+  watched: boolean;
 }
 
 /**
- * Public, read-by-token badge report — served via the service role since the
- * badges/scans tables are otherwise owner-only. Exposes only what's safe to
- * show the world: the verdict, score, when it was checked, and finding
- * titles/severities. Never the fix prompts, redacted locations, or app owner.
+ * Public, read-by-token badge report.
+ *
+ * This used to resolve `badges.scan_id` — the scan the mark was minted from —
+ * which froze the mark to that moment forever. An app could regress the day
+ * after handoff and the public page would still say "no issues found", which
+ * is exactly the static-image badge every competitor ships, and exactly the
+ * thing that makes a mark worthless.
+ *
+ * It now resolves the *latest completed scan for the same app and owner*. The
+ * pinned scan is kept only as provenance: when the mark was first struck. The
+ * consequence is the point of the feature — if a re-check finds the app has
+ * regressed, this page flips to Held on its own, and nobody involved can
+ * suppress it.
+ *
+ * SECURITY: finding titles used to be fetched here and were rendered by
+ * neither consumer. They are gone. A public URL enumerating a live app's
+ * weaknesses is a map for an attacker, so the shape of this type is the
+ * guarantee: there is no field for a finding, and the page cannot leak one by
+ * accident. Standing is public; detail stays behind the owner's login.
  */
 export async function getBadgeReport(token: string): Promise<BadgeReport | null> {
   const db = createAdminClient();
@@ -129,25 +149,51 @@ export async function getBadgeReport(token: string): Promise<BadgeReport | null>
     .maybeSingle();
   if (!badge) return null;
 
-  const { data: scan } = await db
+  // The minted scan identifies whose app this is, and when the mark was struck.
+  const { data: struck } = await db
     .from("scans")
-    .select("app_url, verdict, score, completed_at")
+    .select("app_url, user_id, completed_at")
     .eq("id", badge.scan_id)
     .maybeSingle();
-  if (!scan) return null;
+  if (!struck) return null;
 
-  const { data: findings } = await db
-    .from("scan_findings")
-    .select("severity, title")
-    .eq("scan_id", badge.scan_id)
-    .order("severity");
+  // Current standing: the newest completed scan of the same app by the same
+  // owner. Falls back to the minted scan when there is nothing newer.
+  //
+  // The owner scope is not optional. Matching on app_url alone would let a
+  // stranger who scans the same URL move someone else's public mark, which is
+  // both wrong and abusable. An ownerless (anonymous) mark therefore cannot be
+  // live-resolved at all, and stays pinned to what it was struck from.
+  const owned = struck.user_id !== null;
+
+  const { data: latest } = owned
+    ? await db
+        .from("scans")
+        .select("verdict, score, completed_at")
+        .eq("app_url", struck.app_url)
+        .eq("user_id", struck.user_id as string)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
+  const { data: monitor } = owned
+    ? await db
+        .from("monitored_apps")
+        .select("active")
+        .eq("app_url", struck.app_url)
+        .eq("user_id", struck.user_id as string)
+        .maybeSingle()
+    : { data: null };
 
   return {
-    appUrl: scan.app_url,
-    verdict: scan.verdict,
-    score: scan.score,
-    completedAt: scan.completed_at,
-    findings: (findings ?? []).map((f) => ({ severity: f.severity, title: f.title })),
+    appUrl: struck.app_url,
+    verdict: latest?.verdict ?? null,
+    score: latest?.score ?? null,
+    completedAt: latest?.completed_at ?? struck.completed_at,
+    struckAt: struck.completed_at,
+    watched: Boolean(monitor?.active),
   };
 }
 

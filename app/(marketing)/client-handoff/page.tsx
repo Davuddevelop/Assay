@@ -100,6 +100,32 @@ export default function ClientHandoffPage() {
       </div>
 
       <h2 className="mt-16 font-display text-2xl font-bold tracking-[-0.02em] text-ivory">
+        The part your client can check themselves
+      </h2>
+      <div className="mt-4 space-y-5 text-base leading-relaxed text-ivory-dim">
+        <p>
+          A report you hand over is still a report <em>you</em> handed over.
+          So the mark isn&rsquo;t an image you paste into a document — it&rsquo;s
+          a link, and it re-checks itself.
+        </p>
+        <p className="text-ivory">
+          Your client can open it without trusting you, or us. It shows the
+          current standing of the live app, not the day you ran the scan.
+        </p>
+        <p>
+          Which means it can go against you, and that&rsquo;s the point. If the
+          app stops passing after handoff, the mark revokes itself in public and
+          nobody — not you, not Assay — can hold it open. A mark that can only
+          ever say yes isn&rsquo;t evidence of anything.
+        </p>
+        <p className="text-sm text-ash">
+          It never publishes what&rsquo;s wrong, though. A public page listing a
+          live app&rsquo;s weaknesses would be a gift to an attacker, so the
+          detail goes to whoever owns the app and nowhere else.
+        </p>
+      </div>
+
+      <h2 className="mt-16 font-display text-2xl font-bold tracking-[-0.02em] text-ivory">
         The obvious objections
       </h2>
       <dl className="mt-8 space-y-8">

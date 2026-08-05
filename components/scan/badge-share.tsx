@@ -37,8 +37,10 @@ export function BadgeShare({ scanId }: { scanId: string }) {
           Your proof is live
         </p>
         <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
-          Share this link anywhere — it shows your app passed, when it was
-          checked, and stays honest as it ages.
+          Share this link anywhere. It re-checks itself: whoever opens it sees
+          the <em>current</em> standing, not the day you minted it — and if this
+          app stops passing, the mark revokes itself. That&rsquo;s what makes it
+          worth showing a client.
         </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
           <code className="min-w-0 flex-1 truncate rounded-pill border border-border bg-onyx/50 px-4 py-2 font-mono text-xs text-ivory">
