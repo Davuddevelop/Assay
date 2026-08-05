@@ -55,7 +55,7 @@ export default async function AppAgentPage({
       {/* status header */}
       <header className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+          <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.16em] text-ash">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-iris-soft opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-iris" />
@@ -87,7 +87,7 @@ export default async function AppAgentPage({
       {latest && (
         <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ash">
           Last full check {new Date(latest.completed_at ?? latest.created_at).toLocaleDateString()} ·{" "}
-          <Link href={`/scan/${latest.id}`} className="text-iris-soft transition-colors hover:text-ivory">
+          <Link href={`/scan/${latest.id}`} className="text-ivory-dim transition-colors hover:text-ivory">
             open the full report →
           </Link>
         </p>

@@ -65,10 +65,9 @@ export function MonitorView({
       <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface/40">
         <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-2.5">
           <p className="truncate font-mono text-xs text-ash">{appUrl}</p>
-          <span className="flex shrink-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-iris-soft">
+          <span className="flex shrink-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ash">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-iris-soft opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-iris" />
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-iris" />
             </span>
             Watching
           </span>

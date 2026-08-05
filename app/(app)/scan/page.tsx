@@ -68,7 +68,7 @@ export default async function ScanPage({
         {error === "limit" && (
           <p className="mt-3 text-sm text-oxblood-soft">
             You&rsquo;ve used your scans for this month.{" "}
-            <Link href="/billing" className="text-iris-soft hover:text-ivory">
+            <Link href="/billing" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
               Upgrade for more →
             </Link>
           </p>
@@ -83,7 +83,7 @@ export default async function ScanPage({
       <p className="mt-5 font-mono text-xs leading-relaxed text-ash">
         Read-only. We never store secrets and never change your app. By scanning,
         you confirm you own this app or are authorized to test it — see our{" "}
-        <Link href="/acceptable-use" className="text-iris-soft hover:text-ivory">
+        <Link href="/acceptable-use" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
           acceptable use
         </Link>{" "}
         policy.
@@ -91,7 +91,7 @@ export default async function ScanPage({
 
       <Link
         href="/sample"
-        className="mt-8 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft hover:text-ivory"
+        className="mt-8 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
       >
         See a sample report →
       </Link>

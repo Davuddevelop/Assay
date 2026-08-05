@@ -61,7 +61,7 @@ export function ScanCard() {
       <div className="relative overflow-hidden">
         <pre className="overflow-x-auto px-5 py-5 font-mono text-[13px] leading-7 text-ivory-dim">
           <div>
-            <span className="text-iris-soft">export const</span> supabase ={" "}
+            <span className="text-ivory">export const</span> supabase ={" "}
             createClient(
           </div>
           <div>{'  "https://xyzcompany.supabase.co",'}</div>

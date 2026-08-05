@@ -138,7 +138,11 @@ export function ScanReport({
               <span
                 className={cn(
                   "font-display text-5xl font-bold tabular-nums",
-                  certified ? "text-iris-soft" : "text-oxblood-soft",
+                  // Ivory when clean: the dot and the stamp already carry the
+                  // verdict, and a coloured number is the same signal a third
+                  // time. Failure keeps oxblood because "bad" must survive
+                  // being glanced at.
+                  certified ? "text-ivory" : "text-oxblood-soft",
                 )}
               >
                 {scan.score ?? "—"}

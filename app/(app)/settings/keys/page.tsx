@@ -46,7 +46,7 @@ export default async function KeysPage() {
           already works, so the setup instructions live inside this panel. */}
       <CreateKeyForm endpoint={endpoint} />
 
-      <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+      <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-ash">
         Your keys
       </h2>
       {keys.length === 0 ? (
@@ -84,7 +84,7 @@ export default async function KeysPage() {
         </p>
       )}
 
-      <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+      <h2 className="mt-12 font-mono text-xs uppercase tracking-[0.16em] text-ash">
         What your agent can do
       </h2>
       <ul className="mt-4 space-y-3 text-sm text-ivory-dim">

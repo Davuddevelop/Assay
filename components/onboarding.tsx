@@ -26,7 +26,7 @@ export function Onboarding() {
     <div className="panel relative overflow-hidden p-8 sm:p-10">
       <div aria-hidden className="field pointer-events-none absolute inset-x-0 -top-32 h-64" />
       <div className="relative">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           Get started
         </p>
         <h2 className="mt-3 font-display text-2xl font-bold tracking-[-0.02em] text-ivory">
@@ -39,7 +39,7 @@ export function Onboarding() {
               key={step.n}
               className="flex gap-4 rounded-[var(--radius-control)] border border-line bg-surface/40 p-5"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-pill border border-iris/40 bg-iris/10 font-mono text-sm text-iris-soft">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-pill border border-border bg-surface font-mono text-sm text-ash">
                 {step.n}
               </span>
               <div>
@@ -56,7 +56,7 @@ export function Onboarding() {
           </Button>
           <Link
             href="/sample"
-            className="font-mono text-xs uppercase tracking-[0.14em] text-iris-soft hover:text-ivory"
+            className="font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
           >
             See a sample report →
           </Link>

@@ -39,7 +39,7 @@ export function useToast() {
 }
 
 const TONE: Record<ToastTone, { ring: string; dot: string; label: string }> = {
-  info: { ring: "border-iris/50", dot: "bg-iris", label: "text-iris-soft" },
+  info: { ring: "border-border", dot: "bg-ivory-dim", label: "text-ivory-dim" },
   warn: { ring: "border-oxblood/60", dot: "bg-oxblood", label: "text-oxblood-soft" },
   success: { ring: "border-iris/50", dot: "bg-iris", label: "text-iris-soft" },
 };

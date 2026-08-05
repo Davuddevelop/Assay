@@ -125,7 +125,7 @@ export function FindingCard({
       {finding.fix_prompt && (
         <div className="mt-5 rounded-[var(--radius-control)] border border-iris/30 bg-iris/5 p-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-iris-soft">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ash">
               Paste this into your builder to fix it
             </p>
             <CopyButton text={finding.fix_prompt} />

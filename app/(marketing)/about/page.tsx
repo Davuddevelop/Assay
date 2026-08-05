@@ -187,7 +187,7 @@ export default function AboutPage() {
 
       <p className="mt-16 text-sm text-ash">
         Want to see it work?{" "}
-        <Link href="/try" className="text-iris-soft hover:text-ivory">
+        <Link href="/try" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
           Scan your app →
         </Link>
       </p>

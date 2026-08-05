@@ -78,7 +78,7 @@ export default async function BillingPage({
       {/* current plan + usage */}
       <div className="panel mt-8 flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
             Current plan
           </p>
           <p className="mt-2 font-display text-2xl font-bold text-ivory">{plan.name}</p>

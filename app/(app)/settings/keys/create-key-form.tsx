@@ -86,7 +86,7 @@ export function CreateKeyForm({ endpoint }: { endpoint: string }) {
 
     return (
       <div className="panel mt-8 border-iris/40 p-6">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           Your new key
         </p>
         <p className="mt-2 text-sm text-ivory-dim">
@@ -103,7 +103,7 @@ export function CreateKeyForm({ endpoint }: { endpoint: string }) {
         </div>
 
         <div className="mt-8 border-t border-line pt-6">
-          <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
             Set it up
           </p>
           <p className="mt-2 text-sm text-ivory-dim">
@@ -179,7 +179,7 @@ export function CreateKeyForm({ endpoint }: { endpoint: string }) {
     <form action={action} className="panel mt-8 p-6">
       <label
         htmlFor="label"
-        className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft"
+        className="font-mono text-xs uppercase tracking-[0.16em] text-ash"
       >
         New key
       </label>

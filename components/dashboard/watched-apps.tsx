@@ -15,7 +15,7 @@ function Delta({ status }: { status: WatchedAppStatus }) {
   }
   if (delta.improved) {
     return (
-      <span className="rounded-pill border border-iris/40 bg-iris/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
+      <span className="rounded-pill border border-iris/40 bg-iris/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ash">
         {delta.scoreDelta !== null ? `↑ ${delta.scoreDelta} — ` : ""}fixed
       </span>
     );

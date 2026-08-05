@@ -163,7 +163,7 @@ export default function GuidePage() {
           </Link>
         </p>
         <p className="mt-6 text-sm text-ash">
-          <Link href="/try" className="text-iris-soft hover:text-ivory">
+          <Link href="/try" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
             Check your app →
           </Link>
         </p>

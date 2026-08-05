@@ -7,12 +7,14 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { ProductMock } from "@/components/landing/product-mock";
 import { Silk } from "@/components/landing/silk";
-import { BlurText } from "@/components/landing/blur-text";
 
 /**
- * Hero (v2) — the silk-backed, editorial hero. Same structure as the classic
- * hero, but the headline uses the Blur Text reveal (React Bits type animation)
- * instead of a slide, landing the page squarely in the v2 look.
+ * Hero (v2) — the silk-backed, editorial hero.
+ *
+ * The silk is the page's one deliberate ambient effect. Everything else that
+ * used to compete with it — the film grain, the blur-in headline, the pill
+ * chips under the CTA — is gone, because a signature only reads as a signature
+ * when it is the only thing doing that job.
  */
 export function HeroV2() {
   const root = useRef<HTMLElement>(null);
@@ -32,12 +34,15 @@ export function HeroV2() {
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // The headline blur-reveal runs itself; orchestrate the rest around it.
+        // One timeline for the whole hero now that the headline no longer runs
+        // its own reveal. gsap.from() leaves elements visible by default, so a
+        // no-JS or reduced-motion visitor still gets the full hero.
         const tl = gsap.timeline({
           defaults: { ease: "power3.out", duration: 0.6 },
         });
         tl.from(".hero-eyebrow", { autoAlpha: 0, y: 16 })
-          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "+=0.5")
+          .from("h1", { autoAlpha: 0, y: 18 }, "-=0.35")
+          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "-=0.3")
           .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.3")
           .from(".hero-product", { autoAlpha: 0, y: 28, duration: 0.8 }, "-=0.2");
       });
@@ -104,25 +109,22 @@ export function HeroV2() {
             The strongest thing we have to say was the third thing anyone read.
             Every competitor in this category leads with a feature list, and we
             cannot win a feature list; we can win the idea. */}
-        <BlurText
-          as="h1"
-          immediate
-          startDelay={120}
-          stagger={70}
-          className="mx-auto mt-7 block max-w-3xl text-balance font-display text-[2.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ivory sm:max-w-4xl sm:text-6xl xl:max-w-5xl xl:text-7xl"
-        >
+        {/* A plain h1, not the blur reveal it used to be.
+            The silk backdrop stays — that's a deliberate signature — but it
+            moves, and having the most important sentence on the site also
+            resolve out of a blur meant two things were happening to it before
+            anyone could read it. If the background is going to have presence,
+            the sentence on top of it has to be instantly legible. */}
+        <h1 className="mx-auto mt-7 block max-w-3xl text-balance font-display text-[2.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ivory sm:max-w-4xl sm:text-6xl xl:max-w-5xl xl:text-7xl">
           The tool that built your app
           {/* Setup and payoff are two beats — once there's room for the second
               half on one line, break there rather than wherever the text
               happens to run out. */}
           <br className="hidden lg:inline" /> can&rsquo;t be the one that{" "}
-          {/* The accent word carries its own full stop: BlurText splits on
-              whitespace, so a bare "." would become its own word span and could
-              orphan onto the next line. */}
           <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
             clears it.
           </span>
-        </BlurText>
+        </h1>
 
         <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg xl:mt-7 xl:max-w-2xl xl:text-xl">
           Assay is the outside check. Paste your app&rsquo;s link and we look at
@@ -149,19 +151,12 @@ export function HeroV2() {
               Scan my app
             </Button>
           </form>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            {["Exposed keys", "Open database", "Missing protections", "Plain-language fixes"].map(
-              (chip) => (
-                <span
-                  key={chip}
-                  className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface/40 px-3 py-1 text-xs text-ivory-dim xl:text-sm"
-                >
-                  <span className="h-1 w-1 rounded-full bg-border-strong" />
-                  {chip}
-                </span>
-              ),
-            )}
-          </div>
+          {/* One line, not four pills. There were nine pill shapes above the
+              fold; a pill is a container, and a container implies the thing
+              inside needs holding. These are four nouns. */}
+          <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-ash xl:text-xs">
+            Exposed keys · Open database · Missing protections · Plain-language fixes
+          </p>
           <a
             href="/sample"
             className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"

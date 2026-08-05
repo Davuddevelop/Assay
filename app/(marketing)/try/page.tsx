@@ -52,7 +52,7 @@ export default async function TryPage({
       {!target && (
         <Link
           href="/sample"
-          className="mt-8 inline-block font-mono text-xs uppercase tracking-[0.14em] text-iris-soft hover:text-ivory"
+          className="mt-8 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
         >
           See a sample report →
         </Link>

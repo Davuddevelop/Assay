@@ -25,7 +25,7 @@ import { continueWithApp } from "@/app/(marketing)/try/actions";
 export function NextStep({ appUrl, certified }: { appUrl: string; certified: boolean }) {
   return (
     <div className="no-print mt-8 rounded-[var(--radius-card)] border border-iris/40 bg-iris/[0.05] p-6 sm:p-7">
-      <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+      <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
         {certified ? "Keep it that way" : "After you fix them"}
       </p>
 

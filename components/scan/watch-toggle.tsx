@@ -87,7 +87,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
   if (activating) {
     return (
       <div className="panel p-6 sm:p-7">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           Starting the agent
         </p>
         <div className="mt-4 space-y-2 font-mono text-[13px]">
@@ -113,7 +113,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
     return (
       <div className="panel flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-7">
         <div className="min-w-0">
-          <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+          <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.16em] text-ash">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-iris-soft opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-iris" />
@@ -137,7 +137,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
     return (
       <div className="panel flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-7">
         <div className="min-w-0">
-          <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
             Watch more apps
           </p>
           <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
@@ -156,7 +156,7 @@ export function WatchToggle({ scan, watched }: { scan: ScanRow; watched: boolean
   return (
     <div className="panel flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-7">
       <div className="min-w-0">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">Keep it safe</p>
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">Keep it safe</p>
         <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
           You&rsquo;ll keep editing this app. Put Assay on watch — the moment you
           ship a change that breaks something, it&rsquo;s flagged here before your

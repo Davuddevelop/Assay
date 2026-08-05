@@ -42,7 +42,7 @@ export async function AppHeader() {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2.5 rounded-pill border border-border bg-surface/50 py-1 pl-1 pr-3">
-            <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-pill bg-iris/20 font-mono text-xs text-iris-soft">
+            <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-pill bg-surface-hover font-mono text-xs text-ash">
               {session?.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={session.avatarUrl} alt="" className="h-full w-full object-cover" />

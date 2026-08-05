@@ -1,15 +1,14 @@
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
-import { SpotlightCard } from "@/components/spotlight-card";
 
 export function HallmarkApplied() {
   return (
     <section className="edge-b">
-      <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28">
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
-          <h2 className="mt-6 max-w-3xl text-balance font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
+          <h2 className="mt-5 max-w-3xl text-balance font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">
             Two apps, judged two ways.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-dim xl:text-lg">
@@ -21,7 +20,10 @@ export function HallmarkApplied() {
         <div className="mt-16 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
-            <SpotlightCard className="panel lift-glow h-full p-8">
+            {/* Border-only hover. These two cards previously carried a cursor-following
+                spotlight AND a glow lift — two effects doing the same job on the
+                same element. */}
+            <div className="panel lift h-full p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="assayed" />
                 <span className="font-mono text-xs text-ash">my-saas.lovable.app</span>
@@ -33,12 +35,12 @@ export function HallmarkApplied() {
                 No secret keys in the browser. Database locked down — rows are
                 protected. Security headers in place. This app earned the hallmark.
               </p>
-            </SpotlightCard>
+            </div>
           </Reveal>
 
           {/* Held */}
           <Reveal delay={110}>
-            <SpotlightCard className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
+            <div className="lift h-full rounded-[var(--radius-card)] border border-oxblood/50 bg-surface p-8">
               <div className="flex items-center justify-between">
                 <HallmarkStamp state="held" />
                 <span className="font-mono text-xs text-ash">my-store.lovable.app</span>
@@ -63,7 +65,7 @@ a policy so users see only their own
 rows.`}</code>
                 </pre>
               </figure>
-            </SpotlightCard>
+            </div>
           </Reveal>
         </div>
       </div>

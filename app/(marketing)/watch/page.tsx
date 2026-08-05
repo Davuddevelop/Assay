@@ -16,7 +16,7 @@ export default function WatchPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-iris-soft">Example</p>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-ash">Example</p>
       <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
         Assay never stops watching.
       </h1>
@@ -39,7 +39,7 @@ export default function WatchPage() {
         </Link>
         <Link
           href="/sample"
-          className="font-mono text-xs uppercase tracking-[0.14em] text-iris-soft hover:text-ivory"
+          className="font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
         >
           See a sample report →
         </Link>

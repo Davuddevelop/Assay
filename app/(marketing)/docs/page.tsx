@@ -48,7 +48,7 @@ export default function DocsPage() {
 
       <p className="mt-8 text-xs leading-relaxed text-ash">
         Scan only apps you own or are authorized to test — see our{" "}
-        <Link href="/acceptable-use" className="text-iris-soft hover:text-ivory">
+        <Link href="/acceptable-use" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
           Acceptable Use Policy
         </Link>
         .
@@ -56,7 +56,7 @@ export default function DocsPage() {
 
       <p className="mt-8 text-sm text-ash">
         Ready?{" "}
-        <Link href="/try" className="text-iris-soft hover:text-ivory">
+        <Link href="/try" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
           Scan your app →
         </Link>
       </p>

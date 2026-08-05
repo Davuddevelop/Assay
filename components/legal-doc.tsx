@@ -35,14 +35,14 @@ export function LegalDoc({
       <p className="mt-6 text-base leading-relaxed text-ivory-dim">{intro}</p>
 
       <article
-        className="mt-12 space-y-8 text-sm leading-relaxed text-ivory-dim [&_a]:text-iris-soft [&_a:hover]:text-ivory [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-[-0.01em] [&_h2]:text-ivory [&_li]:ml-1 [&_p]:mt-3 [&_strong]:text-ivory [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        className="mt-12 space-y-8 text-sm leading-relaxed text-ivory-dim [&_a]:text-ivory [&_a]:underline [&_a]:decoration-line [&_a]:underline-offset-4 [&_a:hover]:decoration-ivory [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-[-0.01em] [&_h2]:text-ivory [&_li]:ml-1 [&_p]:mt-3 [&_strong]:text-ivory [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
       >
         {children}
       </article>
 
       <p className="mt-14 border-t border-line pt-6 text-xs text-ash">
         Questions? Email{" "}
-        <a href="mailto:hello@assaysecurity.com" className="text-iris-soft hover:text-ivory">
+        <a href="mailto:hello@assaysecurity.com" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
           hello@assaysecurity.com
         </a>
         .

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 function Check() {
   return (
-    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-iris-soft" fill="none" aria-hidden>
+    <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-ash" fill="none" aria-hidden>
       <path d="M5 10.5 8.5 14 15 6.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -34,14 +34,14 @@ export function PricingTable() {
           const plan = PLANS[id];
           const featured = !!plan.highlighted;
           return (
-            <div key={id} className={cn("flex flex-col p-8", featured && "bg-iris/[0.05]")}>
+            <div key={id} className={cn("flex flex-col p-8", featured && "bg-surface/40")}>
               <div className="flex items-center justify-between">
                 <h3 className="font-mono text-xs uppercase tracking-[0.22em] text-ivory">
                   {plan.name}
                 </h3>
                 {featured && (
-                  <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-iris-soft">
-                    <span aria-hidden className="h-1.5 w-1.5 rotate-45 bg-iris" />
+                  <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ash">
+                    <span aria-hidden className="h-1.5 w-1.5 rotate-45 bg-ivory-dim" />
                     Recommended
                   </span>
                 )}

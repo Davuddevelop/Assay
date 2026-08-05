@@ -147,7 +147,6 @@ export default function RootLayout({
             </linearGradient>
           </defs>
         </svg>
-        <div className="atmosphere" aria-hidden />
         {children}
         {/* Page-level traffic and performance. Vercel's own, chosen over a
             general analytics suite because it sets no cookies and collects no

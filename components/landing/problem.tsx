@@ -10,13 +10,13 @@ export function Problem() {
           can't wrap — pushed this track to 494px inside a 375px viewport and
           the whole home page scrolled sideways. The `<pre>` already had
           `overflow-x-auto`; the item wrapping it is what refused to shrink. */}
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36 lg:grid-cols-2 lg:gap-16 [&>*]:min-w-0">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28 lg:grid-cols-2 lg:gap-16 [&>*]:min-w-0">
         <Reveal>
           <Eyebrow label="The problem" />
           {/* No italic accent word here. It was in six of six home-page
               headlines, which made it a template rather than a device — the
               hero keeps the only one on the page. */}
-          <h2 className="mt-6 font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
+          <h2 className="mt-5 font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">
             Your app looks finished.
           </h2>
           <div className="mt-7 space-y-4 text-base leading-relaxed text-ivory-dim sm:text-lg xl:text-xl">

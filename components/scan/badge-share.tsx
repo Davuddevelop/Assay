@@ -33,7 +33,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
     const embed = `<a href="${url}"><img src="${svgUrl}" alt="Checked by Assay — no issues found" height="28"></a>`;
     return (
       <div className="no-print panel p-6 sm:p-7">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           Your proof is live
         </p>
         <p className="mt-2 text-sm leading-relaxed text-ivory-dim">
@@ -81,7 +81,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
   return (
     <div className="no-print panel flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center sm:p-7">
       <div className="min-w-0">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris-soft">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
           Show it off
         </p>
         <p className="mt-2 text-sm leading-relaxed text-ivory-dim">

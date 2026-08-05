@@ -22,7 +22,7 @@ const KIND_TONE: Record<ActivityEvent["kind"], string> = {
 
 function AgentAvatar() {
   return (
-    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-iris-soft">
+    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ash">
       <HallmarkMark className="h-3.5 w-3.5" />
     </span>
   );
@@ -137,7 +137,7 @@ export function AppAgent({
         {chat.map((m, i) =>
           m.role === "user" ? (
             <div key={i} className="flex justify-end">
-              <p className="max-w-[85%] rounded-2xl rounded-br-md border border-iris/25 bg-iris/10 px-4 py-2.5 text-sm leading-relaxed text-ivory">
+              <p className="max-w-[85%] rounded-2xl rounded-br-md border border-border bg-surface px-4 py-2.5 text-sm leading-relaxed text-ivory">
                 {m.content}
               </p>
             </div>
@@ -169,7 +169,7 @@ export function AppAgent({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Assay about this app — “is it safe to launch?”"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-pill border border-line bg-onyx/60 px-4 py-2.5 text-sm text-ivory placeholder:text-ash focus:border-iris/50 focus:outline-none"
+          className="min-w-0 flex-1 rounded-pill border border-line bg-onyx/60 px-4 py-2.5 text-sm text-ivory placeholder:text-ash focus:border-border-strong focus:outline-none"
         />
         <button
           type="submit"
