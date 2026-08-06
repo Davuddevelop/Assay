@@ -33,10 +33,10 @@ import { Button } from "@/components/ui/button";
  * Lives in `public/`, referenced by path rather than imported.
  *
  * A static import would fail the build outright if the file were missing; a
- * path 404s the image and leaves the page standing. That matters because the
- * headline is legible either way here — the scrim below is opaque enough on
- * its own — so a missing asset degrades to a plain dark hero instead of
- * taking the site down.
+ * path 404s the image and leaves the page standing. That is not theoretical —
+ * a PR merged this component before the image reached public/, and production
+ * served a hero with a dead src for several minutes. It degraded to a plain
+ * dark hero with legible type instead of taking the site down.
  */
 const HERO_IMAGE = "/hero-assay.jpg";
 const HERO_IMAGE_SMALL = "/hero-assay-1200.jpg";
@@ -82,38 +82,47 @@ export function HeroV2() {
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
-            have been the slowest thing on the site on the page everyone lands
-            on; these are 148KB and 46KB. The small one is not a thumbnail —
-            below 640px the hero is a narrow crop of the middle, so 1200px of
-            source is already more than the device can resolve.
+            have been the slowest asset on the site on the page everyone lands
+            on; these are 148KB and 46KB.
 
-            The ingot sits near the horizontal centre of the frame, so on a
-            phone the crop is biased left of centre to keep it in shot rather
-            than slicing it out of the visible window. */}
+            The two crops are chosen for opposite reasons. On desktop the
+            window is biased left so the lit ingot lands in the right third,
+            clear of the headline. On a phone it is biased much further left,
+            onto the dark textured slate, and that is deliberate: a 390px
+            portrait window over a 21:9 frame cannot show a bright subject
+            *and* carry ~500px of text without one of them losing. Measured, an
+            ingot behind the sub-paragraph gave 2.02:1 where 4.5:1 is required.
+            The slate reads as photograph, holds texture, and lets the scrim
+            stay light. */}
         <img
           src={HERO_IMAGE}
           srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
           sizes="100vw"
           alt=""
-          className="h-full w-full object-cover object-[42%_center] sm:object-[26%_center]"
+          className="h-full w-full object-cover object-[16%_center] sm:object-[26%_center]"
           loading="eager"
           fetchPriority="high"
         />
 
-        {/* Two scrims, doing different jobs. The horizontal one darkens the
-            left, where the type sits, and lets the metal keep its contrast on
-            the right. The vertical one lands the image into the page ground so
-            there's no seam where the section ends.
+        {/* Darken where the words are, and nowhere else.
+            A broad even wash is the obvious approach and the wrong one: it
+            costs the photograph everywhere in order to protect type that only
+            occupies the left half. This reaches full transparency by 72%, so
+            the ingot and the beam are seen at the brightness they were shot
+            at. It can afford to be this light because the frame's left third
+            is already near-black in the photograph itself (mean 15 of 255) —
+            the scrim is insurance against the crop moving, not the main
+            defence.
 
-            Heavier on small screens: a 21:9 photograph cropped to a phone puts
-            the subject wherever it lands, so legibility can't depend on the
-            composition surviving the crop. */}
-        {/* Tuned against the real photograph, not a placeholder. Its left third
-            is already near-black (mean 15) while the lit ingot sits around the
-            middle, so the scrim only has to carry the first quarter of the
-            frame and can then get out of the way — an even 70% wash across the
-            whole width just buried the subject the image was chosen for. */}
-        <div className="absolute inset-0 bg-onyx/72 sm:bg-gradient-to-r sm:from-onyx sm:from-15% sm:via-onyx/50 sm:via-55% sm:to-onyx/15" />
+            Note the base bg-onyx/38 applies at every breakpoint; the `sm:`
+            classes replace the background-image, not the colour, so lowering
+            it lightens desktop too. Verified per element with the text hidden
+            rather than by eye — worst-pixel contrast is 4.02:1 behind the h1
+            (needs 3:1 at 85px) and 6-7:1 behind the body copy (needs 4.5:1).
+
+            The second, vertical scrim lands the image into the page ground so
+            there's no seam where the section ends. */}
+        <div className="absolute inset-0 bg-onyx/38 sm:bg-gradient-to-r sm:from-onyx sm:from-18% sm:via-onyx/72 sm:via-42% sm:to-transparent sm:to-72%" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
