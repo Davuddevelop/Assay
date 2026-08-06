@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
  * taking the site down.
  */
 const HERO_IMAGE = "/hero-assay.jpg";
+const HERO_IMAGE_SMALL = "/hero-assay-1200.jpg";
 
 export function HeroV2() {
   const root = useRef<HTMLElement>(null);
@@ -80,16 +81,21 @@ export function HeroV2() {
           is one continuous image with no dark strip above it. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {/* On a phone the frame is portrait and the photograph is 21:9, so the
-            crop is severe. Biased right, because that's where the lit subject
-            is — measured contrast behind the headline stays at 9.4:1 even with
-            the brightest part of the image directly behind it, so the crop can
-            be chosen to keep the photograph worth looking at rather than to
-            dodge the type. */}
+        {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
+            have been the slowest thing on the site on the page everyone lands
+            on; these are 148KB and 46KB. The small one is not a thumbnail —
+            below 640px the hero is a narrow crop of the middle, so 1200px of
+            source is already more than the device can resolve.
+
+            The ingot sits near the horizontal centre of the frame, so on a
+            phone the crop is biased left of centre to keep it in shot rather
+            than slicing it out of the visible window. */}
         <img
           src={HERO_IMAGE}
+          srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
+          sizes="100vw"
           alt=""
-          className="h-full w-full object-cover object-[70%_center] sm:object-center"
+          className="h-full w-full object-cover object-[42%_center] sm:object-[26%_center]"
           loading="eager"
           fetchPriority="high"
         />
@@ -102,7 +108,12 @@ export function HeroV2() {
             Heavier on small screens: a 21:9 photograph cropped to a phone puts
             the subject wherever it lands, so legibility can't depend on the
             composition surviving the crop. */}
-        <div className="absolute inset-0 bg-onyx/78 sm:bg-gradient-to-r sm:from-onyx sm:from-25% sm:via-onyx/70 sm:to-onyx/10" />
+        {/* Tuned against the real photograph, not a placeholder. Its left third
+            is already near-black (mean 15) while the lit ingot sits around the
+            middle, so the scrim only has to carry the first quarter of the
+            frame and can then get out of the way — an even 70% wash across the
+            whole width just buried the subject the image was chosen for. */}
+        <div className="absolute inset-0 bg-onyx/72 sm:bg-gradient-to-r sm:from-onyx sm:from-15% sm:via-onyx/50 sm:via-55% sm:to-onyx/15" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
