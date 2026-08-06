@@ -17,7 +17,8 @@ const MESSAGES: Record<string, string> = {
   email: "That address didn’t look right. Check it and try again.",
   throttled: "Too many sign-in emails from here. Wait a few minutes and try again.",
   oauth: "GitHub sign-in didn’t complete. Please try again.",
-  auth: "That sign-in link has expired or was already used. Request a new one.",
+  auth: "That sign-in link has expired or was already used. Request a new one, or enter the code from the same email below.",
+  code: "That code didn’t work — it may be wrong, expired, or already used. Check the email again, or request a new one.",
 };
 
 export function LoginError() {
@@ -28,8 +29,9 @@ export function LoginError() {
       <div className="mt-6 w-full rounded-[var(--radius-control)] border border-iris/40 bg-iris/[0.07] px-4 py-3.5 text-left">
         <p className="text-sm font-medium text-ivory">Check your email.</p>
         <p className="mt-1 text-sm leading-relaxed text-ivory-dim">
-          We sent you a sign-in link. It works once and expires shortly — open it
-          on this device if you can.
+          We sent you a sign-in link, and a 6-digit code in the same email. If
+          the link says it&rsquo;s already used before you&rsquo;ve touched it,
+          that&rsquo;s a mail scanner opening it first — use the code instead.
         </p>
       </div>
     );

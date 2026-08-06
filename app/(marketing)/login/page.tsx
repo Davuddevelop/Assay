@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
 import { LoginError } from "@/components/login-error";
+import { EmailCodeForm } from "@/components/email-code-form";
 import { signInWithGitHub, signInWithEmail } from "@/app/auth/actions";
 import { getUser } from "@/lib/auth";
 import { safeNext } from "@/lib/safe-redirect";
@@ -20,14 +21,19 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; sent?: string; error?: string }>;
 }) {
   // Already signed in? Sending them to a sign-in form is a dead end — take them
   // where they were going instead.
   const user = await getUser();
-  const { next } = await searchParams;
+  const { next, sent, error } = await searchParams;
   const dest = safeNext(next ?? null);
   if (user) redirect(dest);
+
+  // Open the code form by default at exactly the two moments it's the answer:
+  // right after a link was sent, and when a link just failed. Otherwise it
+  // stays collapsed — most people never need it.
+  const codeFormOpen = sent === "1" || error === "auth" || error === "code";
 
   return (
     <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col items-center justify-center px-4 py-20 text-center sm:px-6">
@@ -74,6 +80,8 @@ export default async function LoginPage({
           Email me a sign-in link
         </SubmitButton>
       </form>
+
+      <EmailCodeForm next={next} dest={dest} defaultOpen={codeFormOpen} />
 
       <div className="mt-7 flex w-full items-center gap-4">
         <span className="h-px flex-1 bg-line" />
