@@ -63,8 +63,9 @@ export default async function LoginPage({
 
       <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">
-        No password. We&rsquo;ll email you a link. Then paste the link to an app
-        you own and Assay will check it for security issues — nothing else.
+        No password. We&rsquo;ll email you a sign-in code. Then paste the link
+        to an app you own and Assay will check it for security issues — nothing
+        else.
       </p>
 
       <Suspense fallback={null}>

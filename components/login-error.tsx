@@ -29,9 +29,9 @@ export function LoginError() {
       <div className="mt-6 w-full rounded-[var(--radius-control)] border border-iris/40 bg-iris/[0.07] px-4 py-3.5 text-left">
         <p className="text-sm font-medium text-ivory">Check your email.</p>
         <p className="mt-1 text-sm leading-relaxed text-ivory-dim">
-          We sent you a sign-in link, and a numeric code in the same email. If
-          the link says it&rsquo;s already used before you&rsquo;ve touched it,
-          that&rsquo;s a mail scanner opening it first — use the code instead.
+          Enter the code from it below. There&rsquo;s a link in the same email
+          too, but some mail providers open links automatically to scan them,
+          which uses the link up before you get to it — the code always works.
         </p>
       </div>
     );
