@@ -3,15 +3,19 @@ import { verifyEmailCode } from "@/app/auth/actions";
 import { OTP_MIN_LENGTH, OTP_MAX_LENGTH } from "@/lib/auth-email";
 
 /**
- * The fallback to the clickable sign-in link: the numeric code from the same
- * email, typed in by hand.
+ * How email sign-in finishes: the numeric code from the email, typed in.
  *
- * It exists because the link alone isn't reliable. Some corporate mail
- * gateways and security scanners (Microsoft 365 Safe Links is the common one)
- * pre-fetch every link in an email before the recipient opens it, which burns
- * the one-time token — so the first real click reports "already used" for
- * someone who never used it. A typed code has no URL for that kind of thing
- * to visit.
+ * This began as a fallback to a clickable link and became the only path,
+ * because the link never worked reliably. Mail gateways and security scanners
+ * fetch every URL in an email before the recipient opens it, which spends the
+ * one-time token — so the first real click reports "already used" to someone
+ * who never used it. Confirmed live on this product, not theorised. A typed
+ * code has no URL for a scanner to visit, so it cannot be consumed early.
+ *
+ * The link is gone from the email entirely rather than kept as a secondary
+ * option: a broken affordance is worse than no affordance, because the person
+ * who clicks it concludes the product is broken rather than that their mail
+ * provider is unusual.
  *
  * A plain `<details>`, not client state: whether it starts open is decided
  * server-side by the login page, from the same `sent`/`error` the page
@@ -36,7 +40,7 @@ export function EmailCodeForm({
           <span aria-hidden className="transition-transform group-open:rotate-90">
             &rarr;
           </span>
-          Enter the code instead
+          Already have a code?
         </span>
       </summary>
 

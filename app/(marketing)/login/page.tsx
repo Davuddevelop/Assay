@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Sign in — Assay",
-  description: "Sign in with an email link to begin.",
+  description: "Sign in with an emailed code to begin.",
   robots: { index: false, follow: true },
 };
 
@@ -48,9 +48,9 @@ export default async function LoginPage({
   // rather than asking for something they typed seconds ago.
   const pendingEmail = (await cookies()).get(PENDING_EMAIL_COOKIE)?.value ?? "";
 
-  // Open the code form by default at exactly the two moments it's the answer:
-  // right after a link was sent, and when a link just failed. Otherwise it
-  // stays collapsed — most people never need it.
+  // Open the code form whenever the code is the next thing to do: right after
+  // one was sent, after a bad code, and after a failed GitHub round trip,
+  // where email is the obvious alternative.
   const codeFormOpen = sent === "1" || error === "auth" || error === "code";
 
   return (
@@ -63,9 +63,9 @@ export default async function LoginPage({
 
       <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory">Sign in</h1>
       <p className="mt-4 text-base leading-relaxed text-ivory-dim">
-        No password. We&rsquo;ll email you a sign-in code. Then paste the link
-        to an app you own and Assay will check it for security issues — nothing
-        else.
+        No password. We&rsquo;ll email you a sign-in code. Then paste the
+        address of an app you own and Assay will check it for security issues —
+        nothing else.
       </p>
 
       <Suspense fallback={null}>
@@ -113,9 +113,9 @@ export default async function LoginPage({
           variant="primary"
           size="lg"
           className="mt-3 w-full"
-          pendingText="Sending your link…"
+          pendingText="Sending your code…"
         >
-          Email me a sign-in link
+          Email me a sign-in code
         </SubmitButton>
       </form>
 
