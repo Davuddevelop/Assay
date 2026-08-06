@@ -76,7 +76,7 @@ export function HowItWorks() {
     <section id="how-it-works" ref={root} className="scroll-mt-16 edge-b">
       {/* Utility section — steps down from the display size the argument
           sections use, so the page has chapters instead of six equal blocks. */}
-      <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-24">
+      <div className="hiw-inner mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 xl:max-w-7xl xl:py-20">
         <Reveal>
           <Eyebrow label="How it works" />
           <h2 className="mt-5 max-w-2xl font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">

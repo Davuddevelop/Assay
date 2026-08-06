@@ -23,7 +23,7 @@ export function CopyButton({ text, label = "Copy fix" }: { text: string; label?:
       type="button"
       onClick={onCopy}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors",
+        "inline-flex items-center gap-1.5 rounded-[var(--radius-control)] border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors",
         copied
           ? "border-iris/50 bg-iris/10 text-iris-soft"
           : "border-border text-ivory-dim hover:border-border-strong hover:text-ivory",

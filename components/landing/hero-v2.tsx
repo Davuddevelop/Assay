@@ -75,11 +75,17 @@ export function HeroV2() {
   return (
     <section
       ref={root}
-      className="relative isolate flex min-h-[88svh] items-center overflow-hidden"
+      // Pulled up under the header by exactly its height. The header is now a
+      // full-width bar in normal flow rather than a floating capsule, so it
+      // occupies 56px (64 at xl) of layout above this section — and with a
+      // transparent header that band rendered as flat page-ground sitting on
+      // top of the photograph, a hard seam across the first screen. This puts
+      // the image back under it, which is the whole point of a transparent bar.
+      className="relative isolate -mt-14 flex min-h-[88svh] items-center overflow-hidden xl:-mt-16"
     >
-      {/* Full bleed, and pulled up behind the floating nav so the first screen
-          is one continuous image with no dark strip above it. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
+      {/* Full bleed. The section itself is what reaches under the header now,
+          so this no longer needs its own negative offset. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
             have been the slowest asset on the site on the page everyone lands
             on; these are 186KB and 58KB, graded and re-encoded from the
@@ -88,8 +94,12 @@ export function HeroV2() {
 
             The two crops are chosen for opposite reasons. On desktop the
             window is biased hard left so the lit ingot clears the headline
-            entirely — at the previous 26% it sat under "clears it." and pulled
-            worst-pixel contrast down to 1.84:1 against a 3:1 requirement. On a
+            entirely — at 26% it sat under "clears it." and pulled worst-pixel
+            contrast to 1.84:1 against a 3:1 requirement, and 8% failed the
+            same way at 2.43:1 once the section moved up under the header. This
+            number is empirical, not chosen: it is whatever keeps the metal
+            clear of the type, and it has to be re-measured any time the hero's
+            geometry changes. On a
             phone it goes further left still, onto the dark textured slate, and
             that is deliberate: a 390px portrait window over a 21:9 frame
             cannot show a bright subject *and* carry ~500px of text without one
@@ -106,7 +116,7 @@ export function HeroV2() {
           srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
           sizes="100vw"
           alt=""
-          className="h-full w-full object-cover object-[16%_center] sm:object-[8%_center]"
+          className="h-full w-full object-cover object-[16%_center] sm:object-[2%_center]"
           loading="eager"
           fetchPriority="high"
         />
@@ -136,7 +146,9 @@ export function HeroV2() {
           page look generated rather than designed; the reference pages this is
           measured against are restrained in exactly this way, and the copy
           budget is the reason, not the photograph. */}
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 sm:py-32 xl:max-w-7xl">
+      {/* Top padding carries the header's height on top of the section's own,
+          so the eyebrow never rides up under the wordmark. */}
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-28 pt-36 sm:px-6 sm:pb-32 sm:pt-40 xl:max-w-7xl">
         <div className="max-w-2xl text-left xl:max-w-3xl">
           {/* The platforms alone. "Independent" used to sit here too, which was
               the headline's job — saying it twice made it read as a claim

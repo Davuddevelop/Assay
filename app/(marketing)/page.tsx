@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { HeroV2 } from "@/components/landing/hero-v2";
-import { LogoLoop } from "@/components/landing/logo-loop";
 import { Independence } from "@/components/landing/independence";
 import { Problem } from "@/components/landing/problem";
 import { FeatureBento } from "@/components/landing/feature-bento";
@@ -28,22 +27,23 @@ export const metadata: Metadata = {
 };
 
 /**
- * The landing page (v2) — silk-backed hero with the Blur Text reveal, the
- * LogoLoop compatibility marquee, and the editorial sections. The previous
- * design is preserved at /classic.
+ * The landing page — the photographic hero, then five sections: the argument,
+ * the symptom, the evidence, the steps, the price. The previous design is
+ * preserved at /classic.
  */
 export default function LandingPage() {
   return (
     <>
       <HeroV2 />
-      <section className="edge-b py-12">
-        <p className="mb-7 text-center font-mono text-xs uppercase tracking-[0.2em] text-ash">
-          Scans apps built with
-        </p>
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <LogoLoop />
-        </div>
-      </section>
+      {/* The scrolling logo marquee that sat here is gone.
+          Three reasons, in order of weight. It is the single most generic
+          block in SaaS — every template ships one, which is exactly the "looks
+          AI-generated" charge this page is trying to answer. It said nothing
+          new: the hero eyebrow one screen above already reads "Lovable · Bolt ·
+          Replit · v0". And half its logos were Next.js, React, Stripe and
+          Firebase, which are things we *detect*, not platforms we scan — so it
+          quietly overstated the product to anyone reading carefully.
+          The component still exists and /gdg still uses it. */}
       {/* Argument, then symptom, then proof. The independence claim comes
           before anything about what we detect — a feature list is a fight we
           lose, and the position is the one thing a platform's own built-in

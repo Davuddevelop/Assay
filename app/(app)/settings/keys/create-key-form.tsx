@@ -123,7 +123,7 @@ export function CreateKeyForm({ endpoint }: { endpoint: string }) {
                 aria-selected={target === t.id}
                 onClick={() => setTarget(t.id)}
                 className={cn(
-                  "h-9 rounded-pill border px-4 text-sm transition-colors",
+                  "h-9 rounded-[var(--radius-control)] border px-4 text-sm transition-colors",
                   target === t.id
                     ? "border-iris/50 bg-iris/10 text-ivory"
                     : "border-line text-ivory-dim hover:border-border-strong hover:text-ivory",
@@ -193,7 +193,7 @@ export function CreateKeyForm({ endpoint }: { endpoint: string }) {
           type="text"
           maxLength={80}
           placeholder="Cursor on my laptop"
-          className="h-11 flex-1 rounded-pill border border-line bg-surface/60 px-4 text-sm text-ivory placeholder:text-ash focus:border-border-strong focus:outline-none"
+          className="h-11 flex-1 rounded-[var(--radius-control)] border border-line bg-surface/60 px-4 text-sm text-ivory placeholder:text-ash focus:border-border-strong focus:outline-none"
         />
         <SubmitButton pendingText="Creating…">Create key</SubmitButton>
       </div>

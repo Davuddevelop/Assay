@@ -1,4 +1,3 @@
-import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { CountUp } from "@/components/count-up";
@@ -49,12 +48,16 @@ const CHECKS = [
     ),
   },
   {
-    label: "The verdict",
-    body: "No critical or risky issues and the hallmark is struck. Anything unsafe is Held, with the exact fix to paste back.",
+    // Was "The verdict", showing both hallmark stamps. The section below this
+    // one is the verdict, at full size, with a real report in it — so this
+    // column was a thumbnail of the next scroll. Replaced with the check that
+    // actually runs and appeared nowhere on the page.
+    label: "Missing protections",
+    body: "The response headers a published app is meant to send and a generated one usually doesn't — the difference between a bug and a breach.",
     evidence: (
-      <p className="flex flex-wrap items-center gap-3">
-        <HallmarkStamp state="assayed" animate={false} />
-        <HallmarkStamp state="held" animate={false} />
+      <p className="rounded-[var(--radius-control)] border border-line bg-onyx px-3 py-2.5 font-mono text-xs text-ivory-dim">
+        content-security-policy&nbsp;&nbsp;
+        <span className="text-oxblood-soft">absent</span>
       </p>
     ),
   },
@@ -63,7 +66,7 @@ const CHECKS = [
 export function FeatureBento() {
   return (
     <section className="edge-b relative overflow-hidden">
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28">
+      <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 xl:max-w-7xl xl:py-24">
         <Reveal>
           <Eyebrow label="What it checks" />
           <h2 className="mt-5 max-w-2xl text-balance font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">
@@ -78,7 +81,7 @@ export function FeatureBento() {
 
         {/* The one failure worth the room, and the one card worth having. */}
         <Reveal delay={90}>
-          <div className="mt-14 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16 [&>*]:min-w-0">
+          <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16 [&>*]:min-w-0">
             <div>
               <h3 className="font-display text-xl font-bold tracking-[-0.015em] text-ivory">
                 An open database
@@ -119,7 +122,7 @@ export function FeatureBento() {
 
         {/* The rest are checks, not products. Rules, not cards. */}
         <Reveal delay={140}>
-          <ul className="mt-16 grid gap-y-10 md:grid-cols-3 md:gap-x-12">
+          <ul className="mt-12 grid gap-y-10 md:grid-cols-3 md:gap-x-12">
             {CHECKS.map((c) => (
               <li
                 key={c.label}

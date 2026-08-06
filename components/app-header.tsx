@@ -1,8 +1,5 @@
-import Link from "next/link";
-
-import { Wordmark } from "@/components/wordmark";
 import { MobileMenu } from "@/components/mobile-menu";
-import { NavLink } from "@/components/nav-link";
+import { NavBar } from "@/components/nav-bar";
 import { SignOutButton } from "@/components/sign-out-button";
 import { getUser, toSessionUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
@@ -15,56 +12,42 @@ const LINKS = [
 ];
 
 /**
- * Floating glass pill chrome for signed-in pages: wordmark, quiet links, and
- * the account chip with sign-out, backed by the real Supabase session.
+ * Chrome for signed-in pages. Same bar as the marketing site — the dashboard
+ * gets the same design bar as the marketing pages (CLAUDE.md §6), and two
+ * different navs on one product is how an app starts feeling like two
+ * products.
  */
 export async function AppHeader() {
   const user = await getUser();
   const session = user ? toSessionUser(user) : null;
 
   return (
-    <div className="sticky top-3 z-40 px-4 sm:top-4">
-      <nav className="glass mx-auto flex h-14 w-full max-w-4xl xl:max-w-5xl items-center justify-between rounded-pill border border-border pl-5 pr-2.5">
-        <div className="flex items-center gap-8">
-          <Link
-            href="/dashboard"
-            aria-label="Assay dashboard"
-            className="rounded-pill transition-opacity hover:opacity-80"
-          >
-            <Wordmark />
-          </Link>
-          <div className="hidden items-center gap-6 md:flex">
-            {LINKS.map((link) => (
-              <NavLink key={link.href} href={link.href} label={link.label} />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2.5 rounded-pill border border-border bg-surface/50 py-1 pl-1 pr-3">
-            <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-pill bg-surface-hover font-mono text-xs text-ash">
-              {session?.avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={session.avatarUrl} alt="" className="h-full w-full object-cover" />
-              ) : (
-                session?.initial ?? "?"
-              )}
-            </span>
-            <span className="hidden font-mono text-xs text-ivory-dim sm:inline">
-              {session?.handle ?? "guest"}
-            </span>
-          </div>
-          {session && (
-            <div className="hidden md:block">
-              <SignOutButton action={signOut} />
-            </div>
+    <NavBar homeHref="/dashboard" homeLabel="Assay dashboard" links={LINKS}>
+      {/* The account chip lost its capsule and its fill. It was a bordered,
+          filled pill sitting beside a bordered, filled nav — two containers
+          for one avatar and a handle. Avatar and name, on the bar. */}
+      <span className="flex items-center gap-2.5">
+        <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-[var(--radius-control)] bg-surface font-mono text-xs text-ash">
+          {session?.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={session.avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            session?.initial ?? "?"
           )}
-          <MobileMenu
-            links={LINKS}
-            footer={session ? <SignOutButton action={signOut} /> : undefined}
-          />
+        </span>
+        <span className="hidden font-mono text-xs text-ivory-dim sm:inline">
+          {session?.handle ?? "guest"}
+        </span>
+      </span>
+      {session && (
+        <div className="ml-2 hidden md:block">
+          <SignOutButton action={signOut} />
         </div>
-      </nav>
-    </div>
+      )}
+      <MobileMenu
+        links={LINKS}
+        footer={session ? <SignOutButton action={signOut} /> : undefined}
+      />
+    </NavBar>
   );
 }

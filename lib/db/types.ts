@@ -217,6 +217,17 @@ type LegalAcceptanceRow = {
   accepted_at: string;
 };
 
+type UserProfileRow = {
+  user_id: string;
+  /** 'lovable' | 'bolt' | 'replit' | 'v0' | 'other' — see lib/onboarding.ts. */
+  platform: string | null;
+  /** 'self' | 'client' | 'company'. */
+  audience: string | null;
+  skipped: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type SubscriptionRow = {
   user_id: string;
   plan: string;
@@ -275,6 +286,7 @@ export interface Database {
       scan_stats: Table<ScanStatRow, "platform">;
       funnel_events: Table<FunnelEventRow, "event">;
       legal_acceptances: Table<LegalAcceptanceRow, "user_id" | "version">;
+      user_profile: Table<UserProfileRow, "user_id">;
     };
     Views: Record<string, never>;
     Functions: {

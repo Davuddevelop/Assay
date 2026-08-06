@@ -72,7 +72,7 @@ export default async function TryPage({
               defaultValue={url ?? ""}
               placeholder="yourapp.lovable.app"
               required
-              className="flex-1 rounded-pill border border-line bg-surface px-5 py-3 font-mono text-sm text-ivory outline-none placeholder:text-ash focus:border-iris"
+              className="flex-1 rounded-[var(--radius-control)] border border-line bg-surface px-5 py-3 font-mono text-sm text-ivory outline-none placeholder:text-ash focus:border-iris"
             />
             <Button type="submit" variant="primary" size="md">Scan my app</Button>
           </div>

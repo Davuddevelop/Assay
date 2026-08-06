@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 export function HallmarkApplied() {
   return (
     <section className="edge-b">
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 xl:max-w-7xl xl:py-24">
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
           <h2 className="mt-5 max-w-3xl text-balance font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">
@@ -17,7 +17,7 @@ export function HallmarkApplied() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+        <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
             {/* Border-only hover. These two cards previously carried a cursor-following
