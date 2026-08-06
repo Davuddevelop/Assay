@@ -83,46 +83,45 @@ export function HeroV2() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
             have been the slowest asset on the site on the page everyone lands
-            on; these are 148KB and 46KB.
+            on; these are 186KB and 58KB, graded and re-encoded from the
+            original rather than from the earlier JPEG, so the tone curve isn't
+            applied on top of existing compression.
 
             The two crops are chosen for opposite reasons. On desktop the
-            window is biased left so the lit ingot lands in the right third,
-            clear of the headline. On a phone it is biased much further left,
-            onto the dark textured slate, and that is deliberate: a 390px
-            portrait window over a 21:9 frame cannot show a bright subject
-            *and* carry ~500px of text without one of them losing. Measured, an
-            ingot behind the sub-paragraph gave 2.02:1 where 4.5:1 is required.
-            The slate reads as photograph, holds texture, and lets the scrim
-            stay light. */}
+            window is biased hard left so the lit ingot clears the headline
+            entirely — at the previous 26% it sat under "clears it." and pulled
+            worst-pixel contrast down to 1.84:1 against a 3:1 requirement. On a
+            phone it goes further left still, onto the dark textured slate, and
+            that is deliberate: a 390px portrait window over a 21:9 frame
+            cannot show a bright subject *and* carry ~500px of text without one
+            of them losing. Measured, an ingot behind the sub-paragraph gave
+            2.02:1 where 4.5:1 is required. The slate reads as photograph,
+            holds texture, and lets the scrim stay light. */}
         <img
           src={HERO_IMAGE}
           srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
           sizes="100vw"
           alt=""
-          className="h-full w-full object-cover object-[16%_center] sm:object-[26%_center]"
+          className="h-full w-full object-cover object-[16%_center] sm:object-[8%_center]"
           loading="eager"
           fetchPriority="high"
         />
 
-        {/* Darken where the words are, and nowhere else.
-            A broad even wash is the obvious approach and the wrong one: it
-            costs the photograph everywhere in order to protect type that only
-            occupies the left half. This reaches full transparency by 72%, so
-            the ingot and the beam are seen at the brightness they were shot
-            at. It can afford to be this light because the frame's left third
-            is already near-black in the photograph itself (mean 15 of 255) —
-            the scrim is insurance against the crop moving, not the main
-            defence.
+        {/* Barely any scrim left, on purpose.
+            The heavy lifting moved into the photograph: it is graded with a
+            steepened tone curve, which drops the left third from mean 15 to
+            mean 5 of 255 while holding the metal's brightness. The blacks the
+            type sits on are now the image's own, so the overlay no longer has
+            to manufacture them — and the silver reads at close to full
+            strength instead of through a wash.
 
-            Note the base bg-onyx/38 applies at every breakpoint; the `sm:`
-            classes replace the background-image, not the colour, so lowering
-            it lightens desktop too. Verified per element with the text hidden
-            rather than by eye — worst-pixel contrast is 4.02:1 behind the h1
-            (needs 3:1 at 85px) and 6-7:1 behind the body copy (needs 4.5:1).
+            Note the base opacity applies at every breakpoint; the `sm:`
+            classes replace the background-image, not the colour, so changing
+            it moves desktop too.
 
             The second, vertical scrim lands the image into the page ground so
             there's no seam where the section ends. */}
-        <div className="absolute inset-0 bg-onyx/38 sm:bg-gradient-to-r sm:from-onyx sm:from-18% sm:via-onyx/72 sm:via-42% sm:to-transparent sm:to-72%" />
+        <div className="absolute inset-0 bg-onyx/30 sm:bg-gradient-to-r sm:from-onyx/92 sm:from-14% sm:via-onyx/60 sm:via-40% sm:to-transparent sm:to-70%" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
