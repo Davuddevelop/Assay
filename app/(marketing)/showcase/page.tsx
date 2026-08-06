@@ -80,11 +80,14 @@ export default function ShowcasePage() {
         <div className="space-y-8">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
-              Display — Fraunces
+              Display — Instrument Sans
             </p>
             <p className="mt-2 font-display text-5xl tracking-[-0.02em] text-ivory">
               <span className="font-bold">Certified,</span>{" "}
-              <span className="font-light text-ivory-dim">not assumed.</span>
+              {/* 400, not 300: Instrument Sans' variable weight axis starts at
+                  400, so `font-light` silently rendered as regular and this
+                  specimen lied about the type ramp it exists to document. */}
+              <span className="font-normal text-ivory-dim">not assumed.</span>
             </p>
           </div>
           <div>

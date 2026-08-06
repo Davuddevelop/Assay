@@ -125,28 +125,43 @@ export function HeroV2() {
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
+      {/* Four things, and nothing else: label, argument, one line, one action.
+          It was six — eyebrow, headline, a four-line paragraph, the form, a
+          list of checks, and a second link — all stacked down one column, each
+          asking for a share of the same attention. That stack is what makes a
+          page look generated rather than designed; the reference pages this is
+          measured against are restrained in exactly this way, and the copy
+          budget is the reason, not the photograph. */}
       <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 sm:py-32 xl:max-w-7xl">
         <div className="max-w-2xl text-left xl:max-w-3xl">
-          <p className="hero-eyebrow font-mono text-[11px] uppercase tracking-[0.22em] text-ash xl:text-xs">
-            Independent · Lovable, Bolt, Replit &amp; v0
+          {/* The platforms alone. "Independent" used to sit here too, which was
+              the headline's job — saying it twice made it read as a claim
+              rather than an argument. */}
+          <p className="hero-eyebrow font-mono text-[11px] uppercase tracking-[0.28em] text-ash xl:text-xs">
+            Lovable · Bolt · Replit · v0
           </p>
 
           {/* The argument is the headline. Every competitor in this category
               leads with a list of checks, which is the fight we lose; the
               position is the one thing a platform's own scanner structurally
-              cannot copy. */}
-          <h1 className="mt-6 text-balance font-display text-[2.8rem] font-bold leading-[1.02] tracking-[-0.035em] text-ivory sm:text-6xl xl:text-[5rem]">
-            The tool that built your app can&rsquo;t be the one that{" "}
-            <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
-              clears it.
-            </span>
+              cannot copy.
+
+              One face, one weight, no italic-serif word inside it. The accent
+              span on "clears it." was meant as emphasis and read as a wobble,
+              because a 5rem line that changes family mid-sentence looks like
+              two decisions rather than one. Emphasis at this size comes from
+              scale and tracking; it doesn't need a costume. */}
+          <h1 className="mt-7 text-balance font-display text-[2.7rem] font-semibold leading-[0.94] tracking-[-0.042em] text-ivory sm:text-[4.25rem] xl:text-[5.25rem]">
+            The tool that built your app can&rsquo;t be the one that clears it.
           </h1>
 
-          <p className="hero-sub mt-7 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
-            Assay is the outside check. Paste your app&rsquo;s link and we look
-            at it the way a stranger would — no login, no access to your code —
-            then tell you in plain English what&rsquo;s exposed and exactly how
-            to fix it.
+          {/* Sixteen words, down from thirty-four. Everything cut — no login,
+              no code access, plain English — is stated below the fold where
+              there's room for it; up here it was three lines of qualifier
+              between the argument and the box you type in. */}
+          <p className="hero-sub mt-8 max-w-md text-base leading-relaxed text-ivory-dim sm:text-lg">
+            Paste your app&rsquo;s link. We look at it from the outside, then
+            show you exactly what to fix.
           </p>
 
           <div className="hero-cta mt-10">
@@ -168,12 +183,13 @@ export function HeroV2() {
               </Button>
             </form>
 
-            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ash xl:text-xs">
-              Exposed keys · Open database · Missing protections
-            </p>
+            {/* One tertiary item, not two. The checks strip that sat here is
+                the whole subject of the next section down, and the sample
+                report is the more useful of the two because it's the thing
+                someone can look at before typing anything. */}
             <a
               href="/sample"
-              className="mt-5 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
+              className="mt-6 inline-block font-mono text-[11px] uppercase tracking-[0.16em] text-ivory-dim transition-colors hover:text-ivory xl:text-xs"
             >
               See a sample report →
             </a>

@@ -14,7 +14,7 @@ function Check() {
  * The pricing ladder, shared between the marketing /pricing page and any
  * upgrade surface. Reads the plan catalog (lib/plans.ts) so it never drifts.
  *
- * Styled as one editorial ledger — hairline-separated columns, large Fraunces
+ * Styled as one editorial ledger — hairline-separated columns, large display
  * prices, and a struck-diamond mark on the recommended plan — rather than the
  * generic three-floating-cards-with-a-"Most Popular"-ribbon pattern.
  */

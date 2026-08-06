@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import {
-  Fraunces,
+  Instrument_Sans,
   Hanken_Grotesk,
   JetBrains_Mono,
   Instrument_Serif,
@@ -12,10 +12,22 @@ import "./globals.css";
 import { siteUrl } from "@/lib/env";
 import { PLANS } from "@/lib/plans";
 
-// Display — an editorial high-contrast serif for headlines and the wordmark.
-// Optical sizing (engaged in globals.css) sharpens its contrast at large sizes.
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Display — a tight, sharp grotesque for headlines and the wordmark.
+//
+// This was Fraunces, an editorial high-contrast serif. At 3rem it read as
+// classy; at the 5rem the hero needs it read as soft and floppy, which is the
+// opposite of what an instrument-maker's brand should look like, and it fought
+// the photograph instead of cutting through it.
+//
+// Instrument Sans is deliberately not a third unrelated family: it is the
+// companion face to Instrument Serif, which this site already loads for the
+// one-word italic accent. So headline and accent are now a designed pair
+// rather than two faces that happened to be picked in different weeks — and
+// the previous arrangement had two serifs (Fraunces + Instrument Serif)
+// competing inside a single headline, which is why the accent never read as
+// emphasis.
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -116,7 +128,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${fraunces.variable} ${hanken.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`dark ${instrumentSans.variable} ${hanken.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-onyx text-ivory">
         {/* Structured data for search engines — kept in sync with the

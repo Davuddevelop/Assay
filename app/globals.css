@@ -36,9 +36,10 @@
   /* The hallmark accent gradient (iris), used for struck marks and labels */
   --gradient-gold: linear-gradient(145deg, #c4b5fd 0%, #8b8bf0 52%, #5b7cf0 100%);
 
-  /* Type roles — Fraunces (editorial serif display), Hanken Grotesk (body),
-     JetBrains Mono for detail, Instrument Serif for the italic accent. */
-  --font-display: var(--font-fraunces);
+  /* Type roles — Instrument Sans (sharp grotesque display), Hanken Grotesk
+     (body), JetBrains Mono for detail, Instrument Serif for the italic accent.
+     Display and accent are companion faces from one family; see layout.tsx. */
+  --font-display: var(--font-instrument-sans);
   --font-sans: var(--font-hanken);
   --font-mono: var(--font-jetbrains-mono);
   --font-serif: var(--font-instrument-serif); /* editorial italic accent */
@@ -119,11 +120,13 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Fraunces display — optical sizing sharpens contrast at large sizes; a
-     gentle negative tracking tightens headlines without colliding serifs. */
+  /* Instrument Sans display. Tracking is tighter than the old serif could take
+     (-0.018em): a grotesque only looks sharp when the words lock together, and
+     the sizes this face runs at here — up to 5rem in the hero — need it. Set
+     once here so no component has to remember; per-element overrides in the
+     hero go tighter still, which is normal for display sizes. */
   .font-display {
-    letter-spacing: -0.018em;
-    font-optical-sizing: auto;
+    letter-spacing: -0.03em;
   }
 
   /* A single, consistent gold focus ring on every interactive element. */
