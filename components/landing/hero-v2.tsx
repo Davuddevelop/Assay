@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
+import {
+  HERO_IMAGE,
+  HERO_IMAGE_SMALL,
+  HERO_IMAGE_PORTRAIT,
+} from "@/lib/hero-image";
 
 /**
  * The hero: one cinematic still, the argument in large type over it, and the
@@ -29,19 +34,7 @@ import { Button } from "@/components/ui/button";
  * restoring this is one import away if the photograph turns out worse.
  */
 
-/**
- * Lives in `public/`, referenced by path rather than imported.
- *
- * A static import would fail the build outright if the file were missing; a
- * path 404s the image and leaves the page standing. That is not theoretical —
- * a PR merged this component before the image reached public/, and production
- * served a hero with a dead src for several minutes. It degraded to a plain
- * dark hero with legible type instead of taking the site down.
- */
-const HERO_IMAGE = "/hero-assay.jpg";
-const HERO_IMAGE_SMALL = "/hero-assay-1200.jpg";
-
-export function HeroV2() {
+export function HeroV2({ portrait = false }: { portrait?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const router = useRouter();
   const [url, setUrl] = useState("");
@@ -99,27 +92,54 @@ export function HeroV2() {
             same way at 2.43:1 once the section moved up under the header. This
             number is empirical, not chosen: it is whatever keeps the metal
             clear of the type, and it has to be re-measured any time the hero's
-            geometry changes. On a
-            phone it goes further left still, onto the dark textured slate, and
-            that is deliberate: a 390px portrait window over a 21:9 frame
-            cannot show a bright subject *and* carry ~500px of text without one
-            of them losing. Measured, an ingot behind the sub-paragraph gave
-            2.02:1 where 4.5:1 is required. The slate reads as photograph,
-            holds texture, and lets the scrim stay light.
+            geometry changes.
+
+            The phone crop below is the fallback for when no portrait
+            photograph is present: it runs further left still, onto dark
+            textured slate, because a 390px window over a 21:9 frame cannot
+            show a bright subject *and* carry ~500px of text without one of
+            them losing — measured, an ingot behind the sub-paragraph gave
+            2.02:1 where 4.5:1 is required. Legible, and it hides the one
+            object this brand is built around from every mobile visitor, which
+            is what the portrait asset exists to fix.
 
             Plain <img>, not next/image: it is two hand-graded fixed-size JPEGs
             with an explicit srcSet, so the optimizer has nothing left to do
             except add a per-request transform we'd be billed for. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={HERO_IMAGE}
-          srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
-          sizes="100vw"
-          alt=""
-          className="h-full w-full object-cover object-[16%_center] sm:object-[2%_center]"
-          loading="eager"
-          fetchPriority="high"
-        />
+        {/* <picture>, not a second <img>, so the phone downloads one file
+            and never both.
+
+            The portrait <source> is rendered only when the file is actually in
+            public/ — the page checks and passes `portrait`. That check exists
+            because a <source> is not a fallback: if its srcset 404s the
+            browser shows a broken image rather than dropping back to the
+            <img>. A PR once merged this component before its image landed and
+            production served a dead src for several minutes; that degraded
+            gracefully precisely because it was a plain <img>. This keeps that
+            property. */}
+        <picture>
+          {portrait && (
+            <source media="(max-width: 639px)" srcSet={HERO_IMAGE_PORTRAIT} />
+          )}
+          {/* No eslint-disable needed any more: @next/next/no-img-element
+              does not fire on an <img> inside a <picture>, which is the
+              sanctioned way to hand-manage art direction. */}
+          <img
+            src={HERO_IMAGE}
+            srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
+            sizes="100vw"
+            alt=""
+            className={
+              portrait
+                ? // With a frame composed for the window, the subject is where
+                  // it was put — so the phone crop stops running away from it.
+                  "h-full w-full object-cover object-center sm:object-[2%_center]"
+                : "h-full w-full object-cover object-[16%_center] sm:object-[2%_center]"
+            }
+            loading="eager"
+            fetchPriority="high"
+          />
+        </picture>
 
         {/* Barely any scrim left, on purpose.
             The heavy lifting moved into the photograph: it is graded with a

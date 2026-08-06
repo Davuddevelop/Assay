@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 import { HeroV2 } from "@/components/landing/hero-v2";
+import { HERO_IMAGE_PORTRAIT } from "@/lib/hero-image";
 import { Independence } from "@/components/landing/independence";
 import { Problem } from "@/components/landing/problem";
 import { FeatureBento } from "@/components/landing/feature-bento";
@@ -31,10 +34,27 @@ export const metadata: Metadata = {
  * the symptom, the evidence, the steps, the price. The previous design is
  * preserved at /classic.
  */
+/**
+ * Does the phone-shaped hero photograph actually exist?
+ *
+ * Evaluated once at build time, on a statically prerendered page, so it costs
+ * nothing per request. It is here rather than in the component because the
+ * component is a client component and cannot read the filesystem.
+ *
+ * The reason it exists at all: a <picture><source> whose srcset 404s renders a
+ * broken image — it does not fall back to the <img>. This repo has already
+ * shipped a hero whose image had not landed yet, so the asset and the markup
+ * that needs it are decoupled on purpose. If the file is missing, phones get
+ * the landscape crop they have today and nothing is broken.
+ */
+const hasPortraitHero = existsSync(
+  join(process.cwd(), "public", HERO_IMAGE_PORTRAIT),
+);
+
 export default function LandingPage() {
   return (
     <>
-      <HeroV2 />
+      <HeroV2 portrait={hasPortraitHero} />
       {/* The scrolling logo marquee that sat here is gone.
           Three reasons, in order of weight. It is the single most generic
           block in SaaS — every template ships one, which is exactly the "looks
