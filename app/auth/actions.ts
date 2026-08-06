@@ -13,6 +13,8 @@ import {
   normalizeEmail,
   looksLikeOtpCode,
   normalizeOtpCode,
+  PENDING_EMAIL_COOKIE,
+  PENDING_EMAIL_MAX_AGE,
 } from "@/lib/auth-email";
 import { PREFILL_COOKIE } from "@/lib/scan/prefill";
 import { log } from "@/lib/log";
@@ -107,12 +109,23 @@ export async function signInWithEmail(formData: FormData) {
     redirect(`/login?error=email${qs}`);
   }
 
+  // Carry the address to the code form so they don't retype what they just
+  // typed. Set only after a successful send, so it never appears for an
+  // address we didn't actually mail.
+  (await cookies()).set(PENDING_EMAIL_COOKIE, email, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: PENDING_EMAIL_MAX_AGE,
+  });
+
   // Always the same screen, whether or not that address has an account.
   redirect(`/login?sent=1${qs}`);
 }
 
 /**
- * Verify the 6-digit code from the same email `signInWithEmail` sent, as a
+ * Verify the numeric code from the same email `signInWithEmail` sent, as a
  * fallback to the clickable link.
  *
  * The link is a single-use token, and some corporate mail gateways and
@@ -124,7 +137,7 @@ export async function signInWithEmail(formData: FormData) {
  * scanner to visit, so it survives exactly the case the link doesn't.
  *
  * Rate limited more tightly than sending: this endpoint is a guess against a
- * live 6-digit secret, so it's the one place in this file defending against
+ * live numeric secret, so it's the one place in this file defending against
  * brute force rather than mail abuse. Supabase enforces its own limits on
  * verification attempts against a token; this is defense in depth, the same
  * posture rate-limit-global.ts documents for the DB-backed limiter.
@@ -165,7 +178,9 @@ export async function verifyEmailCode(formData: FormData) {
     redirect(`/login?error=code${qs}`);
   }
 
-  const carrying = (await cookies()).has(PREFILL_COOKIE);
+  const jar = await cookies();
+  const carrying = jar.has(PREFILL_COOKIE);
+  jar.delete(PENDING_EMAIL_COOKIE);
   await completeSignIn(data.user, carrying);
   redirect(next || (carrying ? "/scan" : "/dashboard"));
 }

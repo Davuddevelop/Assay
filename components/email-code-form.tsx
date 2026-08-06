@@ -1,8 +1,9 @@
 import { SubmitButton } from "@/components/ui/submit-button";
 import { verifyEmailCode } from "@/app/auth/actions";
+import { OTP_MIN_LENGTH, OTP_MAX_LENGTH } from "@/lib/auth-email";
 
 /**
- * The fallback to the clickable sign-in link: the 6-digit code from the same
+ * The fallback to the clickable sign-in link: the numeric code from the same
  * email, typed in by hand.
  *
  * It exists because the link alone isn't reliable. Some corporate mail
@@ -20,10 +21,13 @@ export function EmailCodeForm({
   next,
   dest,
   defaultOpen,
+  email,
 }: {
   next?: string;
   dest: string;
   defaultOpen: boolean;
+  /** Prefilled from the pending-email cookie; empty when there isn't one. */
+  email?: string;
 }) {
   return (
     <details open={defaultOpen} className="group mt-7 w-full text-left">
@@ -49,24 +53,29 @@ export function EmailCodeForm({
             required
             autoComplete="email"
             inputMode="email"
+            defaultValue={email}
             placeholder="you@example.com"
             className="h-12 w-full rounded-[var(--radius-control)] border border-border bg-surface/50 px-4 text-center text-base text-ivory outline-none transition-colors placeholder:text-ash focus:border-border-strong"
           />
         </div>
         <div>
           <label htmlFor="code" className="sr-only">
-            6-digit code
+            Sign-in code from the email
           </label>
+          {/* Length comes from the shared constants, not a literal. maxLength
+              in particular is unforgiving: it silently refuses the extra
+              keystrokes rather than showing an error, so a too-small value
+              looks to the user like their keyboard stopped working. */}
           <input
             id="code"
             name="code"
             type="text"
             required
             inputMode="numeric"
-            pattern="[0-9]{6}"
-            maxLength={6}
+            pattern={`[0-9]{${OTP_MIN_LENGTH},${OTP_MAX_LENGTH}}`}
+            maxLength={OTP_MAX_LENGTH}
             autoComplete="one-time-code"
-            placeholder="123456"
+            placeholder="Code from the email"
             className="h-12 w-full rounded-[var(--radius-control)] border border-border bg-surface/50 px-4 text-center font-mono text-lg tracking-[0.3em] text-ivory outline-none transition-colors placeholder:tracking-normal placeholder:text-ash focus:border-border-strong"
           />
         </div>

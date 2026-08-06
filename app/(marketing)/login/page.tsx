@@ -7,8 +7,10 @@ import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
 import { LoginError } from "@/components/login-error";
 import { EmailCodeForm } from "@/components/email-code-form";
-import { signInWithGitHub, signInWithEmail } from "@/app/auth/actions";
-import { getUser } from "@/lib/auth";
+import { signInWithGitHub, signInWithEmail, signOut } from "@/app/auth/actions";
+import { getUser, toSessionUser } from "@/lib/auth";
+import { PENDING_EMAIL_COOKIE } from "@/lib/auth-email";
+import { cookies } from "next/headers";
 import { safeNext } from "@/lib/safe-redirect";
 import { redirect } from "next/navigation";
 
@@ -23,12 +25,28 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ next?: string; sent?: string; error?: string }>;
 }) {
-  // Already signed in? Sending them to a sign-in form is a dead end — take them
-  // where they were going instead.
   const user = await getUser();
   const { next, sent, error } = await searchParams;
   const dest = safeNext(next ?? null);
-  if (user) redirect(dest);
+
+  // Already signed in? Sending them to a sign-in form is a dead end — take
+  // them where they were going instead.
+  //
+  // Unless a sign-in attempt just failed. Someone signed in as one account,
+  // clicking a dead magic link for another, was silently bounced to the first
+  // account's dashboard: the error redirect landed here, this line saw the
+  // stale session and forwarded them on before they could read it. The
+  // symptom is "the link logged me into the wrong account", the cause is that
+  // the failure was never shown, and quietly leaving someone under an
+  // identity they didn't just ask for is the part that actually matters.
+  const attemptFailed = Boolean(error);
+  if (user && !attemptFailed) redirect(dest);
+
+  const staleSession = user ? toSessionUser(user) : null;
+
+  // The address they just asked us to mail, so the code form arrives filled in
+  // rather than asking for something they typed seconds ago.
+  const pendingEmail = (await cookies()).get(PENDING_EMAIL_COOKIE)?.value ?? "";
 
   // Open the code form by default at exactly the two moments it's the answer:
   // right after a link was sent, and when a link just failed. Otherwise it
@@ -52,6 +70,25 @@ export default async function LoginPage({
       <Suspense fallback={null}>
         <LoginError />
       </Suspense>
+
+      {/* Say plainly whose session is still active. Without this, a failed
+          sign-in leaves someone looking at a login page while silently still
+          being someone else — and the moment they navigate anywhere, they're
+          back in an account they didn't choose. */}
+      {staleSession && (
+        <div className="mt-4 w-full rounded-[var(--radius-control)] border border-border bg-surface/50 px-4 py-3.5 text-left">
+          <p className="text-sm leading-relaxed text-ivory-dim">
+            You&rsquo;re still signed in as{" "}
+            <span className="font-mono text-ivory">{staleSession.handle}</span>.
+            That sign-in attempt didn&rsquo;t change it.
+          </p>
+          <form action={signOut} className="mt-3">
+            <SubmitButton variant="ghost" size="sm" pendingText="Signing out…">
+              Sign out first
+            </SubmitButton>
+          </form>
+        </div>
+      )}
 
       {/* Email first, GitHub second. This product's premise is that you don't
           need to be a developer, and GitHub was the only door — a wall shaped
@@ -81,7 +118,12 @@ export default async function LoginPage({
         </SubmitButton>
       </form>
 
-      <EmailCodeForm next={next} dest={dest} defaultOpen={codeFormOpen} />
+      <EmailCodeForm
+        next={next}
+        dest={dest}
+        defaultOpen={codeFormOpen}
+        email={pendingEmail}
+      />
 
       <div className="mt-7 flex w-full items-center gap-4">
         <span className="h-px flex-1 bg-line" />

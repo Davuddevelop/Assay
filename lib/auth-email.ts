@@ -29,16 +29,24 @@ export function normalizeEmail(raw: string): string {
 }
 
 /**
- * Shape check for the 6-digit sign-in code, the fallback for when the emailed
- * link gets consumed before the user clicks it — some corporate mail gateways
- * and security scanners pre-fetch every link in an email to scan it, which
- * silently burns the one-time token. A typed code has no URL for that kind of
- * thing to visit, so it survives where the link doesn't.
+ * Shape check for the emailed sign-in code — the fallback for when the link
+ * gets consumed before the user clicks it, because some mail gateways and
+ * security scanners pre-fetch every link in an email to scan it and silently
+ * burn the one-time token. A typed code has no URL for that to visit.
+ *
+ * Six to ten digits, not six. Supabase's OTP length is configurable in that
+ * range and the *default varies by when the project was provisioned* — ours
+ * issues eight. Hardcoding six rejected every real code before it reached
+ * verifyOtp; hardcoding eight would just move the same bug. Accept the whole
+ * documented range and let Supabase judge the value.
  *
  * Shape only, same as the email check: whether it's the *right* code is
  * Supabase's problem when we call verifyOtp.
  */
-const CODE_SHAPE = /^\d{6}$/;
+export const OTP_MIN_LENGTH = 6;
+export const OTP_MAX_LENGTH = 10;
+
+const CODE_SHAPE = new RegExp(`^\\d{${OTP_MIN_LENGTH},${OTP_MAX_LENGTH}}$`);
 
 export function looksLikeOtpCode(raw: unknown): raw is string {
   return typeof raw === "string" && CODE_SHAPE.test(raw.trim());
@@ -48,3 +56,22 @@ export function looksLikeOtpCode(raw: unknown): raw is string {
 export function normalizeOtpCode(raw: string): string {
   return raw.trim();
 }
+
+/**
+ * Carrying the address across the send → check-your-email → type-the-code trip.
+ *
+ * verifyOtp needs the email alongside the code, and without this the form asks
+ * for an address the person typed thirty seconds ago on the same page. That
+ * retype is friction at precisely the moment they're already annoyed the link
+ * didn't work.
+ *
+ * A short-lived httpOnly cookie rather than a query parameter, matching
+ * PREFILL_COOKIE: an address in the URL ends up in browser history, server
+ * logs and any Referer header the page emits, and it would let a crafted link
+ * pre-fill someone else's sign-in form with an address of the attacker's
+ * choosing.
+ */
+export const PENDING_EMAIL_COOKIE = "assay_pending_email";
+
+/** Ten minutes — comfortably longer than it takes to open an email, and gone soon after. */
+export const PENDING_EMAIL_MAX_AGE = 60 * 10;
