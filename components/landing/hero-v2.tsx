@@ -5,17 +5,41 @@ import { useRouter } from "next/navigation";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
-import { ProductMock } from "@/components/landing/product-mock";
-import { Silk } from "@/components/landing/silk";
 
 /**
- * Hero (v2) — the silk-backed, editorial hero.
+ * The hero: one cinematic still, the argument in large type over it, and the
+ * scan box. Nothing else.
  *
- * The silk is the page's one deliberate ambient effect. Everything else that
- * used to compete with it — the film grain, the blur-in headline, the pill
- * chips under the CTA — is gone, because a signature only reads as a signature
- * when it is the only thing doing that job.
+ * It replaces a centred stack — pill, headline, paragraph, form, chips, link,
+ * floating product mock — that had six things competing down one vertical
+ * axis. The reference this is built against (dark editorial SaaS pages) works
+ * on restraint: one image, one sentence, one action.
+ *
+ * The image is deliberately of the thing the product is named after — an assay
+ * office tests metal it didn't cast — rather than the abstract mountains and
+ * galaxies those pages usually reach for. A galaxy belongs to nobody. A struck
+ * silver bar belongs to us, and it means something a visitor can carry into
+ * the argument below it.
+ *
+ * The silk shader is gone from this screen. Two atmospheric backgrounds
+ * competing for the same attention is exactly the fault an outside critique
+ * named ("the first impression is a shader, not a sentence"), and a still
+ * image doesn't move across the headline while someone is trying to read it.
+ * `components/landing/silk.tsx` still exists and /classic still uses it, so
+ * restoring this is one import away if the photograph turns out worse.
  */
+
+/**
+ * Lives in `public/`, referenced by path rather than imported.
+ *
+ * A static import would fail the build outright if the file were missing; a
+ * path 404s the image and leaves the page standing. That matters because the
+ * headline is legible either way here — the scrim below is opaque enough on
+ * its own — so a missing asset degrades to a plain dark hero instead of
+ * taking the site down.
+ */
+const HERO_IMAGE = "/hero-assay.jpg";
+
 export function HeroV2() {
   const root = useRef<HTMLElement>(null);
   const router = useRouter();
@@ -29,147 +53,111 @@ export function HeroV2() {
 
   useGSAP(
     () => {
-      const el = root.current;
-      if (!el) return;
+      if (!root.current) return;
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // One timeline for the whole hero now that the headline no longer runs
-        // its own reveal. gsap.from() leaves elements visible by default, so a
-        // no-JS or reduced-motion visitor still gets the full hero.
-        const tl = gsap.timeline({
-          defaults: { ease: "power3.out", duration: 0.6 },
-        });
-        tl.from(".hero-eyebrow", { autoAlpha: 0, y: 16 })
-          .from("h1", { autoAlpha: 0, y: 18 }, "-=0.35")
-          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "-=0.3")
-          .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.3")
-          .from(".hero-product", { autoAlpha: 0, y: 28, duration: 0.8 }, "-=0.2");
-      });
-
-      mm.add("(prefers-reduced-motion: no-preference) and (pointer: fine)", () => {
-        const xTo = gsap.quickTo(".hero-parallax", "x", { duration: 0.5, ease: "power3.out" });
-        const yTo = gsap.quickTo(".hero-parallax", "y", { duration: 0.5, ease: "power3.out" });
-        const onMove = (e: PointerEvent) => {
-          const r = el.getBoundingClientRect();
-          xTo(((e.clientX - r.left) / r.width - 0.5) * 28);
-          yTo(((e.clientY - r.top) / r.height - 0.5) * 20);
-        };
-        const onLeave = () => {
-          xTo(0);
-          yTo(0);
-        };
-        el.addEventListener("pointermove", onMove);
-        el.addEventListener("pointerleave", onLeave);
-        return () => {
-          el.removeEventListener("pointermove", onMove);
-          el.removeEventListener("pointerleave", onLeave);
-        };
+        // gsap.from() leaves everything visible by default, so no-JS and
+        // reduced-motion visitors get the finished hero rather than an empty
+        // one waiting for an animation that never runs.
+        gsap
+          .timeline({ defaults: { ease: "power3.out", duration: 0.7 } })
+          .from(".hero-eyebrow", { autoAlpha: 0, y: 14 })
+          .from("h1", { autoAlpha: 0, y: 20 }, "-=0.45")
+          .from(".hero-sub", { autoAlpha: 0, y: 16 }, "-=0.45")
+          .from(".hero-cta", { autoAlpha: 0, y: 16 }, "-=0.45");
       });
     },
     { scope: root },
   );
 
   return (
-    <section ref={root} className="relative overflow-x-clip">
-      {/* Silk — flowing-fabric background. Kept position:absolute (NOT fixed —
-          iOS Safari hides fixed + negative-z layers behind the page), and
-          extended up behind the floating nav so the whole first screen is one
-          continuous backdrop with no dark strip at the top. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-32 bottom-0 -z-10 overflow-hidden"
-      >
-        <Silk className="absolute inset-0 h-full w-full opacity-70" />
-        <div className="absolute inset-0 bg-onyx/25" />
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-b from-transparent to-onyx" />
+    <section
+      ref={root}
+      className="relative isolate flex min-h-[88svh] items-center overflow-hidden"
+    >
+      {/* Full bleed, and pulled up behind the floating nav so the first screen
+          is one continuous image with no dark strip above it. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* On a phone the frame is portrait and the photograph is 21:9, so the
+            crop is severe. Biased right, because that's where the lit subject
+            is — measured contrast behind the headline stays at 9.4:1 even with
+            the brightest part of the image directly behind it, so the crop can
+            be chosen to keep the photograph worth looking at rather than to
+            dodge the type. */}
+        <img
+          src={HERO_IMAGE}
+          alt=""
+          className="h-full w-full object-cover object-[70%_center] sm:object-center"
+          loading="eager"
+          fetchPriority="high"
+        />
+
+        {/* Two scrims, doing different jobs. The horizontal one darkens the
+            left, where the type sits, and lets the metal keep its contrast on
+            the right. The vertical one lands the image into the page ground so
+            there's no seam where the section ends.
+
+            Heavier on small screens: a 21:9 photograph cropped to a phone puts
+            the subject wherever it lands, so legibility can't depend on the
+            composition surviving the crop. */}
+        <div className="absolute inset-0 bg-onyx/78 sm:bg-gradient-to-r sm:from-onyx sm:from-25% sm:via-onyx/70 sm:to-onyx/10" />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
       </div>
 
-      {/* Accent discipline.
-          The token file states the rule — "Iris: the single cool accent, spent
-          only on the hallmark" — and this screen was breaking it seven ways at
-          once: the Independent pill, the italic headline word, four chip dots
-          and the sample-report link were all accent-coloured, while the actual
-          call to action was plain ivory. The accent was on every decoration
-          and never on the thing we want pressed. All of it is neutral now; the
-          italic serif is distinction enough for the headline word without
-          colour doing the same job twice. */}
-      <div className="relative mx-auto w-full max-w-5xl px-4 pb-24 pt-24 text-center sm:px-6 sm:pt-32 xl:max-w-6xl xl:pb-28 xl:pt-40">
-        <p className="hero-eyebrow mx-auto inline-flex items-center gap-2 rounded-pill border border-border bg-surface/50 py-1 pl-1.5 pr-3.5 text-xs text-ivory-dim xl:text-sm">
-          <span className="rounded-pill bg-surface px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ivory-dim">
-            Independent
-          </span>
-          One check across Lovable, Bolt, Replit &amp; v0
-        </p>
-
-        {/* The argument is the headline now.
-            This used to open with what Assay checks, and the actual argument —
-            that the builder can't be the one that vouches for its own output —
-            sat as a subordinate clause in the middle of the paragraph below.
-            The strongest thing we have to say was the third thing anyone read.
-            Every competitor in this category leads with a feature list, and we
-            cannot win a feature list; we can win the idea. */}
-        {/* A plain h1, not the blur reveal it used to be.
-            The silk backdrop stays — that's a deliberate signature — but it
-            moves, and having the most important sentence on the site also
-            resolve out of a blur meant two things were happening to it before
-            anyone could read it. If the background is going to have presence,
-            the sentence on top of it has to be instantly legible. */}
-        <h1 className="mx-auto mt-7 block max-w-3xl text-balance font-display text-[2.7rem] font-bold leading-[1.06] tracking-[-0.03em] text-ivory sm:max-w-4xl sm:text-6xl xl:max-w-5xl xl:text-7xl">
-          The tool that built your app
-          {/* Setup and payoff are two beats — once there's room for the second
-              half on one line, break there rather than wherever the text
-              happens to run out. */}
-          <br className="hidden lg:inline" /> can&rsquo;t be the one that{" "}
-          <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
-            clears it.
-          </span>
-        </h1>
-
-        <p className="hero-sub mx-auto mt-6 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg xl:mt-7 xl:max-w-2xl xl:text-xl">
-          Assay is the outside check. Paste your app&rsquo;s link and we look at
-          it the way a stranger would — no login, no access to your code — then
-          tell you in plain English what&rsquo;s exposed and exactly how to fix
-          it.
-        </p>
-
-        <div className="hero-cta mt-9">
-          <form
-            onSubmit={onSubmit}
-            className="glass mx-auto flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5 xl:max-w-lg xl:py-2"
-          >
-            <input
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              inputMode="url"
-              autoComplete="off"
-              aria-label="Your app URL"
-              placeholder="yourapp.lovable.app"
-              className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash xl:text-base"
-            />
-            <Button type="submit" variant="primary" size="sm">
-              Scan my app
-            </Button>
-          </form>
-          {/* One line, not four pills. There were nine pill shapes above the
-              fold; a pill is a container, and a container implies the thing
-              inside needs holding. These are four nouns. */}
-          <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-ash xl:text-xs">
-            Exposed keys · Open database · Missing protections · Plain-language fixes
+      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 sm:py-32 xl:max-w-7xl">
+        <div className="max-w-2xl text-left xl:max-w-3xl">
+          <p className="hero-eyebrow font-mono text-[11px] uppercase tracking-[0.22em] text-ash xl:text-xs">
+            Independent · Lovable, Bolt, Replit &amp; v0
           </p>
-          <a
-            href="/sample"
-            className="mt-6 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
-          >
-            See a sample report →
-          </a>
-        </div>
 
-        <div className="hero-product relative mt-20">
-          <div className="hero-parallax relative">
-            <div className="float-soft relative">
-              <ProductMock className="mx-auto max-w-3xl text-left xl:max-w-4xl" />
-            </div>
+          {/* The argument is the headline. Every competitor in this category
+              leads with a list of checks, which is the fight we lose; the
+              position is the one thing a platform's own scanner structurally
+              cannot copy. */}
+          <h1 className="mt-6 text-balance font-display text-[2.8rem] font-bold leading-[1.02] tracking-[-0.035em] text-ivory sm:text-6xl xl:text-[5rem]">
+            The tool that built your app can&rsquo;t be the one that{" "}
+            <span className="font-accent text-[1.06em] font-normal tracking-normal text-ivory">
+              clears it.
+            </span>
+          </h1>
+
+          <p className="hero-sub mt-7 max-w-xl text-base leading-relaxed text-ivory-dim sm:text-lg">
+            Assay is the outside check. Paste your app&rsquo;s link and we look
+            at it the way a stranger would — no login, no access to your code —
+            then tell you in plain English what&rsquo;s exposed and exactly how
+            to fix it.
+          </p>
+
+          <div className="hero-cta mt-10">
+            <form
+              onSubmit={onSubmit}
+              className="glass flex max-w-md items-center gap-2 rounded-pill border border-border py-1.5 pl-5 pr-1.5 xl:max-w-lg xl:py-2"
+            >
+              <input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                inputMode="url"
+                autoComplete="off"
+                aria-label="Your app URL"
+                placeholder="yourapp.lovable.app"
+                className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash xl:text-base"
+              />
+              <Button type="submit" variant="primary" size="sm">
+                Scan my app
+              </Button>
+            </form>
+
+            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ash xl:text-xs">
+              Exposed keys · Open database · Missing protections
+            </p>
+            <a
+              href="/sample"
+              className="mt-5 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:text-ivory"
+            >
+              See a sample report →
+            </a>
           </div>
         </div>
       </div>
