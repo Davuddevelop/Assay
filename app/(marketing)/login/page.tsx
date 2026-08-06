@@ -7,6 +7,7 @@ import { GitHubMark } from "@/components/icons";
 import { HallmarkMark } from "@/components/wordmark";
 import { LoginError } from "@/components/login-error";
 import { EmailCodeForm } from "@/components/email-code-form";
+import { LegalNotice } from "@/components/legal-notice";
 import { signInWithGitHub, signInWithEmail, signOut } from "@/app/auth/actions";
 import { getUser, toSessionUser } from "@/lib/auth";
 import { PENDING_EMAIL_COOKIE } from "@/lib/auth-email";
@@ -148,6 +149,12 @@ export default async function LoginPage({
       <p className="mt-6 font-mono text-xs leading-relaxed text-ash">
         We use GitHub only to sign you in — no access to your repositories.
       </p>
+
+      {/* Below both sign-in forms and above nothing else, so it is the last
+          thing under the buttons rather than a footer link. The version is
+          recorded server-side the moment a session exists — see
+          completeSignIn. */}
+      <LegalNotice action="signing in" className="mt-8 max-w-sm text-center" />
 
       <Link
         href="/"

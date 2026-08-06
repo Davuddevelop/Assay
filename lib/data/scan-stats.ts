@@ -12,6 +12,11 @@ import type { ScanFindingSeverity } from "@/lib/db/types";
 export type ScanFailureReason =
   | "rate_limited"
   | "rejected_url"
+  // Reached the scan endpoint without the ownership attestation. Its own
+  // bucket rather than folded into rejected_url: that one answers "how often
+  // do people paste something that isn't an app URL", and a hand-built request
+  // with the confirmation stripped out is a different event entirely.
+  | "not_attested"
   | "unreachable"
   | "explain_failed"
   | "unknown";

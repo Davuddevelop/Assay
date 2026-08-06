@@ -80,7 +80,6 @@ export function HeroV2() {
       {/* Full bleed, and pulled up behind the floating nav so the first screen
           is one continuous image with no dark strip above it. */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
             have been the slowest asset on the site on the page everyone lands
             on; these are 186KB and 58KB, graded and re-encoded from the
@@ -96,7 +95,12 @@ export function HeroV2() {
             cannot show a bright subject *and* carry ~500px of text without one
             of them losing. Measured, an ingot behind the sub-paragraph gave
             2.02:1 where 4.5:1 is required. The slate reads as photograph,
-            holds texture, and lets the scrim stay light. */}
+            holds texture, and lets the scrim stay light.
+
+            Plain <img>, not next/image: it is two hand-graded fixed-size JPEGs
+            with an explicit srcSet, so the optimizer has nothing left to do
+            except add a per-request transform we'd be billed for. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={HERO_IMAGE}
           srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}

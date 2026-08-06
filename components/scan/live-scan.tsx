@@ -29,9 +29,14 @@ export function LiveScan({ target }: { target: string }) {
 
     (async () => {
       try {
-        const res = await fetch(`/api/scan/stream?url=${encodeURIComponent(target)}`, {
-          signal: ctrl.signal,
-        });
+        // `owned=1` carries the attestation the page collected. The route
+        // rejects a request without it, so a bare stream URL can't be passed
+        // around as a way to scan something without ever being asked whose
+        // app it is.
+        const res = await fetch(
+          `/api/scan/stream?url=${encodeURIComponent(target)}&owned=1`,
+          { signal: ctrl.signal },
+        );
         if (!res.body) throw new Error("no stream");
         const reader = res.body.getReader();
         const decoder = new TextDecoder();

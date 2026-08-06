@@ -61,14 +61,21 @@ async function launch(userId: string, appUrl: string): Promise<never> {
 }
 
 /**
- * Submit a URL to scan — runs immediately. No ownership step: a scan only reads
- * what's already public on the app, so gating it behind "edit your <head> and
- * republish" was pure friction. The value is private self-assurance, not a
- * public credential.
+ * Submit a URL to scan — runs immediately once ownership is attested.
+ *
+ * Still no meta-tag proof: gating a first scan behind "edit your <head> and
+ * republish" is friction we can't afford, and the value here is private
+ * self-assurance rather than a public credential. But the attestation is now
+ * an act rather than a footnote, and it is re-checked here because
+ * `required` in the markup stops only the people who weren't going to lie.
  */
 export async function startScan(formData: FormData) {
   const user = await requireUser();
   const appUrl = normalizeUrl(String(formData.get("url") ?? ""));
+
+  if (formData.get("owned") !== "1") {
+    redirect(`/scan?error=owned`);
+  }
 
   try {
     await assertScannableUrl(appUrl);

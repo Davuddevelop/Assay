@@ -207,6 +207,16 @@ type EmailLogRow = {
   sent_at: string;
 };
 
+type LegalAcceptanceRow = {
+  id: number;
+  user_id: string;
+  /** The LEGAL_VERSION constant at the moment they accepted. */
+  version: string;
+  /** 'signup' | 'reaccept' — see 0016_legal_acceptance.sql. */
+  context: string;
+  accepted_at: string;
+};
+
 export type SubscriptionRow = {
   user_id: string;
   plan: string;
@@ -264,6 +274,7 @@ export interface Database {
       // scan starts, long before either is known.
       scan_stats: Table<ScanStatRow, "platform">;
       funnel_events: Table<FunnelEventRow, "event">;
+      legal_acceptances: Table<LegalAcceptanceRow, "user_id" | "version">;
     };
     Views: Record<string, never>;
     Functions: {

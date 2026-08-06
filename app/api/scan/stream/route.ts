@@ -45,6 +45,27 @@ export async function GET(req: NextRequest) {
       const enc = new TextEncoder();
       const send = (obj: unknown) => controller.enqueue(enc.encode(JSON.stringify(obj) + "\n"));
 
+      /**
+       * Close once, whoever gets there first.
+       *
+       * Every early return here closed the controller and then returned — and
+       * `return` inside a `try` still runs the `finally`, which closed it
+       * again. The second call throws `Invalid state: Controller is already
+       * closed`, the stream errors, and the response becomes a 500 with an
+       * empty body. So the three cases that are meant to hand back a readable
+       * sentence — you're rate limited, we're over budget, that isn't a URL —
+       * were the three that handed back nothing at all.
+       *
+       * Found by adding a fourth early return and watching curl print "Empty
+       * reply from server" where the message should have been.
+       */
+      let closed = false;
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        controller.close();
+      };
+
       // Opened before anything can go wrong and closed on every path out, so a
       // row left reading 'started' means the platform killed us mid-scan — the
       // one failure that cannot report itself.
@@ -64,7 +85,7 @@ export async function GET(req: NextRequest) {
               ? "You've hit today's free-scan limit. Sign in to keep scanning."
               : "You've run a lot of scans in a short time. Wait a minute and try again.",
           });
-          controller.close();
+          close();
           return;
         }
 
@@ -92,15 +113,35 @@ export async function GET(req: NextRequest) {
             message:
               "Free scanning is busy right now and paused for a moment. Sign in and your scan runs straight away — it's free.",
           });
-          controller.close();
+          close();
           return;
         }
+        // The ownership attestation the page collected, carried through.
+        // Checked before the URL is even validated: whether we should be
+        // pointing at this app at all comes before whether we can.
+        //
+        // Anyone can add `&owned=1` by hand, and that is fine — an attestation
+        // is a statement someone makes, not a fact we verify (the meta-tag
+        // check in CLAUDE.md §5 is still unbuilt). What it stops is the easy
+        // path: a bare stream URL passed around as a one-click way to scan
+        // somebody else's site, with nothing anywhere having asked whose it is.
+        if (req.nextUrl.searchParams.get("owned") !== "1") {
+          failScanStat(statId, "not_attested");
+          send({
+            type: "error",
+            message:
+              "Confirm the app is yours before scanning — Assay only checks apps you own or are authorised to test.",
+          });
+          close();
+          return;
+        }
+
         try {
           await assertScannableUrl(target);
         } catch {
           failScanStat(statId, "rejected_url");
           send({ type: "error", message: "That doesn't look like a public app URL. Try the full link." });
-          controller.close();
+          close();
           return;
         }
 
@@ -178,7 +219,7 @@ export async function GET(req: NextRequest) {
             : "We couldn't finish scanning that app. Check the URL is live and public.";
         send({ type: "error", message });
       } finally {
-        controller.close();
+        close();
       }
     },
   });

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ScanErrorToast } from "@/components/scan/scan-error-toast";
+import { OwnershipCheck } from "@/components/scan/ownership-check";
 import { requireUser } from "@/lib/auth";
 import { PREFILL_COOKIE } from "@/lib/scan/prefill";
 import { startScan } from "@/app/(app)/scan/actions";
@@ -30,8 +31,10 @@ export default async function ScanPage({
   // a stale one is a filled box they can overwrite, never a wrong scan.
   const carried = prefill ?? (await cookies()).get(PREFILL_COOKIE)?.value ?? "";
 
-  // One step — paste a URL, scan runs immediately. No ownership tag: a scan only
-  // reads what's already public, so there's nothing to "prove" to look at it.
+  // Paste a URL, tick that it's yours, scan runs. The tick is not verification
+  // — a meta-tag check is still unbuilt (CLAUDE.md §5, §12) — but it moves the
+  // ownership claim from something we asserted on the user's behalf in a
+  // footnote to something they actually stated.
   return (
     <div className="relative mx-auto w-full max-w-xl px-4 py-20 sm:px-6">
       <ScanErrorToast error={error} />
@@ -78,15 +81,18 @@ export default async function ScanPage({
             Slow down a sec — wait a minute and try again.
           </p>
         )}
+        {error === "owned" && (
+          <p className="mt-3 text-sm text-oxblood-soft">
+            Tick the box to confirm this is your app. Assay only checks apps you
+            own or are authorised to test.
+          </p>
+        )}
+
+        <OwnershipCheck className="mt-6" />
       </form>
 
       <p className="mt-5 font-mono text-xs leading-relaxed text-ash">
-        Read-only. We never store secrets and never change your app. By scanning,
-        you confirm you own this app or are authorized to test it — see our{" "}
-        <Link href="/acceptable-use" className="text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory">
-          acceptable use
-        </Link>{" "}
-        policy.
+        Read-only. We never store secrets and never change your app.
       </p>
 
       <Link

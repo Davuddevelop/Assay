@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { siteUrl } from "@/lib/env";
 import { GUIDES } from "@/lib/guides";
+import { LEGAL_DOCUMENTS } from "@/lib/legal";
 
 /**
  * Static sitemap for the public marketing surface only. Private/functional
@@ -76,29 +77,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    {
-      url: `${base}/terms`,
+    // From the same registry the footer reads, so a new policy is submitted to
+    // search engines without anyone remembering to add it in two places.
+    ...LEGAL_DOCUMENTS.map((doc) => ({
+      url: `${base}${doc.slug}`,
       lastModified,
-      changeFrequency: "yearly",
+      changeFrequency: "yearly" as const,
       priority: 0.3,
-    },
-    {
-      url: `${base}/privacy`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/acceptable-use`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/refunds`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+    })),
   ];
 }

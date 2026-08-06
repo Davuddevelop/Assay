@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Wordmark } from "@/components/wordmark";
+import { LEGAL_DOCUMENTS } from "@/lib/legal";
 
 const COLUMNS = [
   {
@@ -30,12 +31,11 @@ const COLUMNS = [
   },
   {
     heading: "Legal",
-    links: [
-      { href: "/terms", label: "Terms" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/acceptable-use", label: "Acceptable use" },
-      { href: "/refunds", label: "Refunds" },
-    ],
+    // Read from lib/legal.ts rather than listed here. The same registry drives
+    // the sitemap and the acceptance notice, so a document can't be published
+    // and then quietly go unlinked — which is how /license and /dmca would
+    // otherwise have shipped invisible.
+    links: LEGAL_DOCUMENTS.map((d) => ({ href: d.slug, label: d.label })),
   },
 ];
 

@@ -3,6 +3,7 @@ import type { User } from "@supabase/supabase-js";
 
 import { claimInstallations } from "@/lib/auth";
 import { recordFunnelEvent } from "@/lib/data/funnel";
+import { recordAcceptance } from "@/lib/data/legal";
 
 /**
  * Everything that must happen the moment a session is established, regardless
@@ -25,6 +26,13 @@ export async function completeSignIn(
   carrying: boolean,
 ): Promise<void> {
   await claimInstallations(user);
+  // Every door shows the same notice next to its button (LegalNotice on the
+  // login page), so establishing a session is the moment the agreement is
+  // made — and this is where it becomes a record rather than a claim. It
+  // never throws and never blocks: a consent row that fails to write must not
+  // be the reason someone can't reach their account, and the cost of the
+  // failure is that we ask them again, which is the safe direction.
+  await recordAcceptance(user.id, "signup");
   recordFunnelEvent("signup");
   if (carrying) recordFunnelEvent("signup_from_scan");
 }

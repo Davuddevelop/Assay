@@ -13,7 +13,7 @@ export default function TermsPage() {
   return (
     <LegalDoc
       title="Terms of Service"
-      updated="July 2026"
+      updated="August 2026"
       intro="These terms govern your use of Assay, a security checkpoint for apps built with AI. By creating an account or running a scan, you agree to them."
     >
       <section>
@@ -27,13 +27,24 @@ export default function TermsPage() {
           the exact change to make. Assay is a{" "}
           <strong>best-effort detection tool</strong>, not a guarantee.
         </p>
+        <p>
+          Three other documents form part of this agreement and are worth
+          reading: our <Link href="/license">License Terms</Link> (who owns a
+          report, and the rules for displaying the hallmark), our{" "}
+          <Link href="/acceptable-use">Acceptable Use Policy</Link>, and our{" "}
+          <Link href="/dmca">Copyright &amp; DMCA Policy</Link>. What we do with
+          your data is set out separately in the{" "}
+          <Link href="/privacy">Privacy Policy</Link>.
+        </p>
       </section>
 
       <section>
         <h2>2. Your account</h2>
         <p>
-          You sign in with GitHub. You&rsquo;re responsible for activity under
-          your account and for keeping your login secure.
+          You sign in with a code we email you, or with GitHub. There is no
+          password. You&rsquo;re responsible for activity under your account,
+          and for keeping access to the email address it uses &mdash; anyone
+          who can read that inbox can sign in as you.
         </p>
         <p>
           <strong>You must be at least 16 years old to use Assay.</strong> If
@@ -76,6 +87,15 @@ export default function TermsPage() {
 
       <section>
         <h2>5. Plans and billing</h2>
+        <p>
+          <strong>
+            Paid plans are not currently available to buy &mdash; every account
+            is on the free tier, and nothing on this site can charge you today.
+          </strong>{" "}
+          The rest of this section, and the refund policy below, describe how
+          billing works when it opens. Say so plainly rather than leave a
+          section that reads as though a purchase is possible.
+        </p>
         <p>
           Assay has a free tier and paid plans. Paid plans are billed monthly in
           advance and renew until you cancel. Payments are processed by{" "}
