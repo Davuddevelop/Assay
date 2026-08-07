@@ -132,7 +132,7 @@ export default async function BillingPage({
               </ul>
               <div className="mt-6">
                 {isCurrent ? (
-                  <div className="flex h-11 items-center justify-center rounded-pill border border-line text-sm text-ash">
+                  <div className="flex h-11 items-center justify-center rounded-[var(--radius-control)] border border-line text-sm text-ash">
                     Current
                   </div>
                 ) : canUpgrade ? (

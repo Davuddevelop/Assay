@@ -44,10 +44,21 @@
   --font-mono: var(--font-jetbrains-mono);
   --font-serif: var(--font-instrument-serif); /* editorial italic accent */
 
-  /* Radius — soft, modern */
-  --radius-control: 12px;
-  --radius-card: 16px;
-  --radius-frame: 22px;
+  /* Radius — sharp.
+     These were 12 / 16 / 22, which is the default softness of every builder
+     template and reads as friendly rather than precise. The tools this brand
+     is measured against (Vercel, Linear) sit at 6–10, and the difference is
+     not subtle at scale: every card, input, button and figure on the site
+     changes shape from one edit here.
+
+     An assay office is an instrument maker's building. Instruments have
+     corners. */
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-frame: 12px;
+  /* Kept, and now spent in exactly one place: the hero's scan field. One
+     soft shape in a sharp system reads as the thing you're meant to touch;
+     twenty of them read as a theme. */
   --radius-pill: 999px;
 
   /* Spacing — Tailwind's 4px base covers 4/8/12/16/24/48/64; add 34 */

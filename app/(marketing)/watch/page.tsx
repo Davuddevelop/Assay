@@ -33,7 +33,7 @@ export default function WatchPage() {
       <div className="mt-10 flex flex-wrap gap-4">
         <Link
           href="/try"
-          className="rounded-pill bg-ivory px-5 py-2.5 text-sm font-semibold text-onyx transition-opacity hover:opacity-90"
+          className="rounded-[var(--radius-control)] bg-ivory px-5 py-2.5 text-sm font-semibold text-onyx transition-opacity hover:opacity-90"
         >
           Scan your app
         </Link>

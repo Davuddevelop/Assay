@@ -20,12 +20,20 @@ export function SubmitButton({
   variant = "primary",
   size = "md",
   className,
+  disabled,
+  name,
+  value,
 }: {
   children: React.ReactNode;
   pendingText?: string;
   variant?: Variant;
   size?: Size;
   className?: string;
+  /** Disable for reasons of your own; pending always disables regardless. */
+  disabled?: boolean;
+  /** Submitter name/value, for a form with more than one way out of it. */
+  name?: string;
+  value?: string;
 }) {
   const { pending } = useFormStatus();
 
@@ -34,7 +42,9 @@ export function SubmitButton({
       type="submit"
       variant={variant}
       size={size}
-      disabled={pending}
+      name={name}
+      value={value}
+      disabled={pending || disabled}
       aria-busy={pending}
       className={cn("relative", className)}
     >

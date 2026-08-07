@@ -36,7 +36,12 @@ const CASES = [
 export function Independence() {
   return (
     <section className="edge-b">
-      <div className="mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 xl:max-w-7xl xl:py-36">
+      {/* One step taller than the sections below it, and the only one. The
+          page's vertical rhythm came down across the board — every section was
+          py-20 to py-36 around one short idea, which reads as empty rather
+          than as confident — but the lead argument keeps its extra air so the
+          page still has a first chapter instead of five equal blocks. */}
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28">
         <Reveal>
           <Eyebrow label="Why independent" />
           <h2 className="mt-6 max-w-4xl text-balance font-display text-3xl font-bold leading-[1.04] tracking-[-0.02em] text-ivory sm:text-[2.7rem] xl:text-[3.3rem]">
@@ -62,7 +67,7 @@ export function Independence() {
         </Reveal>
 
         <Reveal delay={90}>
-          <ol className="mt-16 grid gap-y-10 md:grid-cols-3 md:gap-x-12">
+          <ol className="mt-12 grid gap-y-10 md:grid-cols-3 md:gap-x-12">
             {CASES.map((c, i) => (
               <li
                 key={c.label}
@@ -85,7 +90,7 @@ export function Independence() {
         </Reveal>
 
         <Reveal delay={140}>
-          <p className="mt-16 max-w-2xl border-l-2 border-border-strong pl-6 text-base leading-relaxed text-ivory sm:text-lg">
+          <p className="mt-12 max-w-2xl border-l-2 border-border-strong pl-6 text-base leading-relaxed text-ivory sm:text-lg">
             Assay is that second opinion for software built with AI. We
             didn&rsquo;t write your code, we can&rsquo;t see it, and we have
             nothing to lose by telling you it&rsquo;s broken.

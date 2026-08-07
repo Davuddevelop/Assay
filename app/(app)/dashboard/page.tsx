@@ -3,11 +3,15 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Onboarding } from "@/components/onboarding";
+import { OnboardingQuestions } from "@/components/onboarding-questions";
+import { NextMove } from "@/components/dashboard/next-move";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { WatchedApps } from "@/components/dashboard/watched-apps";
 import { requireUser, toSessionUser } from "@/lib/auth";
 import { listScans } from "@/lib/data/scans";
 import { listWatchedApps } from "@/lib/data/monitors";
+import { getProfile } from "@/lib/data/profile";
+import { needsOnboarding } from "@/lib/onboarding";
 import { relativeTime, groupScansByApp } from "@/lib/data/derive";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +22,15 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = toSessionUser(await requireUser());
-  const [scans, watched] = await Promise.all([listScans(), listWatchedApps()]);
+  const user = await requireUser();
+  const session = toSessionUser(user);
+  const [scans, watched, profile] = await Promise.all([
+    listScans(),
+    listWatchedApps(),
+    getProfile(user.id),
+  ]);
   const hasScans = scans.length > 0;
+  const asking = needsOnboarding(profile);
 
   // One row per app, not one per scan. See groupScansByApp for why.
   const apps = groupScansByApp(scans);
@@ -57,6 +67,14 @@ export default async function DashboardPage() {
           Scan an app
         </Button>
       </header>
+
+      {/* Above the work, and only until it's answered. Both answers change
+          what this page offers below — see NextMove. */}
+      {asking && (
+        <div className="mt-10">
+          <OnboardingQuestions />
+        </div>
+      )}
 
       {watched.length > 0 && (
         <div className="mt-12">
@@ -136,6 +154,12 @@ export default async function DashboardPage() {
           <Onboarding />
         )}
       </section>
+
+      {/* The payoff for question two. Nothing at all until it's answered —
+          a personalized panel that shows a generic default to everyone is
+          worse than no panel, because it teaches people the answers didn't
+          matter. */}
+      {!asking && hasScans && <NextMove audience={profile.audience} />}
     </div>
   );
 }

@@ -51,7 +51,7 @@ export function PrintButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="no-print inline-flex items-center gap-1.5 rounded-pill border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:border-border-strong hover:text-ivory"
+      className="no-print inline-flex items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:border-border-strong hover:text-ivory"
     >
       Save as PDF
     </button>

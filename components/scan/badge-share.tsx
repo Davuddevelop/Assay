@@ -43,7 +43,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
           worth showing a client.
         </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <code className="min-w-0 flex-1 truncate rounded-pill border border-border bg-onyx/50 px-4 py-2 font-mono text-xs text-ivory">
+          <code className="min-w-0 flex-1 truncate rounded-[var(--radius-control)] border border-border bg-onyx/50 px-4 py-2 font-mono text-xs text-ivory">
             {url}
           </code>
           <div className="flex shrink-0 gap-2">
@@ -52,7 +52,7 @@ export function BadgeShare({ scanId }: { scanId: string }) {
               href={url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center rounded-pill border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:border-border-strong hover:text-ivory"
+              className="inline-flex items-center rounded-[var(--radius-control)] border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ivory-dim transition-colors hover:border-border-strong hover:text-ivory"
             >
               View
             </a>

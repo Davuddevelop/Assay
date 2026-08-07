@@ -12,7 +12,7 @@ export function Pricing() {
           CTA) keep the large display size; the ones that just present a table
           or a sequence step down. Hierarchy between sections, not only within
           them. */}
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-24">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 xl:max-w-7xl xl:py-20">
         <Reveal>
           <Eyebrow label="Pricing" />
           <h2 className="mt-5 max-w-2xl font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">

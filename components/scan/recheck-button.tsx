@@ -58,7 +58,7 @@ export function RecheckButton({
         onClick={recheck}
         disabled={state === "checking"}
         className={cn(
-          "inline-flex items-center gap-2 rounded-pill border px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors",
+          "inline-flex items-center gap-2 rounded-[var(--radius-control)] border px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-colors",
           "border-border text-ivory-dim hover:border-border-strong hover:text-ivory",
           state === "checking" && "opacity-70",
         )}

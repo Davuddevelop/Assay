@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
+import {
+  HERO_IMAGE,
+  HERO_IMAGE_SMALL,
+  HERO_IMAGE_PORTRAIT,
+} from "@/lib/hero-image";
 
 /**
  * The hero: one cinematic still, the argument in large type over it, and the
@@ -29,19 +34,7 @@ import { Button } from "@/components/ui/button";
  * restoring this is one import away if the photograph turns out worse.
  */
 
-/**
- * Lives in `public/`, referenced by path rather than imported.
- *
- * A static import would fail the build outright if the file were missing; a
- * path 404s the image and leaves the page standing. That is not theoretical —
- * a PR merged this component before the image reached public/, and production
- * served a hero with a dead src for several minutes. It degraded to a plain
- * dark hero with legible type instead of taking the site down.
- */
-const HERO_IMAGE = "/hero-assay.jpg";
-const HERO_IMAGE_SMALL = "/hero-assay-1200.jpg";
-
-export function HeroV2() {
+export function HeroV2({ portrait = false }: { portrait?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const router = useRouter();
   const [url, setUrl] = useState("");
@@ -75,11 +68,17 @@ export function HeroV2() {
   return (
     <section
       ref={root}
-      className="relative isolate flex min-h-[88svh] items-center overflow-hidden"
+      // Pulled up under the header by exactly its height. The header is now a
+      // full-width bar in normal flow rather than a floating capsule, so it
+      // occupies 56px (64 at xl) of layout above this section — and with a
+      // transparent header that band rendered as flat page-ground sitting on
+      // top of the photograph, a hard seam across the first screen. This puts
+      // the image back under it, which is the whole point of a transparent bar.
+      className="relative isolate -mt-14 flex min-h-[88svh] items-center overflow-hidden xl:-mt-16"
     >
-      {/* Full bleed, and pulled up behind the floating nav so the first screen
-          is one continuous image with no dark strip above it. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10">
+      {/* Full bleed. The section itself is what reaches under the header now,
+          so this no longer needs its own negative offset. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         {/* Two sizes rather than one. The source was a 4.3MB PNG, which would
             have been the slowest asset on the site on the page everyone lands
             on; these are 186KB and 58KB, graded and re-encoded from the
@@ -88,28 +87,59 @@ export function HeroV2() {
 
             The two crops are chosen for opposite reasons. On desktop the
             window is biased hard left so the lit ingot clears the headline
-            entirely — at the previous 26% it sat under "clears it." and pulled
-            worst-pixel contrast down to 1.84:1 against a 3:1 requirement. On a
-            phone it goes further left still, onto the dark textured slate, and
-            that is deliberate: a 390px portrait window over a 21:9 frame
-            cannot show a bright subject *and* carry ~500px of text without one
-            of them losing. Measured, an ingot behind the sub-paragraph gave
-            2.02:1 where 4.5:1 is required. The slate reads as photograph,
-            holds texture, and lets the scrim stay light.
+            entirely — at 26% it sat under "clears it." and pulled worst-pixel
+            contrast to 1.84:1 against a 3:1 requirement, and 8% failed the
+            same way at 2.43:1 once the section moved up under the header. This
+            number is empirical, not chosen: it is whatever keeps the metal
+            clear of the type, and it has to be re-measured any time the hero's
+            geometry changes.
+
+            The phone crop below is the fallback for when no portrait
+            photograph is present: it runs further left still, onto dark
+            textured slate, because a 390px window over a 21:9 frame cannot
+            show a bright subject *and* carry ~500px of text without one of
+            them losing — measured, an ingot behind the sub-paragraph gave
+            2.02:1 where 4.5:1 is required. Legible, and it hides the one
+            object this brand is built around from every mobile visitor, which
+            is what the portrait asset exists to fix.
 
             Plain <img>, not next/image: it is two hand-graded fixed-size JPEGs
             with an explicit srcSet, so the optimizer has nothing left to do
             except add a per-request transform we'd be billed for. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={HERO_IMAGE}
-          srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
-          sizes="100vw"
-          alt=""
-          className="h-full w-full object-cover object-[16%_center] sm:object-[8%_center]"
-          loading="eager"
-          fetchPriority="high"
-        />
+        {/* <picture>, not a second <img>, so the phone downloads one file
+            and never both.
+
+            The portrait <source> is rendered only when the file is actually in
+            public/ — the page checks and passes `portrait`. That check exists
+            because a <source> is not a fallback: if its srcset 404s the
+            browser shows a broken image rather than dropping back to the
+            <img>. A PR once merged this component before its image landed and
+            production served a dead src for several minutes; that degraded
+            gracefully precisely because it was a plain <img>. This keeps that
+            property. */}
+        <picture>
+          {portrait && (
+            <source media="(max-width: 639px)" srcSet={HERO_IMAGE_PORTRAIT} />
+          )}
+          {/* No eslint-disable needed any more: @next/next/no-img-element
+              does not fire on an <img> inside a <picture>, which is the
+              sanctioned way to hand-manage art direction. */}
+          <img
+            src={HERO_IMAGE}
+            srcSet={`${HERO_IMAGE_SMALL} 1200w, ${HERO_IMAGE} 2400w`}
+            sizes="100vw"
+            alt=""
+            className={
+              portrait
+                ? // With a frame composed for the window, the subject is where
+                  // it was put — so the phone crop stops running away from it.
+                  "h-full w-full object-cover object-center sm:object-[2%_center]"
+                : "h-full w-full object-cover object-[16%_center] sm:object-[2%_center]"
+            }
+            loading="eager"
+            fetchPriority="high"
+          />
+        </picture>
 
         {/* Barely any scrim left, on purpose.
             The heavy lifting moved into the photograph: it is graded with a
@@ -127,6 +157,35 @@ export function HeroV2() {
             there's no seam where the section ends. */}
         <div className="absolute inset-0 bg-onyx/30 sm:bg-gradient-to-r sm:from-onyx/92 sm:from-14% sm:via-onyx/60 sm:via-40% sm:to-transparent sm:to-70%" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
+
+        {/* Portrait-only, mobile-only: a top-to-bottom scrim over and above
+            the flat 30% base above.
+
+            Measured, not assumed: this candidate's light isn't pooled tightly
+            on the metal the way the desktop plate and the rejected candidate
+            were — it's a diagonal beam that ramps brightness up steadily from
+            the top of the frame, peaks at the bar around 50-60% down, and
+            never fully returns to black below it (band-by-band mean stayed
+            26-68 through the bottom third). A photograph with light that
+            diffuse cannot carry four lines of text on its own contrast the
+            way a tightly-lit subject can, so the scrim does the job here
+            instead. Worst-pixel contrast before this existed: h1 1.73:1,
+            sub 1.06:1, eyebrow 2.33:1 — all three failing outright against a
+             3:1 / 4.5:1 requirement, and the sub-paragraph was reading
+            directly over the lit metal.
+
+            Stops end at 72%, just past where the CTA box sits, so the bar
+            still clears at the bottom of the frame — the whole point of
+            using a portrait photograph instead of the landscape crop this
+            replaces. sm:hidden because the wide-screen crop already solves
+            this by putting the metal to the right of the text column
+            entirely; this scrim would just dim it for no reason there. */}
+        {portrait && (
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-b from-onyx/95 from-0% via-onyx/95 via-75% to-transparent to-92% sm:hidden"
+          />
+        )}
       </div>
 
       {/* Four things, and nothing else: label, argument, one line, one action.
@@ -136,7 +195,9 @@ export function HeroV2() {
           page look generated rather than designed; the reference pages this is
           measured against are restrained in exactly this way, and the copy
           budget is the reason, not the photograph. */}
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6 sm:py-32 xl:max-w-7xl">
+      {/* Top padding carries the header's height on top of the section's own,
+          so the eyebrow never rides up under the wordmark. */}
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-28 pt-36 sm:px-6 sm:pb-32 sm:pt-40 xl:max-w-7xl">
         <div className="max-w-2xl text-left xl:max-w-3xl">
           {/* The platforms alone. "Independent" used to sit here too, which was
               the headline's job — saying it twice made it read as a claim

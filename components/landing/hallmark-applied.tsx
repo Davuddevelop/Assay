@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { Eyebrow } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
@@ -5,7 +7,7 @@ import { Reveal } from "@/components/reveal";
 export function HallmarkApplied() {
   return (
     <section className="edge-b">
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 xl:max-w-7xl xl:py-28">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 xl:max-w-7xl xl:py-24">
         <Reveal>
           <Eyebrow label="The hallmark, applied" />
           <h2 className="mt-5 max-w-3xl text-balance font-display text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-ivory sm:text-[2rem] xl:text-[2.4rem]">
@@ -17,7 +19,7 @@ export function HallmarkApplied() {
           </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+        <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {/* Assayed */}
           <Reveal>
             {/* Border-only hover. These two cards previously carried a cursor-following
@@ -68,6 +70,34 @@ rows.`}</code>
             </div>
           </Reveal>
         </div>
+
+        {/* The one fork on the page, and it belongs here.
+            Everything above this speaks to someone checking their own app.
+            The mark is the first thing that only makes sense when there is a
+            second person in the room — you don't hand yourself evidence. So
+            this is the natural point to name the buyer the strategy actually
+            rests on (CLAUDE.md §10: the client-handoff moment), and it was
+            previously unnamed anywhere on the home page. A freelancer landing
+            here had no signal the product was written for them. */}
+        <Reveal delay={160}>
+          <div className="mt-12 border-t border-line pt-8">
+            <h3 className="max-w-2xl text-balance font-display text-xl font-semibold tracking-[-0.015em] text-ivory">
+              If you built it for someone else, the mark is the point.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ivory-dim">
+              &ldquo;Yes, I checked it&rdquo; is the builder vouching for their
+              own build, and the client knows it. A dated report and a mark that
+              re-checks itself is the version they can verify without trusting
+              you &mdash; which is what makes it worth attaching to an invoice.
+            </p>
+            <Link
+              href="/client-handoff"
+              className="mt-5 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
+            >
+              What to hand over &rarr;
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -6,6 +6,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { ScanErrorToast } from "@/components/scan/scan-error-toast";
 import { OwnershipCheck } from "@/components/scan/ownership-check";
 import { requireUser } from "@/lib/auth";
+import { getProfile } from "@/lib/data/profile";
+import { scanPlaceholder } from "@/lib/onboarding";
 import { PREFILL_COOKIE } from "@/lib/scan/prefill";
 import { startScan } from "@/app/(app)/scan/actions";
 
@@ -25,8 +27,13 @@ export default async function ScanPage({
 }: {
   searchParams: Promise<{ error?: string; prefill?: string }>;
 }) {
-  await requireUser();
+  const user = await requireUser();
   const { error, prefill } = await searchParams;
+  // What question one buys: the example host matches the builder they told us
+  // they use, so the box shows the shape of their answer rather than the shape
+  // of the question. Defaults to Lovable, which is where most of these apps
+  // come from.
+  const placeholder = scanPlaceholder((await getProfile(user.id)).platform);
   // Set when they came here from an anonymous report; it expires on its own, so
   // a stale one is a filled box they can overwrite, never a wrong scan.
   const carried = prefill ?? (await cookies()).get(PREFILL_COOKIE)?.value ?? "";
@@ -55,7 +62,7 @@ export default async function ScanPage({
             defaultValue={carried}
             inputMode="url"
             autoComplete="off"
-            placeholder="yourapp.lovable.app"
+            placeholder={placeholder}
             aria-label="Your app URL"
             className="min-w-0 flex-1 bg-transparent text-sm text-ivory outline-none placeholder:text-ash"
           />

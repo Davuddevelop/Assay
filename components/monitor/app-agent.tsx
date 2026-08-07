@@ -169,12 +169,12 @@ export function AppAgent({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Assay about this app — “is it safe to launch?”"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-pill border border-line bg-onyx/60 px-4 py-2.5 text-sm text-ivory placeholder:text-ash focus:border-border-strong focus:outline-none"
+          className="min-w-0 flex-1 rounded-[var(--radius-control)] border border-line bg-onyx/60 px-4 py-2.5 text-sm text-ivory placeholder:text-ash focus:border-border-strong focus:outline-none"
         />
         <button
           type="submit"
           disabled={thinking || input.trim().length === 0}
-          className="shrink-0 rounded-pill border border-iris/40 bg-iris/15 px-4 py-2.5 text-sm font-semibold text-iris-soft transition-colors hover:bg-iris/25 disabled:opacity-40"
+          className="shrink-0 rounded-[var(--radius-control)] border border-iris/40 bg-iris/15 px-4 py-2.5 text-sm font-semibold text-iris-soft transition-colors hover:bg-iris/25 disabled:opacity-40"
         >
           Send
         </button>
