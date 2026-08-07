@@ -120,6 +120,15 @@ export interface FetchedApp {
   html: string;
   headers: Record<string, string>;
   bundles: { url: string; content: string }[];
+  /**
+   * The crawl stopped before the queue was empty — it hit MAX_BUNDLES or the
+   * deadline, so some of the app's code was never read.
+   *
+   * Reported rather than swallowed because a secret hiding in an unread chunk
+   * produces exactly the same empty finding list as no secret at all, and the
+   * scan was previously certifying both. See lib/scan/coverage.ts.
+   */
+  bundlesTruncated: boolean;
 }
 
 /**
@@ -194,5 +203,15 @@ export async function fetchApp(rawUrl: string): Promise<FetchedApp> {
     }
   }
 
-  return { finalUrl: main.finalUrl.toString(), status: main.status, html: main.text, headers, bundles };
+  // Anything still queued means we stopped early rather than finished.
+  const bundlesTruncated = queue.length > 0;
+
+  return {
+    finalUrl: main.finalUrl.toString(),
+    status: main.status,
+    html: main.text,
+    headers,
+    bundles,
+    bundlesTruncated,
+  };
 }

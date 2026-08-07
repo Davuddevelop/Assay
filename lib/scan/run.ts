@@ -10,6 +10,7 @@ import { probeExposedFiles } from "@/lib/scan/exposed-files";
 import { hasSourceMapRef } from "@/lib/scan/bundles";
 import { looksUnscannable } from "@/lib/scan/content-heuristics";
 import { detectPlatform } from "@/lib/scan/platform";
+import { computeCoverage, isConclusive, type CheckCoverage } from "@/lib/scan/coverage";
 import { scoreFindings } from "@/lib/scan/score";
 import type { RawFinding } from "@/lib/scan/types";
 import type { ScanVerdict } from "@/lib/db/types";
@@ -38,6 +39,14 @@ export interface ScanResult {
   findings: RawFinding[];
   score: number;
   verdict: ScanVerdict;
+  /**
+   * What the scan actually managed to examine — reported separately from the
+   * findings, because "found nothing" and "checked nothing" were previously
+   * indistinguishable and both produced a hallmark. See lib/scan/coverage.ts.
+   */
+  coverage: CheckCoverage[];
+  /** True only when every check ran. A clean result is worth this much. */
+  conclusive: boolean;
 }
 
 /** Progress line emitted as the scan works — powers the live feed. */
@@ -135,7 +144,8 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
   //    report. Refuse: this is `risky`, so `scoreFindings` can never certify
   //    it, and the report says plainly that we couldn't look rather than
   //    implying we looked and found nothing.
-  if (looksUnscannable(app.html, app.bundles.length, ref !== null || fb !== null)) {
+  const hidden = looksUnscannable(app.html, app.bundles.length, ref !== null || fb !== null);
+  if (hidden) {
     say("⚠ We couldn't read this app — nothing here can be certified.");
     findings.push({
       kind: "open-endpoint",
@@ -149,6 +159,27 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
 
   const deduped = dedupe(findings);
   const { score, verdict } = scoreFindings(deduped);
+
+  // What we were actually able to look at. Computed from what the scan
+  // observed rather than inferred from the findings, because the whole point
+  // is that an empty finding list cannot tell you which checks ran.
+  const coverage = computeCoverage({
+    bundleCount: app.bundles.length,
+    backendDetected: backend !== null,
+    backendName: backend,
+    bundleCrawlTruncated: app.bundlesTruncated,
+    unscannable: hidden,
+  });
+  const conclusive = isConclusive(coverage);
+
+  // Say it in the live feed too. Someone watching a scan of an app whose
+  // database we never found used to see only "Checking for publicly exposed
+  // files…" and then a clean report — no hint that the most important check
+  // had been skipped.
+  if (!conclusive) {
+    say("Note: some checks could not run — the report says which, and why.");
+  }
+
   say("Scoring the results…");
 
   return {
@@ -156,5 +187,7 @@ export async function runScan(appUrl: string, onProgress?: OnProgress): Promise<
     findings: deduped,
     score,
     verdict,
+    coverage,
+    conclusive,
   };
 }

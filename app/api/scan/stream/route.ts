@@ -182,7 +182,16 @@ export async function GET(req: NextRequest) {
           score: result.score,
           findings: result.findings,
         });
-        send({ type: "done", scan, findings, explaining: result.findings.length > 0 });
+        // Coverage rides with the report. It is the answer to "does this
+        // clean result mean anything", and this in-memory path is where most
+        // scans are actually read — 59 anonymous runs against 4 accounts.
+        send({
+          type: "done",
+          scan,
+          findings,
+          coverage: result.coverage,
+          explaining: result.findings.length > 0,
+        });
 
         if (result.findings.length > 0) {
           try {

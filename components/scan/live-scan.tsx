@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { ScanReport } from "@/components/scan/scan-report";
 import type { ScanRow, ScanFindingRow } from "@/lib/db/types";
+import type { CheckCoverage } from "@/lib/scan/coverage";
 
 interface DoneData {
   scan: ScanRow;
   findings: ScanFindingRow[];
+  coverage?: CheckCoverage[];
   /** True until the plain-English pass lands, so the report can say so. */
   explaining: boolean;
 }
@@ -58,7 +60,7 @@ export function LiveScan({ target }: { target: string }) {
             if (evt.type === "log") setLines((l) => [...l, evt.line]);
             else if (evt.type === "done") {
               settled = true;
-              setDone({ scan: evt.scan, findings: evt.findings, explaining: !!evt.explaining });
+              setDone({ scan: evt.scan, findings: evt.findings, coverage: evt.coverage, explaining: !!evt.explaining });
             } else if (evt.type === "explained") {
               setDone((d) => (d ? { ...d, findings: evt.findings, explaining: false } : d));
             } else if (evt.type === "error") {
@@ -100,7 +102,12 @@ export function LiveScan({ target }: { target: string }) {
             Writing plain-English fixes…
           </p>
         )}
-        <ScanReport scan={done.scan} findings={done.findings} showNextStep />
+        <ScanReport
+          scan={done.scan}
+          findings={done.findings}
+          coverage={done.coverage}
+          showNextStep
+        />
       </div>
     );
   }

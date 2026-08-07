@@ -2,10 +2,12 @@ import { FindingCard } from "@/components/scan/finding-card";
 import { HallmarkStamp } from "@/components/hallmark-stamp";
 import { NextStep } from "@/components/scan/next-step";
 import { ScanReceipt } from "@/components/scan/scan-receipt";
+import { CoveragePanel } from "@/components/scan/coverage-panel";
 import { PrintButton } from "@/components/scan/print-button";
 import { verificationFreshness, VALID_DAYS } from "@/lib/scan/freshness";
 import { formatReportDate } from "@/lib/data/derive";
 import type { ScanRow, ScanFindingRow, ScanFindingSeverity } from "@/lib/db/types";
+import type { CheckCoverage } from "@/lib/scan/coverage";
 import { cn } from "@/lib/utils";
 
 const ORDER: ScanFindingSeverity[] = ["critical", "risky", "minor"];
@@ -18,10 +20,17 @@ function countBy(findings: ScanFindingRow[], sev: ScanFindingSeverity) {
 export function ScanReport({
   scan,
   findings,
+  coverage,
   showNextStep = false,
 }: {
   scan: ScanRow;
   findings: ScanFindingRow[];
+  /**
+   * What the scan managed to examine. Optional because saved scans don't carry
+   * it yet (no column); the live /try report and the sample do, which is where
+   * the misleading pass was actually being read.
+   */
+  coverage?: CheckCoverage[];
   /** Anonymous reports end with a next step; an owned report already has one. */
   showNextStep?: boolean;
 }) {
@@ -170,6 +179,8 @@ export function ScanReport({
       </div>
 
       {/* data receipt — the trust artifact: what we did and what we kept */}
+      {coverage && <CoveragePanel coverage={coverage} />}
+
       <ScanReceipt findings={findings} />
 
       {showNextStep && <NextStep appUrl={scan.app_url} certified={certified} />}
