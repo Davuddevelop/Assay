@@ -89,8 +89,19 @@ const jsonLd = {
       applicationCategory: "SecurityApplication",
       operatingSystem: "Web",
       url: siteUrl(),
+      // Literal, not metaphorical, and deliberately different in register from
+      // the page copy above it. The headline's job is to win a human in three
+      // seconds; this field's job is to be the sentence a model matches when
+      // someone asks "how do I check if my Lovable app is secure". Both are
+      // true — one is an argument, the other is a description.
       description:
-        "Security scanner for apps built with Lovable, Bolt, Replit, and v0.",
+        "Security scanner for vibe-coded and AI-built apps. Checks a live URL from the outside, with no access to your code, for API keys and secrets exposed in the browser bundle, a database readable without a login (Supabase row-level security disabled, Firebase rules left open), public file storage, exposed config files, and missing security headers — then explains each issue in plain English with the exact fix.",
+      // The vocabulary people actually type. Kept out of the h1 on purpose:
+      // the headline is the one thing competitors structurally cannot copy
+      // (CLAUDE.md §10), and trading it for a keyword would be trading the
+      // asset for the signpost. Structured data is where the signpost goes.
+      keywords:
+        "vibe coding security scanner, vibe coded app scanner, AI app security, Lovable security checker, Bolt.new security scanner, Replit app security, v0 security check, Supabase RLS checker, exposed API key scanner, Firebase rules check, MCP security server",
       offers: [
         {
           "@type": "Offer",

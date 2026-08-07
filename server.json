@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.assaysecurity/assay",
+  "description": "Security scanner for vibe-coded and AI-built apps. Checks a live URL from the outside — no code access — for secrets exposed in the browser bundle, a database readable without a login (Supabase RLS off, Firebase rules open), public file storage, exposed config files, and missing security headers. Returns plain-English findings with the exact fix. Built for apps made with Lovable, Bolt, Replit, v0 and Cursor.",
+  "version": "1.0.0",
+  "websiteUrl": "https://assaysecurity.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://assaysecurity.com/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer API key from https://assaysecurity.com/settings/keys (starts with assay_sk_).",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
