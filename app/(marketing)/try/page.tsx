@@ -54,6 +54,15 @@ export default async function TryPage({
           </p>
           <p className="mt-2 break-all font-mono text-sm text-ivory">{target}</p>
 
+          {/* Said at the point of most doubt, not in the footer. This panel is
+              the moment someone is deciding whether to hand a stranger a live
+              URL — often a client's — so it is the one place the boundary is
+              worth more than any capability claim. */}
+          <p className="mt-4 text-sm leading-relaxed text-ivory-dim">
+            Assay only reads. No exploit is sent, nothing is changed, and no
+            data is copied or stored.
+          </p>
+
           <OwnershipCheck className="mt-6" />
 
           <Button type="submit" variant="primary" size="md" className="mt-6">

@@ -139,6 +139,42 @@ export function FeatureBento() {
             ))}
           </ul>
         </Reveal>
+
+        {/* The limit, stated as a feature rather than buried as a caveat.
+
+            Market research, Aug 2026: every competitor that differentiates on
+            depth differentiates by probing *harder* — one captures a working
+            exploit and a reproducible proof-of-concept as its headline claim.
+            Not one of them sells the boundary. So restraint is both true of
+            this engine already and, as far as that research found, unclaimed.
+
+            It lives here rather than in a section of its own because the
+            honest place to say what a tool won't do is directly under what it
+            does — and because the page was just cut from seven blocks to six
+            for exactly the reasons CLAUDE.md §6 gives. This is the same
+            argument the hero makes, one level down: an outside check is only
+            worth handing your client's URL to if you know where it stops. */}
+        <Reveal delay={180}>
+          <div className="mt-14 border-t border-line pt-8">
+            <h3 className="max-w-2xl text-balance font-display text-xl font-semibold tracking-[-0.015em] text-ivory">
+              And a list of things it will never do.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ivory-dim">
+              Assay reads. It never writes. Every check is a bounded, read-only
+              request for something your app already serves to anyone with a
+              browser — no exploit is ever sent, nothing is ever changed, and
+              your users&rsquo; data is never copied or stored. When a check
+              proves a database is readable, the values are masked in memory
+              and never saved.
+            </p>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-ivory-dim">
+              That&rsquo;s a deliberate ceiling, not a missing feature. Assay is
+              not a penetration test and never claims to be one &mdash; and it
+              is the reason you can point it at a client&rsquo;s live app
+              without asking anyone&rsquo;s permission first.
+            </p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
