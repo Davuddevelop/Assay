@@ -215,6 +215,36 @@
   mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 100%);
 }
 
+/*
+  The hero photograph, and the one rule that decides which one you get.
+
+  Written here rather than as Tailwind variants because the condition is an
+  aspect ratio, and it has to be applied identically to three things that
+  would otherwise drift apart: which file the <picture> serves, where that
+  file is anchored, and whether the portrait-only scrim is drawn. Splitting
+  that across a media attribute and two `sm:` variants is exactly how the
+  tablet bug happened — the <source> asked about shape and the CSS asked
+  about width, so between 640px and a landscape window they disagreed.
+
+  Default state is the portrait-shaped one, matching `max-aspect-ratio: 1/1`
+  on the <source>. Anything wider than it is tall gets the landscape plate,
+  anchored 2% from the left so the lit ingot clears the headline (measured;
+  see the component), with the portrait scrim switched off because the
+  landscape crop already puts the metal to the right of the text column.
+*/
+.hero-plate {
+  object-position: center;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  .hero-plate {
+    object-position: 2% center;
+  }
+  .hero-portrait-scrim {
+    display: none;
+  }
+}
+
 /* Glass — for the floating pill nav and glassy surfaces. */
 .glass {
   background-color: color-mix(in srgb, var(--color-surface) 65%, transparent);

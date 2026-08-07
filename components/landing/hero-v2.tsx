@@ -118,8 +118,24 @@ export function HeroV2({ portrait = false }: { portrait?: boolean }) {
             gracefully precisely because it was a plain <img>. This keeps that
             property. */}
         <picture>
+          {/* Shape, not width — and this was a real bug, not a refinement.
+              The gate here was `max-width: 639px`, which reads "phone" and
+              means nothing of the kind. An iPad is 820px wide and *portrait
+              shaped*, so it failed the test, got the 21:9 landscape plate
+              cover-fitted into a tall box, and cropped it to the 2%-from-left
+              window — which is the near-black slate deliberately placed
+              behind the headline. The result was a hero that was a black
+              rectangle with the ingot entirely off-screen. Measured: mean
+              luminance 13.7 at 820px versus 22.5 on a phone and 22.3 on a
+              laptop, i.e. the tablet was darker than either device the
+              breakpoints were actually designed for.
+
+              A viewport taller than it is wide wants the portrait frame
+              whatever its pixel count, and a phone held sideways wants the
+              landscape one. `aspect-ratio` asks that question directly;
+              `width` only ever approximated it. */}
           {portrait && (
-            <source media="(max-width: 639px)" srcSet={HERO_IMAGE_PORTRAIT} />
+            <source media="(max-aspect-ratio: 1/1)" srcSet={HERO_IMAGE_PORTRAIT} />
           )}
           {/* No eslint-disable needed any more: @next/next/no-img-element
               does not fire on an <img> inside a <picture>, which is the
@@ -131,9 +147,10 @@ export function HeroV2({ portrait = false }: { portrait?: boolean }) {
             alt=""
             className={
               portrait
-                ? // With a frame composed for the window, the subject is where
-                  // it was put — so the phone crop stops running away from it.
-                  "h-full w-full object-cover object-center sm:object-[2%_center]"
+                ? // object-position has to switch on the same condition the
+                  // <source> does, or a tablet gets the portrait photograph
+                  // cropped by the landscape rule and the bug just moves.
+                  "hero-plate h-full w-full object-cover"
                 : "h-full w-full object-cover object-[16%_center] sm:object-[2%_center]"
             }
             loading="eager"
@@ -155,7 +172,24 @@ export function HeroV2({ portrait = false }: { portrait?: boolean }) {
 
             The second, vertical scrim lands the image into the page ground so
             there's no seam where the section ends. */}
-        <div className="absolute inset-0 bg-onyx/30 sm:bg-gradient-to-r sm:from-onyx/92 sm:from-14% sm:via-onyx/60 sm:via-40% sm:to-transparent sm:to-70%" />
+        {/* The transparent stop is at 78%, not 70%, and that number is the
+            fix for a second geometry bug rather than a taste change.
+
+            `object-cover` crops the 21:9 plate to fill the box, so how much
+            of the frame you see depends on the *viewport's* aspect ratio: a
+            1440x900 window reveals ~77% of the image width, a 1920x1080 one
+            reveals ~85%. The wider the screen, the less is cropped, and the
+            further left the ingot sits relative to the text column — which
+            stops at roughly 58% of the width at every size because the
+            container is max-width bound.
+
+            So a scrim tuned at 1440 quietly fails at 1920: measured, the h1
+            went to 2.69:1 against a 3:1 requirement, with the lit edge of the
+            metal under "clears it." Ending the scrim past where the headline
+            can ever reach makes it hold across the range instead of at one
+            size, and it costs almost nothing visually because the ingot's
+            body sits further right than that at every width. */}
+        <div className="absolute inset-0 bg-onyx/30 sm:bg-gradient-to-r sm:from-onyx/92 sm:from-14% sm:via-onyx/72 sm:via-46% sm:to-transparent sm:to-78%" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-onyx" />
 
         {/* Portrait-only, mobile-only: a top-to-bottom scrim over and above
@@ -183,7 +217,7 @@ export function HeroV2({ portrait = false }: { portrait?: boolean }) {
         {portrait && (
           <div
             aria-hidden
-            className="absolute inset-0 bg-gradient-to-b from-onyx/95 from-0% via-onyx/95 via-75% to-transparent to-92% sm:hidden"
+            className="hero-portrait-scrim absolute inset-0 bg-gradient-to-b from-onyx/95 from-0% via-onyx/95 via-75% to-transparent to-92%"
           />
         )}
       </div>
