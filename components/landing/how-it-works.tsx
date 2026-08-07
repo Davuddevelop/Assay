@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Eyebrow } from "@/components/section-heading";
@@ -119,6 +120,45 @@ export function HowItWorks() {
             </li>
           ))}
         </ol>
+
+        {/* The strongest claim on the site, and until now it was documented
+            in one sentence on a settings page behind a login.
+
+            Assay is an MCP server. That belongs on the home page rather than
+            in the docs because it is not a feature note — it is the argument
+            in its most literal form. Every competitor's built-in scanner is
+            the platform inspecting its own output; a coding agent calling out
+            to a service that isn't it, before it ships, is the one shape that
+            structurally cannot be copied by the thing doing the building.
+
+            It sits under the three steps because it is the same workflow with
+            the human removed, not a separate product. */}
+        <Reveal delay={200}>
+          <div className="mt-12 border-t border-line pt-8">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-ash">
+              Or none of them
+            </p>
+            <h3 className="mt-3 max-w-2xl text-balance font-display text-xl font-semibold tracking-[-0.015em] text-ivory">
+              Let the agent that wrote it ask something that isn&rsquo;t it.
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ivory-dim">
+              Assay is an MCP server. Connect it to Claude Code, Cursor, or any
+              MCP client and your coding agent can run the check itself, before
+              the app ships &mdash; instead of you leaving what you&rsquo;re
+              building, visiting a website, and carrying the fix back by hand.
+            </p>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-ivory">
+              A model can&rsquo;t clear its own work any more than a platform
+              can. This is what it looks like when it stops trying to.
+            </p>
+            <Link
+              href="/docs"
+              className="mt-5 inline-block font-mono text-xs uppercase tracking-[0.14em] text-ivory underline decoration-line underline-offset-4 hover:decoration-ivory"
+            >
+              How to connect it &rarr;
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
