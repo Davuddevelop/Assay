@@ -34,11 +34,11 @@ export default async function LoginPage({
   // them where they were going instead.
   //
   // Unless a sign-in attempt just failed. Someone signed in as one account,
-  // clicking a dead magic link for another, was silently bounced to the first
-  // account's dashboard: the error redirect landed here, this line saw the
-  // stale session and forwarded them on before they could read it. The
-  // symptom is "the link logged me into the wrong account", the cause is that
-  // the failure was never shown, and quietly leaving someone under an
+  // then entering a stale or mistyped code for another, was silently bounced
+  // to the first account's dashboard: the error redirect landed here, this
+  // line saw the stale session and forwarded them on before they could read
+  // it. The symptom is "the code signed me into the wrong account", the cause
+  // is that the failure was never shown, and quietly leaving someone under an
   // identity they didn't just ask for is the part that actually matters.
   const attemptFailed = Boolean(error);
   if (user && !attemptFailed) redirect(dest);

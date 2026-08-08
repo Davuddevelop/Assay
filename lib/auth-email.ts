@@ -29,8 +29,8 @@ export function normalizeEmail(raw: string): string {
 }
 
 /**
- * Shape check for the emailed sign-in code — the fallback for when the link
- * gets consumed before the user clicks it, because some mail gateways and
+ * Shape check for the emailed sign-in code — the only way email sign-in
+ * finishes. Chosen over a clickable link because some mail gateways and
  * security scanners pre-fetch every link in an email to scan it and silently
  * burn the one-time token. A typed code has no URL for that to visit.
  *

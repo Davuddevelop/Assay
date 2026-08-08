@@ -7,9 +7,9 @@ import { recordAcceptance } from "@/lib/data/legal";
 
 /**
  * Everything that must happen the moment a session is established, regardless
- * of which door they came through — GitHub OAuth, a clicked magic link, or a
- * typed sign-in code. All three call this so the funnel numbers and
- * installation-claiming can't quietly diverge by sign-in method.
+ * of which door they came through — GitHub OAuth or a typed sign-in code.
+ * Both call this so the funnel numbers and installation-claiming can't
+ * quietly diverge by sign-in method.
  *
  * Separate file from lib/auth.ts on purpose: that module stays free of
  * `server-only` so its pure helpers (githubIdFromUser, toSessionUser) can be

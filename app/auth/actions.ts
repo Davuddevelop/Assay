@@ -59,12 +59,20 @@ export async function signInWithGitHub(formData?: FormData) {
 }
 
 /**
- * Send a sign-in link to an email address.
+ * Send a sign-in code to an email address.
  *
  * GitHub was the only door, in a product whose whole premise is that you don't
  * need to be a developer. A person who built an app on Lovable without ever
  * touching git has no GitHub account and no reason to make one — so the wall
  * was in the shape of an assumption the product had already abandoned.
+ *
+ * No `emailRedirectTo`: a clickable link is what mail gateways and security
+ * scanners pre-fetch and burn (see EmailCodeForm), so this deliberately never
+ * asks Supabase for one. The email template in the Supabase dashboard still
+ * has to agree — if it renders `{{ .ConfirmationURL }}`, Supabase fills it
+ * with the project's default Site URL regardless of what this call sends, so
+ * removing the link from what people actually receive is finished there, not
+ * here.
  *
  * This endpoint is unauthenticated and causes mail to be sent, so it is rate
  * limited per IP before anything else happens. The address is validated for
@@ -93,19 +101,12 @@ export async function signInWithEmail(formData: FormData) {
   if (!burst || !daily) redirect(`/login?error=throttled${qs}`);
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${siteUrl()}/auth/callback${
-        next ? `?next=${encodeURIComponent(next)}` : ""
-      }`,
-    },
-  });
+  const { error } = await supabase.auth.signInWithOtp({ email });
 
   if (error) {
     // Never echo the provider's message: it distinguishes "this address has an
     // account" from "it doesn't", which is an enumeration oracle.
-    log.warn("magic link send failed", { reason: error.message });
+    log.warn("sign-in code send failed", { reason: error.message });
     redirect(`/login?error=email${qs}`);
   }
 
@@ -125,16 +126,14 @@ export async function signInWithEmail(formData: FormData) {
 }
 
 /**
- * Verify the numeric code from the same email `signInWithEmail` sent, as a
- * fallback to the clickable link.
+ * Verify the numeric code from the same email `signInWithEmail` sent.
  *
- * The link is a single-use token, and some corporate mail gateways and
- * security scanners (Microsoft 365 Safe Links is the common one) pre-fetch
- * every link in an email server-side to scan it before the recipient ever
- * sees the message. That pre-fetch burns the one-time token, so by the time a
- * real person clicks it the link is already dead — "expired or already used"
- * for someone who never used it. A typed code has no URL for that kind of
- * scanner to visit, so it survives exactly the case the link doesn't.
+ * This is the only way an email sign-in finishes now, not a fallback to a
+ * link: mail gateways and security scanners (Microsoft 365 Safe Links is the
+ * common one) pre-fetch every link in an email server-side to scan it before
+ * the recipient ever sees the message, which burns a single-use token before
+ * a real person can click it — "expired or already used" for someone who
+ * never used it. A typed code has no URL for that kind of scanner to visit.
  *
  * Rate limited more tightly than sending: this endpoint is a guess against a
  * live numeric secret, so it's the one place in this file defending against
