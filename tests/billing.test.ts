@@ -8,37 +8,43 @@ import {
   checksLimit,
   getPlan,
 } from "@/lib/plans";
-import { verifyPaddleSignature } from "@/lib/paddle/signature";
-import { sandboxOnProduction } from "@/lib/env";
+import { verifyLemonSqueezySignature } from "@/lib/lemonsqueezy/signature";
+import { lemonSqueezyTestModeOnProduction, lemonSqueezyTestEventOnProduction } from "@/lib/env";
 
-describe("sandbox billing is unreachable from production", () => {
-  // Paddle's test card is public, and the sandbox webhook points at the
-  // production URL so the integration can be tested end to end. If production
-  // ever holds sandbox credentials, any visitor can pay with 4242 4242 4242
-  // 4242 and have a real paid plan written to the real database — the
-  // signature check passes, because the secret genuinely is ours.
-  it("refuses the one combination that gives away free plans", () => {
-    expect(sandboxOnProduction("production", "sandbox")).toBe(true);
+describe("test-mode billing is unreachable from production", () => {
+  // This app's own LEMONSQUEEZY_TEST_MODE switch must never let production
+  // open a test checkout — there is no legitimate reason for the live site to
+  // create one.
+  it("refuses to open a test checkout from production", () => {
+    expect(lemonSqueezyTestModeOnProduction("production", "true")).toBe(true);
   });
 
   it("leaves previews and local development alone — testing belongs there", () => {
-    expect(sandboxOnProduction("preview", "sandbox")).toBe(false);
-    expect(sandboxOnProduction("development", "sandbox")).toBe(false);
-    expect(sandboxOnProduction(undefined, "sandbox")).toBe(false);
+    expect(lemonSqueezyTestModeOnProduction("preview", "true")).toBe(false);
+    expect(lemonSqueezyTestModeOnProduction("development", "true")).toBe(false);
+    expect(lemonSqueezyTestModeOnProduction(undefined, "true")).toBe(false);
   });
 
-  it("allows production once it holds live credentials", () => {
-    expect(sandboxOnProduction("production", undefined)).toBe(false);
-    expect(sandboxOnProduction("production", "")).toBe(false);
-    expect(sandboxOnProduction("production", "live")).toBe(false);
+  it("allows production once the switch is off", () => {
+    expect(lemonSqueezyTestModeOnProduction("production", undefined)).toBe(false);
+    expect(lemonSqueezyTestModeOnProduction("production", "")).toBe(false);
+    expect(lemonSqueezyTestModeOnProduction("production", "false")).toBe(false);
   });
 
-  // Only the exact string disables live mode, so a typo fails closed —
-  // production stays live rather than silently dropping into test billing.
-  it("treats anything other than exactly 'sandbox' as live", () => {
-    for (const v of ["Sandbox", "SANDBOX", " sandbox", "sandbox "]) {
-      expect(sandboxOnProduction("production", v)).toBe(false);
-    }
+  // The other direction: a genuinely-signed webhook whose event itself claims
+  // test mode (the store's own dashboard toggle, not this app's env var) must
+  // not be allowed to grant a real plan in production either.
+  it("refuses a test-mode webhook event in production", () => {
+    expect(lemonSqueezyTestEventOnProduction("production", true)).toBe(true);
+  });
+
+  it("allows a live-mode webhook event in production", () => {
+    expect(lemonSqueezyTestEventOnProduction("production", false)).toBe(false);
+  });
+
+  it("allows a test-mode webhook event outside production", () => {
+    expect(lemonSqueezyTestEventOnProduction("preview", true)).toBe(false);
+    expect(lemonSqueezyTestEventOnProduction(undefined, true)).toBe(false);
   });
 });
 
@@ -78,71 +84,49 @@ describe("plan gating", () => {
   });
 });
 
-describe("verifyPaddleSignature", () => {
-  const secret = "pdl_ntfset_test";
+describe("verifyLemonSqueezySignature", () => {
+  const secret = "ls_whsec_test";
   const payload = JSON.stringify({
-    event_type: "subscription.created",
-    data: { id: "sub_1", status: "active" },
+    meta: { event_name: "subscription_created", test_mode: false },
+    data: { id: "sub_1", attributes: { status: "active" } },
   });
 
-  // Paddle signs `${ts}:${body}` and sends `ts=<unix>;h1=<hex>`.
-  function sign(body: string, ts: number, key = secret): string {
-    const h1 = createHmac("sha256", key).update(`${ts}:${body}`).digest("hex");
-    return `ts=${ts};h1=${h1}`;
+  function sign(body: string, key = secret): string {
+    return createHmac("sha256", key).update(body, "utf8").digest("hex");
   }
 
-  it("accepts a valid, fresh signature", () => {
-    const now = 1_760_000_000_000;
-    expect(
-      verifyPaddleSignature(payload, sign(payload, Math.floor(now / 1000)), secret, { now }),
-    ).toBe(true);
+  it("accepts a valid signature", () => {
+    expect(verifyLemonSqueezySignature(payload, sign(payload), secret)).toBe(true);
   });
 
   // This endpoint is public and grants paid plans, so every one of these
   // rejections is the difference between a webhook and a free Pro account.
   it("rejects a tampered payload", () => {
-    const now = 1_760_000_000_000;
-    const header = sign(payload, Math.floor(now / 1000));
-    expect(verifyPaddleSignature(payload + "x", header, secret, { now })).toBe(false);
+    const header = sign(payload);
+    expect(verifyLemonSqueezySignature(payload + "x", header, secret)).toBe(false);
   });
 
   it("rejects the wrong secret", () => {
-    const now = 1_760_000_000_000;
-    const header = sign(payload, Math.floor(now / 1000), "pdl_ntfset_wrong");
-    expect(verifyPaddleSignature(payload, header, secret, { now })).toBe(false);
-  });
-
-  it("rejects a stale timestamp (replay)", () => {
-    const now = 1_760_000_000_000;
-    const header = sign(payload, Math.floor(now / 1000) - 10_000);
-    expect(verifyPaddleSignature(payload, header, secret, { now })).toBe(false);
-  });
-
-  // A signature from the future is just as much of a red flag as an old one.
-  it("rejects a timestamp far ahead of now", () => {
-    const now = 1_760_000_000_000;
-    const header = sign(payload, Math.floor(now / 1000) + 10_000);
-    expect(verifyPaddleSignature(payload, header, secret, { now })).toBe(false);
+    const header = sign(payload, "ls_whsec_wrong");
+    expect(verifyLemonSqueezySignature(payload, header, secret)).toBe(false);
   });
 
   it("rejects missing header or secret", () => {
-    expect(verifyPaddleSignature(payload, null, secret)).toBe(false);
-    expect(verifyPaddleSignature(payload, "ts=1;h1=abc", "")).toBe(false);
+    expect(verifyLemonSqueezySignature(payload, null, secret)).toBe(false);
+    expect(verifyLemonSqueezySignature(payload, "abc123", "")).toBe(false);
   });
 
   it("rejects malformed headers rather than throwing", () => {
-    const now = 1_760_000_000_000;
-    for (const bad of ["garbage", "", "ts=;h1=", "h1=abc", "ts=abc;h1=deadbeef", ";;;"]) {
-      expect(verifyPaddleSignature(payload, bad, secret, { now })).toBe(false);
+    for (const bad of ["garbage", "", "not-hex-zzz", ";;;"]) {
+      expect(verifyLemonSqueezySignature(payload, bad, secret)).toBe(false);
     }
   });
 
-  // Stripe's separator was `,` and Paddle's is `;` — parsing one with the
-  // other's rules must fail closed, not accidentally pass.
-  it("does not accept Stripe-style headers", () => {
-    const now = 1_760_000_000_000;
-    const ts = Math.floor(now / 1000);
-    const h1 = createHmac("sha256", secret).update(`${ts}:${payload}`).digest("hex");
-    expect(verifyPaddleSignature(payload, `t=${ts},v1=${h1}`, secret, { now })).toBe(false);
+  // Paddle's header packs a timestamp and a labelled hex digest (`ts=…;h1=…`);
+  // Lemon Squeezy's is the bare hex digest. Parsing one with the other's
+  // shape must fail closed, not accidentally pass.
+  it("does not accept a Paddle-style header", () => {
+    const h1 = createHmac("sha256", secret).update(`0:${payload}`).digest("hex");
+    expect(verifyLemonSqueezySignature(payload, `ts=0;h1=${h1}`, secret)).toBe(false);
   });
 });

@@ -43,19 +43,20 @@ export default function RefundsPage() {
         <h2>How to request one</h2>
         <p>
           Email us from the address on your account, or reply to the receipt
-          Paddle sent you. Either works. You can also request a refund directly
-          from Paddle using that receipt &mdash; Paddle is the seller of record
-          for every paid plan, so they issue the money back.
+          Lemon Squeezy sent you. Either works. You can also request a refund
+          directly from Lemon Squeezy using that receipt &mdash; Lemon Squeezy
+          is the seller of record for every paid plan, so they issue the money
+          back.
         </p>
       </section>
 
       <section>
         <h2>How long it takes</h2>
         <p>
-          We approve refund requests within one business day. Paddle returns the
-          money to the original payment method, which typically takes a further
-          5&ndash;10 business days depending on your bank. Any VAT or sales tax
-          collected is refunded with it.
+          We approve refund requests within one business day. Lemon Squeezy
+          returns the money to the original payment method, which typically
+          takes a further 5&ndash;10 business days depending on your bank. Any
+          VAT or sales tax collected is refunded with it.
         </p>
       </section>
 

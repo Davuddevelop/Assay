@@ -6,12 +6,17 @@ import type { PlanId } from "@/lib/plans";
 import type { SubscriptionRow } from "@/lib/db/types";
 
 /**
- * A subscription is only "live" when Paddle says it's active (or on the grace
- * window we treat as active). Past-due / canceled falls back to Free so a lapsed
- * payment quietly drops entitlements instead of granting paid features forever.
+ * A subscription is only "live" when the billing provider says it's active or
+ * trialing. Past-due / canceled falls back to Free so a lapsed payment quietly
+ * drops entitlements instead of granting paid features forever.
+ *
+ * Two spellings of "trialing" because the provider changed: Paddle's status
+ * was `trialing`, Lemon Squeezy's is `on_trial`. Kept both rather than
+ * normalising at the webhook, so a row written under either provider still
+ * reads correctly.
  */
 function isLive(status: string): boolean {
-  return status === "active" || status === "trialing";
+  return status === "active" || status === "trialing" || status === "on_trial";
 }
 
 function normalizePlan(plan: string): PlanId {
@@ -46,7 +51,7 @@ export async function getSubscription(): Promise<SubscriptionRow | null> {
   return data ?? null;
 }
 
-/** Look up a subscription by Paddle customer id — used by the webhook. */
+/** Look up a subscription by billing-provider customer id — used by the webhook. */
 export async function getSubscriptionByCustomer(
   customerId: string,
 ): Promise<SubscriptionRow | null> {
@@ -59,7 +64,7 @@ export async function getSubscriptionByCustomer(
   return data ?? null;
 }
 
-/** Upsert subscription state (service role) — the Paddle webhook's write path. */
+/** Upsert subscription state (service role) — the billing webhook's write path. */
 export async function upsertSubscription(
   row: Partial<SubscriptionRow> & { user_id: string },
 ): Promise<void> {

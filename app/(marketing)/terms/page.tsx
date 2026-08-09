@@ -99,11 +99,12 @@ export default function TermsPage() {
         <p>
           Assay has a free tier and paid plans. Paid plans are billed monthly in
           advance and renew until you cancel. Payments are processed by{" "}
-          <strong>Paddle</strong>, which is the merchant and seller of record for
-          every paid plan: your purchase contract for the transaction is with
-          Paddle, they issue your invoice, and they collect any VAT or sales tax
-          due in your country. Paddle&rsquo;s own terms apply to the payment
-          alongside these terms. You can cancel any time from your billing page;
+          <strong>Lemon Squeezy</strong>, which is the merchant and seller of
+          record for every paid plan: your purchase contract for the
+          transaction is with Lemon Squeezy, they issue your invoice, and they
+          collect any VAT or sales tax due in your country. Lemon
+          Squeezy&rsquo;s own terms apply to the payment alongside these terms.
+          You can cancel any time from your billing page;
           access continues until the end of the paid period, and you are not
           charged again. We may change prices with notice, and any change applies
           only to future billing periods &mdash; never to one you have paid for.
@@ -124,10 +125,10 @@ export default function TermsPage() {
           payment and to any renewal.
         </p>
         <p>
-          Refunds are issued by Paddle, the seller of record, back to the
-          original payment method &mdash; typically within 5&ndash;10 business
-          days depending on your bank. You may also request a refund directly
-          from Paddle using the receipt they emailed you.
+          Refunds are issued by Lemon Squeezy, the seller of record, back to
+          the original payment method &mdash; typically within 5&ndash;10
+          business days depending on your bank. You may also request a refund
+          directly from Lemon Squeezy using the receipt they emailed you.
         </p>
         <p>
           Beyond that window, a subscription can be cancelled at any time to stop

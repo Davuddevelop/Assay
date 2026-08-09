@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
-
-import { PaddleCheckout } from "@/components/billing/paddle-checkout";
 
 import { requireUser } from "@/lib/auth";
 import { getUserPlan, getSubscription } from "@/lib/data/subscriptions";
 import { scanUsageThisMonth } from "@/lib/usage";
 import { getPlan, PLANS, PLAN_ORDER, formatPrice, checksLimit } from "@/lib/plans";
-import { paddleConfig } from "@/lib/env";
+import { lemonSqueezyConfig } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 import { startCheckout, openPortal } from "@/app/(app)/billing/actions";
 import { cn } from "@/lib/utils";
@@ -33,7 +30,7 @@ export default async function BillingPage({
   ]);
   const plan = getPlan(planId);
   const limit = checksLimit(planId);
-  const billingOn = paddleConfig() !== null;
+  const billingOn = lemonSqueezyConfig() !== null;
 
   const notice =
     success === "1"
@@ -46,11 +43,8 @@ export default async function BillingPage({
 
   return (
     <div className="mx-auto w-full max-w-4xl xl:max-w-5xl px-4 py-12 sm:px-6">
-      {/* Paddle redirects back here with ?_ptxn=<id> — the overlay is the only
-          checkout UI Paddle Billing has, so it has to be opened client-side. */}
-      <Suspense fallback={null}>
-        <PaddleCheckout />
-      </Suspense>
+      {/* No client-side checkout component needed here: startCheckout redirects
+          straight to Lemon Squeezy's own hosted checkout page. */}
       <Link
         href="/dashboard"
         className="font-mono text-xs uppercase tracking-[0.14em] text-ash transition-colors hover:text-ivory"

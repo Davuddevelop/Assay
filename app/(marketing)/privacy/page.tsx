@@ -30,9 +30,10 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Usage &amp; billing.</strong> Scan counts for metering, your
-            plan, and — if you subscribe — a Paddle customer id. Paddle is the
-            seller of record for paid plans: your card details, billing address,
-            and any tax identifiers go to Paddle, and we never see or store them.
+            plan, and — if you subscribe — a Lemon Squeezy customer id. Lemon
+            Squeezy is the seller of record for paid plans: your card details,
+            billing address, and any tax identifiers go to Lemon Squeezy, and
+            we never see or store them.
           </li>
           <li>
             <strong>Anonymous scan statistics.</strong> When a scan runs without
@@ -118,7 +119,7 @@ export default function PrivacyPage() {
           <li><strong>Supabase</strong> — database, authentication.</li>
           <li><strong>Vercel</strong> — hosting.</li>
           <li><strong>Anthropic</strong> — generating plain-language explanations from findings (no secret values are sent).</li>
-          <li><strong>Paddle</strong> — payments and tax, as seller of record (paid plans only).</li>
+          <li><strong>Lemon Squeezy</strong> — payments and tax, as seller of record (paid plans only).</li>
           <li><strong>Resend</strong> — sending alert emails (paid plans only).</li>
           <li><strong>Inngest</strong> — scheduling background re-checks.</li>
           <li>
@@ -146,10 +147,10 @@ export default function PrivacyPage() {
             expire on their own.
           </li>
           <li>
-            <strong>Billing records</strong> &mdash; held by Paddle as seller of
-            record, for as long as tax law requires them (generally several
-            years). Deleting your Assay account does not erase these, because we
-            aren&rsquo;t permitted to destroy them.
+            <strong>Billing records</strong> &mdash; held by Lemon Squeezy as
+            seller of record, for as long as tax law requires them (generally
+            several years). Deleting your Assay account does not erase these,
+            because we aren&rsquo;t permitted to destroy them.
           </li>
           <li>
             <strong>Anonymous scan statistics</strong> &mdash; kept indefinitely.

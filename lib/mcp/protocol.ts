@@ -3,9 +3,10 @@
  * layer is unit-testable without a request.
  *
  * MCP is JSON-RPC 2.0. We implement it directly rather than take a dependency,
- * matching how the Paddle and Resend clients in this codebase are written: the
- * surface we need is three methods wide, and a protocol library that churns is
- * a build break waiting to happen on a path other people's agents depend on.
+ * matching how the Lemon Squeezy and Resend clients in this codebase are
+ * written: the surface we need is three methods wide, and a protocol library
+ * that churns is a build break waiting to happen on a path other people's
+ * agents depend on.
  */
 export const PROTOCOL_VERSION = "2025-06-18";
 const SERVER_INFO = { name: "assay", version: "1.0.0" } as const;
