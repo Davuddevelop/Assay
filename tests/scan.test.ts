@@ -302,3 +302,111 @@ describe("checkHeaders", () => {
     ).toEqual([]);
   });
 });
+
+describe("checkHeaders — a header that is present but does nothing", () => {
+  const strong = {
+    "strict-transport-security": "max-age=63072000",
+    "x-frame-options": "DENY",
+    "x-content-type-options": "nosniff",
+  };
+
+  // The case that started this: our own site. next.config.ts ships a CSP with
+  // no script-src (the nonce'd version broke hydration and was reverted), and
+  // presence-only grading scored it 100/100 while the source called it an
+  // unresolved gap. An outside scanner flagged it; ours did not.
+  it("flags a CSP that never restricts scripts — the assaysecurity.com case", () => {
+    const out = checkHeaders({
+      ...strong,
+      "content-security-policy":
+        "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+    });
+    expect(out).toHaveLength(1);
+    expect(out[0].kind).toBe("weak-header");
+    expect(out[0].title).toMatch(/doesn't restrict scripts/i);
+  });
+
+  it("flags 'unsafe-inline', which is the thing CSP exists to stop", () => {
+    const out = checkHeaders({
+      ...strong,
+      "content-security-policy": "script-src 'self' 'unsafe-inline'",
+    });
+    expect(out.map((f) => f.title)).toEqual([
+      expect.stringMatching(/inline scripts/i),
+    ]);
+  });
+
+  it("flags a wildcard script source", () => {
+    const out = checkHeaders({
+      ...strong,
+      "content-security-policy": "default-src *",
+    });
+    expect(out).toHaveLength(1);
+    expect(out[0].title).toMatch(/any site/i);
+  });
+
+  // 'strict-dynamic' makes browsers ignore both 'unsafe-inline' and host
+  // wildcards, so flagging them alongside it would fail a policy that is
+  // actually modern and strict — a false positive costs more than a miss here,
+  // because it teaches people to distrust the report.
+  it("does not flag unsafe-inline or * when 'strict-dynamic' neutralises them", () => {
+    expect(
+      checkHeaders({
+        ...strong,
+        "content-security-policy": "script-src 'strict-dynamic' 'unsafe-inline' *",
+      }),
+    ).toEqual([]);
+  });
+
+  it("reads script-src-elem and script-src ahead of default-src, as browsers do", () => {
+    expect(
+      checkHeaders({ ...strong, "content-security-policy": "default-src *; script-src 'self'" }),
+    ).toEqual([]);
+    expect(
+      checkHeaders({
+        ...strong,
+        "content-security-policy": "default-src 'self'; script-src-elem *",
+      }),
+    ).toHaveLength(1);
+  });
+
+  // Per spec a repeated directive is ignored after the first, so a laxer
+  // second copy must not be able to overwrite a stricter first one.
+  it("keeps the first copy of a repeated directive", () => {
+    expect(
+      checkHeaders({
+        ...strong,
+        "content-security-policy": "script-src 'self'; script-src 'unsafe-inline'",
+      }),
+    ).toEqual([]);
+  });
+
+  it("flags an HSTS that expires within weeks", () => {
+    const out = checkHeaders({
+      "content-security-policy": "default-src 'self'",
+      "x-frame-options": "DENY",
+      "x-content-type-options": "nosniff",
+      "strict-transport-security": "max-age=86400",
+    });
+    expect(out).toHaveLength(1);
+    expect(out[0].kind).toBe("weak-header");
+    expect(out[0].detail).toContain("1 day");
+  });
+
+  it("accepts six months of HSTS", () => {
+    expect(
+      checkHeaders({
+        "content-security-policy": "default-src 'self'",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=15552000; includeSubDomains",
+      }),
+    ).toEqual([]);
+  });
+
+  // A header that isn't there is already reported as missing; reporting it as
+  // weak too would charge the same problem twice against the score.
+  it("never reports a header as both missing and weak", () => {
+    const out = checkHeaders({});
+    expect(out.every((f) => f.kind === "missing-header")).toBe(true);
+  });
+});

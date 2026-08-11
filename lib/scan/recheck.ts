@@ -50,7 +50,11 @@ export async function recheckFinding(
       ];
       break;
     }
-    case "missing-header": {
+    // Both come from checkHeaders. The fallthrough is load-bearing: an
+    // unhandled kind leaves `found` empty, which findingStillPresent reads as
+    // "gone", so a re-check would cheerfully report an unfixed issue resolved.
+    case "missing-header":
+    case "weak-header": {
       found = checkHeaders(app.headers);
       break;
     }

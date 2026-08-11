@@ -25,6 +25,11 @@ type FindingKind =
   | "firebase-rules"
   | "open-endpoint"
   | "missing-header"
+  // A header that is present but doesn't do its job — a CSP that never
+  // restricts scripts, an HSTS that expires in weeks. Distinct from
+  // "missing-header" because the fix is different ("tighten this" rather than
+  // "add this"), and because re-check must be able to tell them apart.
+  | "weak-header"
   | "vulnerable-dependency";
 
 /**
