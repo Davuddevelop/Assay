@@ -61,7 +61,7 @@ export function StatCard({
   footer,
 }: StatCardProps) {
   return (
-    <div className="relative flex h-[1200px] w-[1200px] shrink-0 flex-col justify-between overflow-hidden bg-onyx p-[100px]">
+    <div className="relative flex h-[1200px] w-[1200px] shrink-0 flex-col overflow-hidden bg-onyx p-[100px]">
       {/* The graph-paper ground. An assay office measures things, and this is
           what measuring looks like — same utility the site's panels use. */}
       <div aria-hidden className="field pointer-events-none absolute inset-0" />
@@ -74,26 +74,42 @@ export function StatCard({
         <HallmarkMark className="h-[52px] w-[52px] text-ivory-dim" />
       </header>
 
-      <div className="relative">
+      {/* The hero owns the slack. Spreading all four blocks with
+          justify-between gave four similar voids and read as undesigned;
+          letting this one absorb the leftover height and centre inside it
+          makes the number the reason the card exists, and lets the findings
+          and footer close ranks into a single foot. */}
+      <div className="relative flex flex-1 flex-col justify-center">
         {/* The denominator sits in ash, not ivory-dim. At this size a bright
             "/200" turns the whole line into one lit block and the accent stops
             reading as emphasis — the contrast between the two halves is what
-            makes the number say "120 of them". */}
-        <p className="font-display text-[232px] font-semibold leading-[0.84] tracking-[-0.045em]">
+            makes the number say "120 of them".
+
+            The negative margin is optical alignment: display digits carry
+            left side bearing, so the glyph starts inboard of the headline
+            beneath it and the card's left edge reads as crooked. Measured
+            off the rendered pixels, not the layout box — getBoundingClientRect
+            includes the bearing, which is the very thing being corrected, so
+            it reports the number as aligned when the ink is not. Real bearing
+            at this size is ~2.5px; every other element inks at x=101. */}
+        <p className="-ml-[3px] font-display text-[232px] font-semibold leading-[0.84] tracking-[-0.045em]">
           <span className="gold-metallic">{value}</span>
           {of && <span className="text-ash">/{of}</span>}
         </p>
-        <p className="mt-[38px] max-w-[900px] font-display text-[48px] font-semibold leading-[1.12] tracking-[-0.028em] text-ivory">
+        <p className="mt-[40px] max-w-[900px] font-display text-[48px] font-semibold leading-[1.12] tracking-[-0.028em] text-ivory">
           {headline}
         </p>
-        <p className="mt-[26px] max-w-[820px] text-[25px] leading-[1.5] text-ivory-dim">
+        {/* Narrower than the headline on purpose: at the headline's width this
+            line broke with a single orphaned word, which reads as a mistake
+            rather than as a measure. */}
+        <p className="mt-[26px] max-w-[720px] text-[25px] leading-[1.5] text-ivory-dim">
           {context}
         </p>
       </div>
 
       <div className="relative">
         <div aria-hidden className="h-px w-full bg-line" />
-        <ul className="mt-[48px] flex flex-col gap-[38px]">
+        <ul className="mt-[44px] flex flex-col gap-[34px]">
           {findings.map((f) => (
             <li key={f.label}>
               <p className="font-mono text-[15px] uppercase tracking-[0.2em] text-ash">
@@ -105,11 +121,10 @@ export function StatCard({
             </li>
           ))}
         </ul>
+        <p className="mt-[56px] font-mono text-[20px] tracking-[0.04em] text-ash">
+          {footer}
+        </p>
       </div>
-
-      <footer className="relative">
-        <p className="font-mono text-[20px] tracking-[0.04em] text-ash">{footer}</p>
-      </footer>
     </div>
   );
 }
