@@ -38,6 +38,11 @@ export async function executeAndSaveScan(scanId: string, appUrl: string): Promis
         score: result.score,
         verdict: result.verdict,
         platform: result.platform,
+        // Written with the verdict, never separately: the mark gates on this,
+        // and a row holding a "certified" without the coverage that justifies
+        // it is the exact state this column exists to make impossible.
+        conclusive: result.conclusive,
+        coverage: result.coverage,
         completed_at: new Date().toISOString(),
       })
       .eq("id", scanId);

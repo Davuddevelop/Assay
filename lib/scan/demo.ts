@@ -1,4 +1,5 @@
 import { scoreFindings } from "@/lib/scan/score";
+import { computeCoverage } from "@/lib/scan/coverage";
 import type {
   ScanRow,
   ScanFindingRow,
@@ -118,6 +119,18 @@ export function getDemoReport(): { scan: ScanRow; findings: ScanFindingRow[] } {
     error: null,
     created_at: now,
     completed_at: now,
+    // Run through the real rules rather than hand-written, so the sample can
+    // never describe a coverage state the scanner cannot actually produce.
+    // The fixture stands for an app that was fully reachable and full of
+    // problems — the opposite of the case the mark now refuses.
+    conclusive: true,
+    coverage: computeCoverage({
+      bundleCount: 3,
+      backendDetected: true,
+      backendName: "Supabase",
+      bundleCrawlTruncated: false,
+      unscannable: false,
+    }),
   };
 
   const findings: ScanFindingRow[] = DEMO_FINDINGS.map((f, i) => ({

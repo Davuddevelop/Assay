@@ -152,6 +152,7 @@ export async function GET(req: NextRequest) {
           id: "inline", user_id: null, app_url: target, platform: result.platform,
           status: "completed", score: result.score, verdict: result.verdict,
           is_demo: false, error: null, created_at: now, completed_at: now,
+          conclusive: result.conclusive, coverage: result.coverage,
         };
 
         // Raw findings first. The verdict is known the moment the probe ends,

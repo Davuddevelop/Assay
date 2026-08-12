@@ -26,7 +26,7 @@ export default async function SamplePage() {
         plain language, with the exact fix to paste back into your builder.
       </p>
       <div className="mt-8">
-        <ScanReport scan={scan} findings={findings} />
+        <ScanReport scan={scan} findings={findings} coverage={scan.coverage ?? undefined} />
       </div>
 
       {/* The one thing a sample report structurally can't show.

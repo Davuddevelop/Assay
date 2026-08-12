@@ -12,8 +12,27 @@ export interface BadgeState {
   tone: BadgeTone;
 }
 
-export function badgeStateFor(certified: boolean, expired: boolean): BadgeState {
+/**
+ * `conclusive` is required, not optional with a permissive default.
+ *
+ * This is the gate on the one artifact a stranger sees, so a caller who
+ * forgets to pass it should fail to compile rather than quietly mint a
+ * "Certified" from a scan that never examined a backend. There is exactly one
+ * production caller; making it required costs nothing and removes the only
+ * way to get this wrong by omission.
+ *
+ * Order matters. Real findings outrank everything — an app with an open
+ * database is "At risk" whether or not the rest of the scan completed.
+ * Incomplete then outranks expired, because expiry says a true result got
+ * old, while incomplete says there was never a full result to age.
+ */
+export function badgeStateFor(
+  certified: boolean,
+  expired: boolean,
+  conclusive: boolean,
+): BadgeState {
   if (!certified) return { status: "At risk", tone: "bad" };
+  if (!conclusive) return { status: "Incomplete", tone: "stale" };
   if (expired) return { status: "Expired", tone: "stale" };
   return { status: "Certified", tone: "ok" };
 }

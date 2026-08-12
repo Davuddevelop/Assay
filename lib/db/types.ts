@@ -6,6 +6,7 @@
  * Shaped for `@supabase/supabase-js` generics:
  *   Database['public']['Tables'][T]['Row' | 'Insert' | 'Update']
  */
+import type { CheckCoverage } from "@/lib/scan/coverage";
 
 type CheckStatus = "queued" | "running" | "completed" | "error";
 type Verdict = "assayed" | "held";
@@ -97,6 +98,14 @@ export type ScanRow = {
   error: string | null;
   created_at: string;
   completed_at: string | null;
+  /**
+   * Whether every check ran against something real. NULL means the scan
+   * predates coverage tracking — not the same as false, and never a pass.
+   * The hallmark gates on this.
+   */
+  conclusive: boolean | null;
+  /** Per-check status and plain-language detail. NULL on legacy rows. */
+  coverage: CheckCoverage[] | null;
 };
 
 export type ScanFindingRow = {

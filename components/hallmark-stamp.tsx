@@ -1,10 +1,18 @@
 import { cn } from "@/lib/utils";
 
-type HallmarkState = "assayed" | "held";
+type HallmarkState = "assayed" | "held" | "incomplete";
 type HallmarkSize = "sm" | "md" | "lg";
 
 export type HallmarkStampProps = {
-  /** "assayed" — sound. "held" — looks right, but breaks something. */
+  /**
+   * "assayed" — sound. "held" — looks right, but breaks something.
+   * "incomplete" — not enough of it could be checked to say either.
+   *
+   * The third state is deliberately neither gold nor oxblood. Reusing "held"
+   * for it would tell someone their app is flagged when what actually
+   * happened is that we could not see it, and reusing "assayed" would claim a
+   * pass nobody earned. It is grey because it is genuinely neither.
+   */
   state: HallmarkState;
   /** Stamp in on mount. Falls back to a quiet fade under reduced-motion. */
   animate?: boolean;
@@ -25,7 +33,19 @@ const STATE = {
     ring: "border-oxblood text-oxblood-soft",
     glyphColor: "text-oxblood-soft",
   },
+  incomplete: {
+    label: "INCOMPLETE",
+    glyph: "–",
+    ring: "border-border-strong text-ivory-dim",
+    glyphColor: "text-ivory-dim",
+  },
 } satisfies Record<HallmarkState, unknown>;
+
+const ARIA: Record<HallmarkState, string> = {
+  assayed: "Assayed — sound",
+  held: "Held — flagged",
+  incomplete: "Incomplete — not enough could be checked",
+};
 
 const SIZE = {
   sm: "h-7 gap-1.5 pl-2 pr-2.5 text-[10px]",
@@ -55,7 +75,7 @@ export function HallmarkStamp({
   return (
     <span
       role="status"
-      aria-label={state === "assayed" ? "Assayed — sound" : "Held — flagged"}
+      aria-label={ARIA[state]}
       className={cn(
         "inline-flex select-none items-center rounded-[var(--radius-pill)] border bg-surface/60 font-mono font-medium uppercase tracking-[0.22em]",
         SIZE[size],

@@ -71,16 +71,28 @@ function badgeToken(): string {
  * scan, so its freshness is the scan's age. Ownership is enforced by reading the
  * scan through the RLS client first; the badge row is then written service-role
  * (the badges table is locked to the public). Idempotent.
+ *
+ * A scan must also be *conclusive*. A clean result from a scan that never
+ * found a backend is not a pass, it is an absence of evidence, and minting a
+ * public mark from it is the one failure this product cannot survive: the mark
+ * is shown to a paying client by someone vouching for their own work.
+ * `conclusive === true` and not merely truthy, because NULL (a scan predating
+ * coverage tracking) means "not established" and must not mint either.
  */
 export async function ensureBadge(scanId: string): Promise<string | null> {
   const rls = await createClient();
   const { data: scan } = await rls
     .from("scans")
-    .select("id, verdict, status")
+    .select("id, verdict, status, conclusive")
     .eq("id", scanId)
     .maybeSingle();
-  if (!scan || scan.status !== "completed" || scan.verdict !== "certified") {
-    return null; // not the user's scan, or not a pass → nothing to share
+  if (
+    !scan ||
+    scan.status !== "completed" ||
+    scan.verdict !== "certified" ||
+    scan.conclusive !== true
+  ) {
+    return null; // not the user's scan, not a pass, or nothing was established
   }
 
   const db = createAdminClient();
@@ -110,6 +122,12 @@ export interface BadgeReport {
   /** The verdict of the most recent completed scan — not the one it was minted from. */
   verdict: ScanVerdict | null;
   score: number | null;
+  /**
+   * Whether the check behind the current verdict actually examined everything.
+   * False for a scan that could not reach a backend, and for any scan that
+   * predates coverage tracking — in both cases the mark cannot claim a pass.
+   */
+  conclusive: boolean;
   /** When the *current* verdict was established. */
   completedAt: string | null;
   /** When the mark was first struck. Provenance, not standing. */
@@ -152,7 +170,7 @@ export async function getBadgeReport(token: string): Promise<BadgeReport | null>
   // The minted scan identifies whose app this is, and when the mark was struck.
   const { data: struck } = await db
     .from("scans")
-    .select("app_url, user_id, completed_at")
+    .select("app_url, user_id, completed_at, conclusive")
     .eq("id", badge.scan_id)
     .maybeSingle();
   if (!struck) return null;
@@ -169,7 +187,7 @@ export async function getBadgeReport(token: string): Promise<BadgeReport | null>
   const { data: latest } = owned
     ? await db
         .from("scans")
-        .select("verdict, score, completed_at")
+        .select("verdict, score, completed_at, conclusive")
         .eq("app_url", struck.app_url)
         .eq("user_id", struck.user_id as string)
         .eq("status", "completed")
@@ -187,10 +205,20 @@ export async function getBadgeReport(token: string): Promise<BadgeReport | null>
         .maybeSingle()
     : { data: null };
 
+  // Read coverage off whichever scan supplied the verdict above, so standing
+  // and the confidence in it always describe the same check. An anonymous or
+  // un-superseded mark falls back to the scan it was struck from, matching the
+  // verdict fallback exactly.
+  //
+  // `=== true` collapses NULL to false: a legacy scan established nothing, and
+  // "we never recorded it" must not present as a pass.
+  const standing = latest ?? struck;
+
   return {
     appUrl: struck.app_url,
     verdict: latest?.verdict ?? null,
     score: latest?.score ?? null,
+    conclusive: (standing as { conclusive?: boolean | null }).conclusive === true,
     completedAt: latest?.completed_at ?? struck.completed_at,
     struckAt: struck.completed_at,
     watched: Boolean(monitor?.active),

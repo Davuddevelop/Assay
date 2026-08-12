@@ -30,7 +30,12 @@ export async function generateMetadata({
   if (!report) return { title: "Assay" };
   const host = hostOf(report.appUrl);
   const title = `${host} — checked by Assay`;
-  const description = `${host} passed Assay's independent security check — no issues found in the checks Assay runs.`;
+  // The share preview is the part most people see without ever opening the
+  // page, so it cannot claim a pass the page itself declines to claim.
+  const description =
+    report.verdict === "certified" && report.conclusive
+      ? `${host} passed Assay's independent security check — no issues found in the checks Assay runs.`
+      : `Assay's independent security check for ${host}.`;
   return {
     title,
     description,
@@ -60,10 +65,15 @@ export default async function BadgePage({
   const fresh = verificationFreshness(report.completedAt);
   const struckOn = formatReportDate(report.struckAt);
   const expired = fresh.state === "expired";
+  // Passed the checks that ran, but not all of them ran. Neither a pass nor a
+  // failure, and it must not be shown as either.
+  const incomplete = certified && !report.conclusive;
+  const sound = certified && report.conclusive && !expired;
 
-  const tone =
-    expired || !certified
-      ? { text: "text-oxblood-soft", dot: "bg-oxblood" }
+  const tone = !certified
+    ? { text: "text-oxblood-soft", dot: "bg-oxblood" }
+    : incomplete || expired
+      ? { text: "text-ivory-dim", dot: "bg-ash" }
       : fresh.state === "aging"
         ? { text: "text-ivory", dot: "bg-ivory-dim" }
         : { text: "text-iris-soft", dot: "bg-iris" };
@@ -77,7 +87,10 @@ export default async function BadgePage({
         <p className="mt-3 truncate font-mono text-sm text-ivory">{host}</p>
 
         <div className="mt-8 flex justify-center">
-          <HallmarkStamp state={certified && !expired ? "assayed" : "held"} animate={false} />
+          <HallmarkStamp
+            state={sound ? "assayed" : incomplete || expired ? "incomplete" : "held"}
+            animate={false}
+          />
         </div>
 
         {/* Standing, not a souvenir. This page resolves the latest check, so
@@ -86,9 +99,11 @@ export default async function BadgePage({
         <h1 className="mt-8 font-display text-3xl font-bold tracking-[-0.02em] text-ivory sm:text-4xl">
           {!certified
             ? "This mark is no longer valid."
-            : expired
-              ? "This check has expired."
-              : "No issues found."}
+            : incomplete
+              ? "This app couldn't be fully checked."
+              : expired
+                ? "This check has expired."
+                : "No issues found."}
         </h1>
 
         <p
@@ -106,7 +121,7 @@ export default async function BadgePage({
             <span
               className={cn(
                 "font-display text-4xl font-bold tabular-nums",
-                certified && !expired ? "text-ivory" : "text-oxblood-soft",
+                sound ? "text-ivory" : incomplete ? "text-ivory-dim" : "text-oxblood-soft",
               )}
             >
               {report.score}
@@ -122,11 +137,13 @@ export default async function BadgePage({
             mark no longer stands. The owner sees the detail when they sign in;
             nobody else ever does. */}
         <p className="mx-auto mt-6 max-w-sm text-sm leading-relaxed text-ivory-dim">
-          {expired
-            ? `This app passed Assay's check, but the verification is older than ${VALID_DAYS} days. Apps drift as they're edited — ask the owner for a fresh check.`
-            : certified
-              ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the last check.`
-              : `A later check found this app no longer meets the standard it was marked for. The details go to the owner, not here. Ask them for a current report.`}
+          {incomplete
+            ? `Assay could not reach everything it checks on ${host} — some checks never ran, so no mark is claimed. This is not a finding against the app, and it is not a pass either. Ask the owner for a full report.`
+            : expired
+              ? `This app passed Assay's check, but the verification is older than ${VALID_DAYS} days. Apps drift as they're edited — ask the owner for a fresh check.`
+              : certified
+                ? `Assay checked ${host} for exposed secrets, open databases, and missing protections, and found no evidence of those specific issues at the last check.`
+                : `A later check found this app no longer meets the standard it was marked for. The details go to the owner, not here. Ask them for a current report.`}
         </p>
 
         {/* What re-verification actually means for this app. Claiming continuous

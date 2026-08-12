@@ -75,7 +75,7 @@ export default async function ScanReportPage({
         ← Dashboard
       </Link>
       <div className="mt-6">
-        <ScanReport scan={scan} findings={findings} />
+        <ScanReport scan={scan} findings={findings} coverage={scan.coverage ?? undefined} />
       </div>
       <div className="mt-8">
         <WatchToggle scan={scan} watched={watched} />

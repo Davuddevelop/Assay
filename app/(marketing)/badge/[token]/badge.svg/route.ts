@@ -23,6 +23,7 @@ export async function GET(
     ? badgeStateFor(
         report.verdict === "certified",
         verificationFreshness(report.completedAt).state === "expired",
+        report.conclusive,
       )
     : { status: "Unknown", tone: "stale" as const };
 
