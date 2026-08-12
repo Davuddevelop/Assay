@@ -93,7 +93,7 @@ export function StatCard({
             it reports the number as aligned when the ink is not. Real bearing
             at this size is ~2.5px; every other element inks at x=101. */}
         <p className="-ml-[3px] font-display text-[232px] font-semibold leading-[0.84] tracking-[-0.045em]">
-          <span className="gold-metallic">{value}</span>
+          <span className="gold-metallic-display">{value}</span>
           {of && <span className="text-ash">/{of}</span>}
         </p>
         <p className="mt-[40px] max-w-[900px] font-display text-[48px] font-semibold leading-[1.12] tracking-[-0.028em] text-ivory">

@@ -76,6 +76,33 @@
   color: transparent;
 }
 
+/*
+  The same struck-metal treatment, for display sizes.
+
+  --gradient-gold runs at 145deg, which is right on a wordmark: the box is
+  small, so the ramp reads as one sheen across the whole lockup. On a wide,
+  short element — a 232px figure like "120" — that same angle spends the ramp
+  horizontally, so the first digit gets the light stop and the last gets the
+  deep blue. Measured: peak luminance falls 174 to 143 across three digits,
+  and the final digit reads as faded or cut rather than as part of the number.
+
+  Same three stops, same tokens, turned to run down the glyphs instead of
+  across the line. Every digit now gets an identical top-to-bottom sheen, and
+  the deep stop only arrives in the last of the descent rather than eating a
+  whole character.
+*/
+.gold-metallic-display {
+  background-image: linear-gradient(
+    170deg,
+    var(--color-iris-soft) 0%,
+    var(--color-iris) 62%,
+    var(--color-gold-deep) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* Editorial italic-serif accent — one word per headline. */
 .font-accent {
   font-family: var(--font-serif), Georgia, "Times New Roman", serif;
