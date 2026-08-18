@@ -71,6 +71,33 @@ rows.`}</code>
           </Reveal>
         </div>
 
+        {/* The third answer.
+            This section's own promise, three paragraphs up, is a mark that
+            "says exactly what was checked" — and until this existed the page
+            showed only pass and fail, which is the same two-state green light
+            it argues against. The product grew a third state (an inconclusive
+            scan cannot mint a mark); the page had not caught up, so a
+            freelancer could hand a client a mark the home page had implied
+            meant more than it does. That is a trust problem before it is a
+            design one. */}
+        <Reveal delay={140}>
+          <div className="mt-6 flex flex-col gap-4 rounded-[var(--radius-card)] border border-line bg-surface/40 p-6 sm:flex-row sm:items-start sm:gap-5">
+            <div className="shrink-0">
+              <HallmarkStamp state="incomplete" />
+            </div>
+            <p className="text-sm leading-relaxed text-ivory-dim">
+              There is a third answer, and it is the one worth asking for. When
+              a check cannot run, because the app sits behind a login we
+              cannot follow or because we never find a database from the
+              outside, the mark is withheld rather than granted.{" "}
+              <span className="text-ivory">
+                Nothing found and nothing checked are different results
+              </span>
+              , and the report always tells you which one you got.
+            </p>
+          </div>
+        </Reveal>
+
         {/* The one fork on the page, and it belongs here.
             Everything above this speaks to someone checking their own app.
             The mark is the first thing that only makes sense when there is a
